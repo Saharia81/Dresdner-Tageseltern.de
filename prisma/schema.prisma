@@ -1,0 +1,98 @@
+// Prisma Schema – Dresdner Tages Eltern e.V.
+// Doku: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============================================================
+// Phase 1 – Steckbriefe & Karte
+// ============================================================
+
+enum Beratungsgebiet {
+  MALVINA
+  OUTDOOR
+  KINDERLAND
+}
+
+model Tagesmutter {
+  id                    String   @id @default(cuid())
+  slug                  String   @unique // URL: /fuer-eltern/tagesmutter-finden/[slug]
+  name                  String
+  einrichtungsname      String?  // optional, nicht alle haben einen
+  fotoUrl               String   // rundes Hauptfoto
+  einrichtungsfotoUrls  String   // JSON-Array von Strings (SQLite hat kein natives Array)
+  adresse               String
+  telefon               String
+  email                 String
+  oeffnungszeiten       String
+  ersatzbetreuung       String   // z.B. "Basis ETP"
+  verpflegung           String   // z.B. "Ich koche selbst"
+  websiteUrl            String?  // optional, Fallback auf Elternportal Stadt Dresden
+  beratungsgebiet       Beratungsgebiet
+  // Karten-Pin
+  latitude              Float
+  longitude             Float
+  // Sichtbarkeit
+  istAktiv              Boolean  @default(true)
+  reihenfolge           Int      @default(0) // für sortierte Anzeige
+
+  buchungen             Buchung[]
+
+  erstelltAm            DateTime @default(now())
+  aktualisiertAm        DateTime @updatedAt
+}
+
+// ============================================================
+// Phase 1 – Blog / Neuigkeiten
+// ============================================================
+
+model BlogPost {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  titel         String
+  kurztext      String   // Vorschau-Text in der Übersicht
+  inhaltMd      String   // Markdown-Inhalt
+  titelbildUrl  String?
+  veroeffentlichtAm DateTime @default(now())
+  istEntwurf    Boolean  @default(false)
+  aktualisiertAm DateTime @updatedAt
+}
+
+// ============================================================
+// Phase 2 – Banner-Buchungssystem (vorbereitet, noch nicht aktiv)
+// ============================================================
+
+model Banner {
+  id          String    @id @default(cuid())
+  bezeichnung String    // "Banner 1", "Banner 2" …
+  notizen     String?
+  buchungen   Buchung[]
+}
+
+enum BuchungsStatus {
+  ANFRAGE
+  BESTAETIGT
+  ABGELEHNT
+  ABGELAUFEN
+}
+
+model Buchung {
+  id              String         @id @default(cuid())
+  bannerId        String
+  banner          Banner         @relation(fields: [bannerId], references: [id])
+  tagesmutterId   String
+  tagesmutter     Tagesmutter    @relation(fields: [tagesmutterId], references: [id])
+  status          BuchungsStatus @default(ANFRAGE)
+  zeitraumStart   DateTime
+  zeitraumEnde    DateTime
+  notizenAdmin    String?
+  erstelltAm      DateTime       @default(now())
+  aktualisiertAm  DateTime       @updatedAt
+
+  @@index([bannerId, zeitraumStart, zeitraumEnde])
+}
