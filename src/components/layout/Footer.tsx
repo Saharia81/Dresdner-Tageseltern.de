@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="mt-24 bg-sonnengelb">
+    <footer className="bg-sonnengelb">
       <div className="mx-auto max-w-6xl px-4 py-10 grid gap-6 md:grid-cols-3 text-sm">
         <div>
           <p className="font-bold mb-2">Dresdner Tages Eltern e.&#8239;V.</p>
@@ -22,7 +22,7 @@ export function Footer() {
         <div>
           <p className="font-bold mb-2">Folge uns</p>
           <a
-            href="https://www.instagram.com/"
+            href="https://www.instagram.com/dresdnertageseltern?igsh=MTFheGJldjNheXhzNw=="
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"

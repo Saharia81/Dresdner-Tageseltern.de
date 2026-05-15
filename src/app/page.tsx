@@ -252,20 +252,20 @@ export default function Home() {
       </section>
 
       {/* 4 — Feature-Grid */}
-      <section className="bg-sonnengelb-hell">
+      <section style={{ backgroundColor: "#fdf7e3" }}>
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-4">
             Warum sich Familien für Kindertagespflege entscheiden
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             <FeatureCard
-              image="/images/allgemein/kleine-gruppen.png"
+              image="/images/allgemein/basteln.png"
               title="Kleine Gruppen"
               text="Maximal 5 Kinder werden individuell betreut und begleitet."
               href="/fuer-eltern/vorteile"
             />
             <FeatureCard
-              image="/images/allgemein/feste-bezugsperson.png"
+              image="/images/allgemein/feste-bezugsperson-v2.png"
               title="Feste Bezugsperson"
               text="Ein vertrautes Gesicht jeden Tag für Sicherheit und Vertrauen."
               href="/fuer-eltern/vorteile"
@@ -277,7 +277,7 @@ export default function Home() {
               href="/fuer-eltern/vorteile"
             />
             <FeatureCard
-              image="/images/allgemein/gleiche-kosten-2.png"
+              image="/images/allgemein/sparschwein.png"
               title="Gleiche Kosten"
               text="Die Elternbeiträge sind identisch mit denen in Krippe und Kita."
               href="/fuer-eltern/faq"
@@ -289,11 +289,11 @@ export default function Home() {
       {/* 5 — Eingewöhnung */}
       <section className="bg-creme relative overflow-hidden">
         <Image
-          src="/images/hero/herz-mit-schweif.png"
+          src="/images/hero/herzapricot-transparent.png"
           alt=""
           width={400}
           height={280}
-          className="hidden md:block absolute bottom-8 right-8 w-64 h-auto opacity-80 select-none pointer-events-none"
+          className="hidden md:block absolute bottom-24 right-20 w-64 h-auto opacity-80 mix-blend-multiply select-none pointer-events-none"
           aria-hidden
         />
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28 relative">
@@ -302,9 +302,9 @@ export default function Home() {
             <h2 className="md:hidden text-3xl font-extrabold">
               Eingewöhnung mit Herz und Zeit
             </h2>
-            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden">
+            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden md:mt-8">
               <Image
-                src="/images/allgemein/eingewoehnung.png"
+                src="/images/allgemein/eingewoehnung-v2.png"
                 alt="Eltern mit Kind bei Eingewöhnung"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -329,7 +329,7 @@ export default function Home() {
       </section>
 
       {/* 6 — Testimonials */}
-      <section className="bg-sonnengelb-hell">
+      <section style={{ backgroundColor: "#fdf7e3" }}>
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
             Das sagen Eltern
@@ -337,69 +337,31 @@ export default function Home() {
           <TestimonialCarousel
             items={[
               {
-                initials: "LD",
-                name: "Lisa aus Dresden",
+                initials: "KB",
+                name: "Katrin aus Blasewitz",
+                avatar: "/images/testimonials/katrin.png",
                 quote:
                   "Unsere Tochter fühlt sich bei ihrer Tagesmama so wohl. Wir hatten einen entspannten Start und ein gutes Gefühl von Anfang an.",
               },
               {
-                initials: "MB",
-                name: "Martin aus Blasewitz",
+                initials: "TL",
+                name: "Thomas aus Löbtau",
+                avatar: "/images/testimonials/thomas.png",
                 quote:
-                  "Die kleine Gruppe und die feste Bezugsperson waren für uns genau das Richtige.",
+                  "Wir hatten bereits unsere große Tochter bei der Tagesmutter und nun geht unser Sohn zu ihr.",
               },
               {
-                initials: "SP",
-                name: "Sarah aus Pieschen",
+                initials: "HN",
+                name: "Helene aus Niedersedlitz",
+                avatar: "/images/testimonials/helene.png",
                 quote:
-                  "Die Tagespflege war für uns eine echte Herzensentscheidung — wir würden uns jederzeit wieder so entscheiden.",
+                  "Ich habe mich bewusst für eine Tagesmama entschieden, da ich meinem Sohn eine kleine Gruppe ermöglichen wollte.",
               },
             ]}
           />
         </div>
       </section>
 
-      {/* 7 — Final CTA */}
-      <section className="bg-creme">
-        <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
-          <div className="rounded-3xl bg-white p-8 md:p-12 shadow-sm relative overflow-hidden">
-            <div className="grid md:grid-cols-2 gap-8 items-center relative">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
-                  Du suchst einen Betreuungsplatz für dein Kind?
-                </h2>
-                <p className="text-text-soft">Wir helfen dir gerne weiter.</p>
-              </div>
-              <div className="flex flex-wrap gap-4 justify-center">
-                <LinkButton
-                  variant="primary"
-                  href="/fuer-eltern/tagesmutter-finden"
-                >
-                  Tageseltern finden
-                </LinkButton>
-                <LinkButton variant="secondary" href="/fuer-eltern">
-                  Beratung für Eltern
-                </LinkButton>
-              </div>
-            </div>
-            <svg
-              className="hidden lg:block absolute -right-8 -bottom-4 text-sonnengelb opacity-70"
-              width="220"
-              height="80"
-              viewBox="0 0 220 80"
-              fill="none"
-              aria-hidden
-            >
-              <path
-                d="M5 60 C 40 20, 80 75, 115 40 S 190 25, 215 55"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }
