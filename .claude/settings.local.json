@@ -12,7 +12,32 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/fuer-mitglieder/neuigkeiten)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/mitglied-werden)",
       "Bash(curl *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(node *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; foreach \\($f in @\\('kleine-gruppe.png','bezugsperson.png','feder.png','sparschwein.png'\\)\\) { $p = \"C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\public\\\\images\\\\icons\\\\$f\"; $img = [System.Drawing.Image]::FromFile\\($p\\); \"{0}: format={1}\" -f $f, $img.PixelFormat; $img.Dispose\\(\\) })",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\Fotos\\\\Karte2.0.png\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))",
+      "PowerShell(Move-Item *)",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\Fotos\\\\Dresden.png\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\Fotos\\\\Karte3.0.png\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))",
+      "Bash(cp \"C:/Visual Studio Code/dresdner-tageseltern.de/Fotos/kleine gruppen.png\" \"C:/Visual Studio Code/dresdner-tageseltern.de/public/images/allgemein/kleine-gruppen.png\")",
+      "Bash(cp \"C:/Visual Studio Code/dresdner-tageseltern.de/Fotos/feste bezugsperson.png\" \"C:/Visual Studio Code/dresdner-tageseltern.de/public/images/allgemein/feste-bezugsperson.png\")",
+      "Bash(cp \"C:/Visual Studio Code/dresdner-tageseltern.de/Fotos/ruhige Atmosphäre.png\" \"C:/Visual Studio Code/dresdner-tageseltern.de/public/images/allgemein/ruhige-atmosphaere.png\")",
+      "Bash(cp \"C:/Visual Studio Code/dresdner-tageseltern.de/Fotos/gleiche kosten.png\" \"C:/Visual Studio Code/dresdner-tageseltern.de/public/images/allgemein/gleiche-kosten.png\")",
+      "PowerShell(Get-NetTCPConnection *)",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 5; \"Port 3000: $\\($r.StatusCode\\)\" } catch { \"Port 3000 FAIL: $\\($_.Exception.Message\\)\" }; try { $r = Invoke-WebRequest -Uri \"http://localhost:3001\" -UseBasicParsing -TimeoutSec 5; \"Port 3001: $\\($r.StatusCode\\)\" } catch { \"Port 3001 FAIL: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 30; \"Status: $\\($r.StatusCode\\)\" } catch { \"FAIL: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(Start-Process \"http://localhost:3000\")",
+      "PowerShell($src = Get-FileHash 'C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\Fotos\\\\ruhige atmosphäre2.png'; $dst = Get-FileHash 'C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\public\\\\images\\\\allgemein\\\\ruhige-atmosphaere.png'; \"SRC: $\\($src.Hash\\)\"; \"DST: $\\($dst.Hash\\)\"; \"Match: $\\($src.Hash -eq $dst.Hash\\)\")",
+      "PowerShell(Remove-Item *)",
+      "Bash(ls \"C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\src\\\\app\\\\fuer-eltern\")",
+      "Bash(ls \"C:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\public\\\\images\")",
+      "Bash(echo \"exit:$?\")",
+      "Skill(update-config)",
+      "Read(//c/Users/Romy/.claude/**)",
+      "Read(//c/Users/Romy/.claude//**)"
     ]
   }
 }

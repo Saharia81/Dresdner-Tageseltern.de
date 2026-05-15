@@ -5,10 +5,12 @@ import { useState } from "react";
 
 const NAV = [
   { href: "/", label: "Startseite" },
+  { href: "/fuer-eltern/tagesmutter-finden", label: "Tageseltern finden" },
+  { href: "/fuer-eltern/kindertagespflege", label: "Was ist Kindertagespflege?" },
   { href: "/fuer-eltern", label: "Für Eltern" },
-  { href: "/fuer-mitglieder", label: "Für Mitglieder" },
-  { href: "/mitglied-werden", label: "Mitglied werden" },
+  { href: "/fuer-tageseltern", label: "Für Tageseltern" },
   { href: "/ueber-uns", label: "Über uns" },
+  { href: "/kontakt", label: "Kontakt" },
 ];
 
 export function MobileNav() {
@@ -21,7 +23,7 @@ export function MobileNav() {
         aria-label="Menü öffnen"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="md:hidden inline-flex flex-col justify-center items-center w-10 h-10 gap-1.5"
+        className="lg:hidden inline-flex flex-col justify-center items-center w-10 h-10 gap-1.5"
       >
         <span className={`block w-6 h-0.5 bg-text transition-transform ${open ? "translate-y-2 rotate-45" : ""}`} />
         <span className={`block w-6 h-0.5 bg-text transition-opacity ${open ? "opacity-0" : ""}`} />
@@ -29,7 +31,7 @@ export function MobileNav() {
       </button>
 
       {open && (
-        <nav className="md:hidden absolute top-full left-0 right-0 bg-sonnengelb shadow-md">
+        <nav className="lg:hidden absolute top-full left-0 right-0 bg-sonnengelb shadow-md">
           <ul className="flex flex-col py-4">
             {NAV.map((item) => (
               <li key={item.href}>

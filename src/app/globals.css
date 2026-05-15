@@ -43,6 +43,7 @@
 @theme {
   /* Primärpalette */
   --color-sonnengelb: #ffde59;
+  --color-sonnengelb-hell: #fff0b0;
   --color-creme: #fef2c2;
   --color-korallenrot: #f8796c;
   --color-korallenrot-dunkel: #e3625a; /* Hover-Variante */
