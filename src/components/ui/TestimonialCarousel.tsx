@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card } from "./Card";
 
 type Testimonial = {
@@ -21,17 +21,19 @@ export function TestimonialCarousel({
   intervalMs?: number;
 }) {
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
   const [animate, setAnimate] = useState(true);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchHandled = useRef(false);
 
   useEffect(() => {
-    if (paused || items.length <= 1) return;
+    if (items.length <= 1) return;
     const id = window.setInterval(
       () => setIndex((i) => i + 1),
       intervalMs,
     );
     return () => window.clearInterval(id);
-  }, [paused, items.length, intervalMs]);
+  }, [items.length, intervalMs]);
 
   // Nahtlose Schleife in beide Richtungen: nach dem Slide in den Duplikat-Bereich
   // springt der Index ohne Animation in den gültigen Bereich zurück.
@@ -57,23 +59,45 @@ export function TestimonialCarousel({
   const activeDot = ((index % items.length) + items.length) % items.length;
 
   return (
-    <div
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-    >
+    <div>
       <div className="flex items-center gap-2 md:gap-4">
         <button
           type="button"
           onClick={() => setIndex((i) => i - 1)}
           aria-label="Vorherige Stimme"
-          className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors"
+          className="relative z-10 shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors"
         >
           <ChevronLeft />
         </button>
 
-        <div className="overflow-hidden flex-1 min-w-0 -mx-3">
+        <div
+          className="overflow-hidden flex-1 min-w-0 -mx-3 touch-pan-y"
+          onTouchStart={(e) => {
+            const t = e.touches[0];
+            touchStartX.current = t.clientX;
+            touchStartY.current = t.clientY;
+            touchHandled.current = false;
+          }}
+          onTouchMove={(e) => {
+            if (
+              touchHandled.current ||
+              touchStartX.current === null ||
+              touchStartY.current === null
+            )
+              return;
+            const t = e.touches[0];
+            const dx = t.clientX - touchStartX.current;
+            const dy = t.clientY - touchStartY.current;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+              setIndex((i) => i + (dx < 0 ? 1 : -1));
+              touchHandled.current = true;
+            }
+          }}
+          onTouchEnd={() => {
+            touchStartX.current = null;
+            touchStartY.current = null;
+          }}
+        >
           <div
             className={`flex w-full [--card-w:100%] md:[--card-w:33.3333%] ${
               animate ? "transition-transform duration-700 ease-out" : ""
@@ -115,7 +139,7 @@ export function TestimonialCarousel({
           type="button"
           onClick={() => setIndex((i) => i + 1)}
           aria-label="Nächste Stimme"
-          className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors"
+          className="relative z-10 shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors"
         >
           <ChevronRight />
         </button>
