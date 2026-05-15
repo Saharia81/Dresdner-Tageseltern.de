@@ -76,24 +76,84 @@ export default function Home() {
                 liebevoller Begleitung und einer ruhigen, familiären
                 Atmosphäre.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <LinkButton
-                  variant="primary"
-                  href="/fuer-eltern/tagesmutter-finden"
-                >
-                  Tageseltern finden
-                </LinkButton>
-                <LinkButton
-                  variant="secondary"
-                  href="/fuer-eltern/kindertagespflege"
-                >
-                  Was ist Kindertagespflege?
-                </LinkButton>
+              <div className="flex justify-center md:justify-start">
+                <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
+                  <LinkButton
+                    variant="primary"
+                    href="/fuer-eltern/tagesmutter-finden"
+                  >
+                    Tageseltern finden
+                  </LinkButton>
+                  <LinkButton
+                    variant="secondary"
+                    href="/fuer-eltern/kindertagespflege"
+                  >
+                    Was ist Kindertagespflege?
+                  </LinkButton>
+                  <div className="sm:hidden flex flex-col items-start gap-6 mt-6">
+                    <UspItem
+                      icon={
+                        <Image
+                          src="/images/icons/kleine-gruppe.png"
+                          alt=""
+                          width={313}
+                          height={313}
+                          className="w-16 h-16 object-contain"
+                          aria-hidden
+                        />
+                      }
+                      title="Kleine Gruppen"
+                      text="max. 5 Kinder"
+                    />
+                    <UspItem
+                      icon={
+                        <Image
+                          src="/images/icons/bezugsperson.png"
+                          alt=""
+                          width={313}
+                          height={313}
+                          className="w-16 h-16 object-contain"
+                          aria-hidden
+                        />
+                      }
+                      title="Feste"
+                      text="Bezugsperson"
+                    />
+                    <UspItem
+                      icon={
+                        <Image
+                          src="/images/icons/feder.png"
+                          alt=""
+                          width={313}
+                          height={313}
+                          className="w-16 h-16 object-contain"
+                          aria-hidden
+                        />
+                      }
+                      title="Ruhige"
+                      text="Atmosphäre"
+                    />
+                    <UspItem
+                      icon={
+                        <Image
+                          src="/images/icons/sparschwein.png"
+                          alt=""
+                          width={313}
+                          height={313}
+                          className="w-16 h-16 object-contain"
+                          aria-hidden
+                        />
+                      }
+                      title="Gleiche Kosten"
+                      text="wie Kita/Krippe"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 mt-12 md:mt-16">
+          <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-4 gap-8 mt-12 md:mt-16">
             <UspItem
               icon={
                 <Image

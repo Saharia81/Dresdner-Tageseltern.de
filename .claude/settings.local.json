@@ -37,7 +37,9 @@
       "Bash(echo \"exit:$?\")",
       "Skill(update-config)",
       "Read(//c/Users/Romy/.claude/**)",
-      "Read(//c/Users/Romy/.claude//**)"
+      "Read(//c/Users/Romy/.claude//**)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(npm start *)"
     ]
   }
 }
