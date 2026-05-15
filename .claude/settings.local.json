@@ -39,7 +39,9 @@
       "Read(//c/Users/Romy/.claude/**)",
       "Read(//c/Users/Romy/.claude//**)",
       "Bash(taskkill //F //IM node.exe)",
-      "Bash(npm start *)"
+      "Bash(npm start *)",
+      "PowerShell(Get-Process *)",
+      "Bash(npm.cmd run *)"
     ]
   }
 }

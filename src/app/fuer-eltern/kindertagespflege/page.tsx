@@ -21,6 +21,7 @@ const IMAGES = {
   alltagSchlaf: "/images/kindertagespflege/schlafen.png",
   alltagBegleitung: "/images/kindertagespflege/lesen.png",
   ersatzbetreuung: "/images/kindertagespflege/ersatzbetreuung.png",
+  ersatzbetreuungIcon: "/images/kindertagespflege/kalender.png",
   herzAccent: "/images/hero/herzapricot.png",
 };
 
@@ -149,7 +150,7 @@ const ALLTAG_KARTEN = [
 
 function AlltagSection() {
   return (
-    <section className="bg-sonnengelb-hell">
+    <section style={{ backgroundColor: "#fdf7e3" }}>
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
         <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
           Ein Tag in der Kindertagespflege
@@ -200,39 +201,47 @@ function ErsatzbetreuungSection() {
     <section className="bg-creme">
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
         <div className="rounded-3xl bg-white shadow-sm overflow-hidden">
-          <div className="grid gap-8 md:grid-cols-[auto_1fr_auto] items-center md:items-stretch p-6 md:p-10">
-            <div className="inline-flex w-16 h-16 md:w-20 md:h-20 items-center justify-center rounded-2xl bg-sonnengelb text-text shrink-0 md:self-center">
-              <CalendarHeartIcon />
-            </div>
-
-            <div className="md:self-center">
-              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
-                Was passiert bei Urlaub oder Krankheit?
-              </h2>
-              <p className="text-text-soft text-lg leading-relaxed mb-6 max-w-2xl">
-                Kinder lernen ihre Ersatzbetreuung bereits vorab kennen und
-                werden auch im Vertretungsfall in vertrauter Atmosphäre
-                begleitet. So bleibt die Betreuung verlässlich und sicher.
-              </p>
-              <LinkButton variant="primary" href="/fuer-eltern/faq">
-                Mehr zur Ersatzbetreuung
-              </LinkButton>
+          <div className="grid gap-8 md:grid-cols-[minmax(0,24rem)_1fr] items-center md:items-stretch p-6 md:p-10">
+            <div className="md:self-center flex items-start gap-4 md:gap-6">
+              <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
+                <Image
+                  src={IMAGES.ersatzbetreuungIcon}
+                  alt=""
+                  fill
+                  sizes="80px"
+                  className="object-contain"
+                  aria-hidden
+                />
+              </div>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+                  Was passiert bei Urlaub oder Krankheit?
+                </h2>
+                <p className="text-text-soft text-lg leading-relaxed mb-6">
+                  Kinder lernen ihre Ersatzbetreuung bereits vorab kennen und
+                  werden auch im Vertretungsfall in vertrauter Atmosphäre
+                  begleitet. So bleibt die Betreuung verlässlich und sicher.
+                </p>
+                <LinkButton variant="primary" href="/fuer-eltern/faq">
+                  Mehr zur Ersatzbetreuung
+                </LinkButton>
+              </div>
             </div>
 
             <div
-              className="relative aspect-[4/3] w-full md:w-72 lg:w-80 md:aspect-auto md:-my-10 md:-mr-10 rounded-2xl md:rounded-none overflow-hidden"
+              className="relative aspect-[4/3] w-full md:w-auto md:aspect-auto md:-my-10 md:-mr-10 rounded-2xl md:rounded-none overflow-hidden"
               style={{
                 maskImage:
-                  "linear-gradient(to right, transparent 0%, black 30%)",
+                  "linear-gradient(to right, transparent 0%, black 20%)",
                 WebkitMaskImage:
-                  "linear-gradient(to right, transparent 0%, black 30%)",
+                  "linear-gradient(to right, transparent 0%, black 20%)",
               }}
             >
               <Image
                 src={IMAGES.ersatzbetreuung}
                 alt="Zwei Betreuungspersonen mit Kleinkindern in warmer Wohnatmosphäre"
                 fill
-                sizes="(max-width: 768px) 100vw, 320px"
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover object-center"
               />
             </div>
