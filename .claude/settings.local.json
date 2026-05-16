@@ -41,7 +41,11 @@
       "Bash(taskkill //F //IM node.exe)",
       "Bash(npm start *)",
       "PowerShell(Get-Process *)",
-      "Bash(npm.cmd run *)"
+      "Bash(npm.cmd run *)",
+      "PowerShell(npm run dev)",
+      "PowerShell(npm.cmd run dev)",
+      "Bash(npx.cmd tsx *)",
+      "Bash(git add *)"
     ]
   }
 }

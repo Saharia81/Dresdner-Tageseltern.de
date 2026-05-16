@@ -3,7 +3,7 @@ import { prisma } from "./db";
 export async function getAlleTagesmuetter() {
   return prisma.tagesmutter.findMany({
     where: { istAktiv: true },
-    orderBy: [{ reihenfolge: "asc" }, { name: "asc" }],
+    orderBy: [{ reihenfolge: "asc" }, { nachname: "asc" }],
   });
 }
 

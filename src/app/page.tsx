@@ -80,7 +80,7 @@ export default function Home() {
                 <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
                   <LinkButton
                     variant="primary"
-                    href="/fuer-eltern/tagesmutter-finden"
+                    href="/kindertagespflege-finden"
                   >
                     Tageseltern finden
                   </LinkButton>
@@ -260,7 +260,7 @@ export default function Home() {
                   </div>
                   <LinkButton
                     variant="primary"
-                    href="/fuer-eltern/tagesmutter-finden"
+                    href="/kindertagespflege-finden"
                     className="w-full"
                   >
                     Jetzt finden
@@ -299,7 +299,7 @@ export default function Home() {
                 </div>
                 <div className="mt-8 text-center">
                   <Link
-                    href="/fuer-eltern/tagesmutter-finden"
+                    href="/kindertagespflege-finden"
                     className="text-text-soft underline hover:text-korallenrot transition-colors"
                   >
                     Zur interaktiven Karte

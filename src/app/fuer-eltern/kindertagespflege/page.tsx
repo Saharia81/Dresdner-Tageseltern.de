@@ -21,7 +21,7 @@ const IMAGES = {
   alltagSchlaf: "/images/kindertagespflege/schlafen.png",
   alltagBegleitung: "/images/kindertagespflege/lesen.png",
   ersatzbetreuung: "/images/kindertagespflege/ersatzbetreuung.png",
-  ersatzbetreuungIcon: "/images/kindertagespflege/kalender.png",
+  ersatzbetreuungIcon: "/images/kindertagespflege/kalende1.png",
   herzAccent: "/images/hero/herzapricot.png",
 };
 
@@ -537,7 +537,7 @@ function FinalCtaSection() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <CtaButton
-                  href="/fuer-eltern/tagesmutter-finden"
+                  href="/kindertagespflege-finden"
                   label="Tageseltern finden"
                   hint="Freie Plätze entdecken"
                   variant="primary"
