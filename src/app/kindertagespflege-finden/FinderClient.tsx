@@ -180,6 +180,8 @@ export function FinderClient() {
                 tagesmuetter={aufKarte}
                 onSelect={setAktiveTm}
                 ausgewaehlteId={aktiveTm?.id ?? null}
+                suchCoords={suchCoords}
+                radiusKm={filter.radiusKm}
               />
               {laden && (
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[400] bg-white rounded-full px-4 py-2 shadow-md text-sm text-text-soft">

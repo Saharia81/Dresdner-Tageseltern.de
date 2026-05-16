@@ -39,12 +39,22 @@ type Props = {
   tagesmuetter: TagesmutterDto[];
   onSelect: (tm: TagesmutterDto) => void;
   ausgewaehlteId: string | null;
+  suchCoords: { lat: number; lng: number } | null;
+  radiusKm: number;
 };
 
-export function MapView({ tagesmuetter, onSelect, ausgewaehlteId }: Props) {
+export function MapView({
+  tagesmuetter,
+  onSelect,
+  ausgewaehlteId,
+  suchCoords,
+  radiusKm,
+}: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
+  const umkreisRef = useRef<L.Circle | null>(null);
+  const suchMarkerRef = useRef<L.CircleMarker | null>(null);
 
   // Vorschau-State (Hover Desktop / 1. Klick Mobile)
   const [vorschau, setVorschau] = useState<{
@@ -158,6 +168,57 @@ export function MapView({ tagesmuetter, onSelect, ausgewaehlteId }: Props) {
       markersRef.current.set(tm.id, marker);
     }
   }, [tagesmuetter, ausgewaehlteId, onSelect, vorschau]);
+
+  // Umkreis-Kreis + Such-Marker synchronisieren
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (!suchCoords) {
+      umkreisRef.current?.remove();
+      umkreisRef.current = null;
+      suchMarkerRef.current?.remove();
+      suchMarkerRef.current = null;
+      return;
+    }
+
+    const center: [number, number] = [suchCoords.lat, suchCoords.lng];
+
+    // Such-Marker (kleiner Punkt) immer setzen, sobald Coords da sind.
+    if (!suchMarkerRef.current) {
+      suchMarkerRef.current = L.circleMarker(center, {
+        radius: 6,
+        color: "#ff6b5b",
+        weight: 2,
+        fillColor: "#ff6b5b",
+        fillOpacity: 1,
+        interactive: false,
+      }).addTo(map);
+    } else {
+      suchMarkerRef.current.setLatLng(center);
+    }
+
+    // Umkreis nur wenn radius > 0.
+    if (radiusKm > 0) {
+      const radiusMeter = radiusKm * 1000;
+      if (!umkreisRef.current) {
+        umkreisRef.current = L.circle(center, {
+          radius: radiusMeter,
+          color: "#ff6b5b",
+          weight: 2,
+          fillColor: "#ff6b5b",
+          fillOpacity: 0.08,
+          interactive: false,
+        }).addTo(map);
+      } else {
+        umkreisRef.current.setLatLng(center);
+        umkreisRef.current.setRadius(radiusMeter);
+      }
+    } else {
+      umkreisRef.current?.remove();
+      umkreisRef.current = null;
+    }
+  }, [suchCoords, radiusKm]);
 
   // Karte schließen, wenn man auf den Hintergrund klickt
   useEffect(() => {
