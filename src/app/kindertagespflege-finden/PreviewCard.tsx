@@ -19,7 +19,7 @@ export function PreviewCard({ tagesmutter, x, y, onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="absolute z-[500] -translate-x-1/2 -translate-y-full mt-[-12px] cursor-pointer text-left"
+      className="absolute z-[500] -translate-x-1/2 -translate-y-full mt-[-68px] cursor-pointer text-left pointer-events-auto"
       style={{ left: x, top: y }}
       aria-label={`${tagesmutter.vorname} ${tagesmutter.nachname} – Profil öffnen`}
     >

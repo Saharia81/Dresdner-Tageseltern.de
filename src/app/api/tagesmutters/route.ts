@@ -30,6 +30,7 @@ export type TagesmutterDto = {
   nachname: string;
   einrichtungsname: string;
   fotoUrl: string;
+  einrichtungsfotoUrls: string[];
   strasse: string;
   plz: string;
   stadtteil: string;
@@ -38,6 +39,7 @@ export type TagesmutterDto = {
   telefon: string;
   email: string;
   websiteUrl: string | null;
+  anmeldungUrl: string | null;
   oeffnungszeiten: string;
   ersatzbetreuung: string;
   verpflegung: "SELBST_GEKOCHT" | "CATERING";
@@ -47,6 +49,17 @@ export type TagesmutterDto = {
   freiePlaetze: FreiePlaetzeDto | null;
   hatFreienPlatz: boolean;
 };
+
+function parseEinrichtungsfotos(value: string): string[] {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed)
+      ? parsed.filter((x): x is string => typeof x === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 function parseDatum(value: string | null): Date | null {
   if (!value) return null;
@@ -115,6 +128,7 @@ export async function GET(request: Request) {
       nachname: tm.nachname,
       einrichtungsname: tm.einrichtungsname,
       fotoUrl: tm.fotoUrl,
+      einrichtungsfotoUrls: parseEinrichtungsfotos(tm.einrichtungsfotoUrls),
       strasse: tm.strasse,
       plz: tm.plz,
       stadtteil: tm.stadtteil,
@@ -123,6 +137,7 @@ export async function GET(request: Request) {
       telefon: tm.telefon,
       email: tm.email,
       websiteUrl: tm.websiteUrl,
+      anmeldungUrl: tm.anmeldungUrl,
       oeffnungszeiten: tm.oeffnungszeiten,
       ersatzbetreuung: tm.ersatzbetreuung,
       verpflegung: tm.verpflegung,

@@ -1,6 +1,13 @@
 "use client";
 
-import type { Beratungsgebiet } from "@/types";
+import Image from "next/image";
+import {
+  BERATUNGSGEBIET_LABEL,
+  BERATUNGSSTELLE_URL,
+  PIN_BERATUNGSSTELLE,
+  PIN_TAGESMUTTER,
+  type Beratungsgebiet,
+} from "@/types";
 
 export type FilterState = {
   beratungsgebiet: "ALLE" | Beratungsgebiet;
@@ -93,20 +100,64 @@ export function FilterBar({ value, onChange }: Props) {
         </label>
       </div>
 
-      {/* Karte 3 – Nur freie Plätze */}
-      <div className="rounded-2xl bg-white p-5 shadow-sm border border-text-soft/10">
-        <h3 className="text-base font-bold mb-3">Freie Plätze</h3>
-        <label className="inline-flex items-center gap-3 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={value.nurFreiePlaetze}
-            onChange={(e) =>
-              onChange({ ...value, nurFreiePlaetze: e.target.checked })
-            }
-            className="h-5 w-5 rounded border-text-soft/30 text-korallenrot focus:ring-korallenrot"
-          />
-          <span>Nur mit freien Plätzen anzeigen</span>
-        </label>
+      {/* Karte 3 – Freie Plätze (kompakt) + Legende darunter */}
+      <div className="flex flex-col gap-4">
+        <div className="rounded-2xl bg-white p-4 shadow-sm border border-text-soft/10">
+          <h3 className="text-base font-bold mb-2">Freie Plätze</h3>
+          <label className="inline-flex items-center gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={value.nurFreiePlaetze}
+              onChange={(e) =>
+                onChange({ ...value, nurFreiePlaetze: e.target.checked })
+              }
+              className="h-5 w-5 rounded border-text-soft/30 text-korallenrot focus:ring-korallenrot"
+            />
+            <span>Nur mit freien Plätzen anzeigen</span>
+          </label>
+        </div>
+
+        <div className="rounded-2xl bg-white p-4 shadow-sm border border-text-soft/10">
+          <h3 className="text-base font-bold mb-2">Pin-Legende</h3>
+          <ul className="space-y-1.5">
+            <li className="flex items-center gap-3">
+              <Image
+                src={PIN_TAGESMUTTER}
+                alt=""
+                width={32}
+                height={32}
+                aria-hidden
+                className="h-7 w-7 object-contain shrink-0"
+              />
+              <span className="text-sm">Tagesmütter/Tagesväter</span>
+            </li>
+            {(["MALWINA", "OUTLAW", "KINDERLAND"] as Beratungsgebiet[]).map(
+              (b) => (
+                <li key={b} className="flex items-center gap-3">
+                  <Image
+                    src={PIN_BERATUNGSSTELLE[b]}
+                    alt=""
+                    width={32}
+                    height={32}
+                    aria-hidden
+                    className="h-7 w-7 object-contain shrink-0"
+                  />
+                  <span className="text-sm">
+                    <a
+                      href={BERATUNGSSTELLE_URL[b]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-korallenrot transition-colors"
+                    >
+                      {BERATUNGSGEBIET_LABEL[b]}
+                    </a>{" "}
+                    <span className="text-text-soft">(Beratung/Vermittlung)</span>
+                  </span>
+                </li>
+              ),
+            )}
+          </ul>
+        </div>
       </div>
     </div>
   );

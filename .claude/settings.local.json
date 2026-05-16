@@ -49,7 +49,10 @@
       "Bash(git commit -m ' *)",
       "Bash(npm.cmd start *)",
       "PowerShell(Stop-Process -Id 13452 -Force)",
-      "Bash(npm.cmd install *)"
+      "Bash(npm.cmd install *)",
+      "PowerShell(if \\(-not \\(Test-Path \"public\\\\images\\\\pins\"\\)\\) { New-Item -ItemType Directory -Path \"public\\\\images\\\\pins\" | Out-Null }; Copy-Item \"Fotos\\\\Malwinapin.png\" \"public\\\\images\\\\pins\\\\malwina.png\"; Copy-Item \"Fotos\\\\outlawpin.png\" \"public\\\\images\\\\pins\\\\outlaw.png\"; Copy-Item \"Fotos\\\\Kinderlandpin.png\" \"public\\\\images\\\\pins\\\\kinderland.png\"; Get-ChildItem \"public\\\\images\\\\pins\")",
+      "PowerShell($pid = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess; if \\($pid\\) { Stop-Process -Id $pid -Force; \"Stopped $pid\" } else { \"Nothing running on 3000\" })",
+      "PowerShell($port_pid = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess; if \\($port_pid\\) { Stop-Process -Id $port_pid -Force; \"Stopped $port_pid\" } else { \"Nothing running on 3000\" })"
     ]
   }
 }

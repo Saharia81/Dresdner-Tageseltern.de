@@ -45,7 +45,8 @@ model Tagesmutter {
   // Kontakt
   telefon               String
   email                 String   @unique
-  websiteUrl            String?  // optional, Fallback auf Elternportal Stadt Dresden
+  websiteUrl            String?  // eigene Webseite, optional
+  anmeldungUrl          String?  // alternativer Anmelde-Link, wenn keine eigene Webseite
 
   // Betreuung
   oeffnungszeiten       String

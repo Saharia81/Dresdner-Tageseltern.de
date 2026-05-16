@@ -3,16 +3,26 @@
 
 export type Beratungsgebiet = "MALWINA" | "OUTLAW" | "KINDERLAND";
 
-export const PIN_FARBE: Record<Beratungsgebiet, string> = {
-  MALWINA: "#3b82f6",    // blau
-  OUTLAW: "#f97316",     // orange
-  KINDERLAND: "#ef4444", // rot
+export const PIN_TAGESMUTTER = "/images/pins/outlaw.png";
+
+export const PIN_BERATUNGSSTELLE: Record<Beratungsgebiet, string> = {
+  MALWINA: "/images/pins/malwina.png",
+  OUTLAW: "/images/pins/kinderland.png",
+  KINDERLAND: "/images/pins/tageseltern2.png",
 };
 
 export const BERATUNGSGEBIET_LABEL: Record<Beratungsgebiet, string> = {
   MALWINA: "Malwina e.V.",
   OUTLAW: "Outlaw gGmbH",
   KINDERLAND: "KINDERLAND-Sachsen e.V.",
+};
+
+export const BERATUNGSSTELLE_URL: Record<Beratungsgebiet, string> = {
+  MALWINA:
+    "https://www.malwina-dresden.de/beratungs-und-vermittlungsstelle-fuer-kindertagespflege",
+  OUTLAW:
+    "https://www.outlaw-ggmbh.de/einrichtung/kindertagespflege-dresden",
+  KINDERLAND: "https://kindertagespflege.kinderland-sachsen.de/",
 };
 
 export type Verpflegung = "SELBST_GEKOCHT" | "CATERING";

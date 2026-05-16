@@ -9,7 +9,8 @@ import "leaflet/dist/leaflet.css";
 import { GestureHandling } from "leaflet-gesture-handling";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
-import { PIN_FARBE } from "@/types";
+import { PIN_BERATUNGSSTELLE, PIN_TAGESMUTTER } from "@/types";
+import { BERATUNGSSTELLEN } from "./beratungsstellen";
 import { PreviewCard } from "./PreviewCard";
 
 // Gesture-Handling-Plugin nur einmal registrieren.
@@ -21,26 +22,16 @@ import { PreviewCard } from "./PreviewCard";
 ).addInitHook("addHandler", "gestureHandling", GestureHandling);
 
 const DRESDEN_ZENTRUM: [number, number] = [51.0504, 13.7373];
-const DRESDEN_ZOOM = 12;
+const DRESDEN_ZOOM_DESKTOP = 12;
+const DRESDEN_ZOOM_MOBILE = 11;
 
-function pinIcon(farbe: string, ausgewaehlt: boolean): L.DivIcon {
-  const groesse = ausgewaehlt ? 32 : 26;
-  const border = ausgewaehlt ? "3px solid #fff" : "2px solid #fff";
-  const shadow = ausgewaehlt
-    ? "0 4px 12px rgba(0,0,0,0.35)"
-    : "0 2px 6px rgba(0,0,0,0.25)";
-  return L.divIcon({
-    className: "tm-pin",
-    html: `<div style="
-        width:${groesse}px;
-        height:${groesse}px;
-        background:${farbe};
-        border:${border};
-        border-radius:50%;
-        box-shadow:${shadow};
-      "></div>`,
+function pinIcon(bild: string, ausgewaehlt: boolean): L.Icon {
+  const groesse = ausgewaehlt ? 78 : 60;
+  return L.icon({
+    iconUrl: bild,
     iconSize: [groesse, groesse],
-    iconAnchor: [groesse / 2, groesse / 2],
+    iconAnchor: [groesse / 2, groesse], // Pin-Spitze unten
+    className: ausgewaehlt ? "tm-pin tm-pin-aktiv" : "tm-pin",
   });
 }
 
@@ -65,9 +56,10 @@ export function MapView({ tagesmuetter, onSelect, ausgewaehlteId }: Props) {
   // Karte initialisieren (einmal)
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    const istMobile = window.matchMedia("(max-width: 767px)").matches;
     const map = L.map(containerRef.current, {
       center: DRESDEN_ZENTRUM,
-      zoom: DRESDEN_ZOOM,
+      zoom: istMobile ? DRESDEN_ZOOM_MOBILE : DRESDEN_ZOOM_DESKTOP,
       scrollWheelZoom: false, // erst nach Klick aktivieren
       // @ts-expect-error – kommt vom leaflet-gesture-handling-Plugin
       gestureHandling: true,
@@ -83,6 +75,17 @@ export function MapView({ tagesmuetter, onSelect, ausgewaehlteId }: Props) {
       attribution: "© OpenStreetMap",
       maxZoom: 19,
     }).addTo(map);
+
+    // Beratungsstellen als feste Pins anlegen (ändern sich nicht).
+    for (const stelle of BERATUNGSSTELLEN) {
+      const icon = pinIcon(PIN_BERATUNGSSTELLE[stelle.schluessel], false);
+      L.marker([stelle.latitude, stelle.longitude], { icon })
+        .addTo(map)
+        .bindTooltip(
+          `<strong>${stelle.name}</strong><br>${stelle.strasse}, ${stelle.plz} Dresden`,
+          { direction: "top", offset: [0, -50] },
+        );
+    }
 
     mapRef.current = map;
 
@@ -111,9 +114,8 @@ export function MapView({ tagesmuetter, onSelect, ausgewaehlteId }: Props) {
     // Hinzufügen oder Icon aktualisieren
     for (const tm of tagesmuetter) {
       if (tm.latitude === null || tm.longitude === null) continue;
-      const farbe = PIN_FARBE[tm.beratungsgebiet];
       const ausgewaehlt = tm.id === ausgewaehlteId;
-      const icon = pinIcon(farbe, ausgewaehlt);
+      const icon = pinIcon(PIN_TAGESMUTTER, ausgewaehlt);
 
       const vorhanden = markersRef.current.get(tm.id);
       if (vorhanden) {
