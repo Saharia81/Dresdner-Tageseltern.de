@@ -6,9 +6,19 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { GestureHandling } from "leaflet-gesture-handling";
+import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
 import { PIN_FARBE } from "@/types";
 import { PreviewCard } from "./PreviewCard";
+
+// Gesture-Handling-Plugin nur einmal registrieren.
+// "as unknown" weil das Plugin keine offiziellen Leaflet-Typen ergänzt.
+(
+  L.Map as unknown as {
+    addInitHook: (name: string, key: string, handler: unknown) => void;
+  }
+).addInitHook("addHandler", "gestureHandling", GestureHandling);
 
 const DRESDEN_ZENTRUM: [number, number] = [51.0504, 13.7373];
 const DRESDEN_ZOOM = 12;
@@ -58,12 +68,22 @@ export function MapView({ tagesmuetter, onSelect, ausgewaehlteId }: Props) {
     const map = L.map(containerRef.current, {
       center: DRESDEN_ZENTRUM,
       zoom: DRESDEN_ZOOM,
-      scrollWheelZoom: true,
+      scrollWheelZoom: false, // erst nach Klick aktivieren
+      // @ts-expect-error – kommt vom leaflet-gesture-handling-Plugin
+      gestureHandling: true,
+      gestureHandlingOptions: {
+        text: {
+          touch: "Mit zwei Fingern die Karte bewegen",
+          scroll: "Strg + Mausrad zum Zoomen",
+          scrollMac: "⌘ + Mausrad zum Zoomen",
+        },
+      },
     });
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap",
       maxZoom: 19,
     }).addTo(map);
+
     mapRef.current = map;
 
     return () => {
