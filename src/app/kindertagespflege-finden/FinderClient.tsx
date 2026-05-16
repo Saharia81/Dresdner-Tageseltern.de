@@ -20,6 +20,7 @@ const MapView = dynamic(() => import("./MapView").then((m) => m.MapView), {
 const LEER_FILTER: FilterState = {
   beratungsgebiet: "ALLE",
   adresseQuery: "",
+  adresseCoords: null,
   radiusKm: 0,
   abDatum: "",
   bisDatum: "",
@@ -53,16 +54,22 @@ export function FinderClient() {
     const radiusKm = Number.isFinite(radiusRaw)
       ? Math.max(0, Math.min(10, Math.round(radiusRaw)))
       : 0;
-    return { ...LEER_FILTER, adresseQuery: adresse, radiusKm };
+    const lat = Number(searchParams.get("lat"));
+    const lng = Number(searchParams.get("lng"));
+    const adresseCoords =
+      Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0
+        ? { lat, lng }
+        : null;
+    return {
+      ...LEER_FILTER,
+      adresseQuery: adresse,
+      adresseCoords,
+      radiusKm,
+    };
   });
   const [tagesmuetter, setTagesmuetter] = useState<TagesmutterDto[]>([]);
   const [aktiveTm, setAktiveTm] = useState<TagesmutterDto | null>(null);
   const [laden, setLaden] = useState(true);
-  const [suchCoords, setSuchCoords] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
-  const [suchFehler, setSuchFehler] = useState<string | null>(null);
 
   // Daten beim Filtern neu laden
   useEffect(() => {
@@ -97,70 +104,21 @@ export function FinderClient() {
     filter.nurFreiePlaetze,
   ]);
 
-  // Adresse → Koordinaten via Nominatim (debounced)
-  useEffect(() => {
-    const query = filter.adresseQuery.trim();
-    if (query.length < 3) {
-      setSuchCoords(null);
-      setSuchFehler(null);
-      return;
-    }
-    const controller = new AbortController();
-    const timer = setTimeout(async () => {
-      try {
-        const params = new URLSearchParams({
-          q: `${query}, Dresden, Deutschland`,
-          format: "json",
-          limit: "1",
-        });
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?${params}`,
-          { signal: controller.signal },
-        );
-        const data = (await res.json()) as Array<{
-          lat: string;
-          lon: string;
-        }>;
-        if (data.length === 0) {
-          setSuchCoords(null);
-          setSuchFehler("Adresse nicht gefunden");
-        } else {
-          setSuchCoords({
-            lat: parseFloat(data[0].lat),
-            lng: parseFloat(data[0].lon),
-          });
-          setSuchFehler(null);
-        }
-      } catch (err) {
-        if ((err as Error).name !== "AbortError") {
-          setSuchFehler("Geocoding fehlgeschlagen");
-        }
-      }
-    }, 600);
-    return () => {
-      clearTimeout(timer);
-      controller.abort();
-    };
-  }, [filter.adresseQuery]);
-
   // Nur Tagesmütter mit Koordinaten + ggf. Umkreisfilter
   const aufKarte = useMemo(() => {
     let liste = tagesmuetter.filter(
       (t) => t.latitude !== null && t.longitude !== null,
     );
-    if (suchCoords && filter.radiusKm > 0) {
+    const coords = filter.adresseCoords;
+    if (coords && filter.radiusKm > 0) {
       liste = liste.filter(
         (t) =>
-          distanzKm(
-            suchCoords.lat,
-            suchCoords.lng,
-            t.latitude!,
-            t.longitude!,
-          ) <= filter.radiusKm,
+          distanzKm(coords.lat, coords.lng, t.latitude!, t.longitude!) <=
+          filter.radiusKm,
       );
     }
     return liste;
-  }, [tagesmuetter, suchCoords, filter.radiusKm]);
+  }, [tagesmuetter, filter.adresseCoords, filter.radiusKm]);
 
   return (
     <>
@@ -168,9 +126,6 @@ export function FinderClient() {
         {/* Mobile: Karte zuerst, Filter danach. Desktop: Filter oben, Karte unten. */}
         <div className="order-2 md:order-1">
           <FilterBar value={filter} onChange={setFilter} />
-          {suchFehler && (
-            <p className="mt-3 text-sm text-korallenrot">{suchFehler}</p>
-          )}
         </div>
 
         <div className="order-1 md:order-2 mt-0 md:mt-10 mb-10 md:mb-0">
@@ -180,7 +135,7 @@ export function FinderClient() {
                 tagesmuetter={aufKarte}
                 onSelect={setAktiveTm}
                 ausgewaehlteId={aktiveTm?.id ?? null}
-                suchCoords={suchCoords}
+                suchCoords={filter.adresseCoords}
                 radiusKm={filter.radiusKm}
               />
               {laden && (

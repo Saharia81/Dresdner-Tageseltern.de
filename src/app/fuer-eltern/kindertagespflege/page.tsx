@@ -21,7 +21,6 @@ const IMAGES = {
   alltagSchlaf: "/images/kindertagespflege/schlafen.png",
   alltagBegleitung: "/images/kindertagespflege/lesen.png",
   ersatzbetreuung: "/images/kindertagespflege/ersatzbetreuung.png",
-  ersatzbetreuungIcon: "/images/kindertagespflege/kalende1.png",
   herzAccent: "/images/hero/herzapricot.png",
 };
 
@@ -202,30 +201,18 @@ function ErsatzbetreuungSection() {
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
         <div className="rounded-3xl bg-white shadow-sm overflow-hidden">
           <div className="grid gap-8 md:grid-cols-[minmax(0,24rem)_1fr] items-center md:items-stretch p-6 md:p-10">
-            <div className="md:self-center flex items-start gap-4 md:gap-6">
-              <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
-                <Image
-                  src={IMAGES.ersatzbetreuungIcon}
-                  alt=""
-                  fill
-                  sizes="80px"
-                  className="object-contain"
-                  aria-hidden
-                />
-              </div>
-              <div>
-                <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
-                  Was passiert bei Urlaub oder Krankheit?
-                </h2>
-                <p className="text-text-soft text-lg leading-relaxed mb-6">
-                  Kinder lernen ihre Ersatzbetreuung bereits vorab kennen und
-                  werden auch im Vertretungsfall in vertrauter Atmosphäre
-                  begleitet. So bleibt die Betreuung verlässlich und sicher.
-                </p>
-                <LinkButton variant="primary" href="/fuer-eltern/faq">
-                  Mehr zur Ersatzbetreuung
-                </LinkButton>
-              </div>
+            <div className="md:self-center">
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+                Was passiert bei Urlaub oder Krankheit?
+              </h2>
+              <p className="text-text-soft text-lg leading-relaxed mb-6">
+                Kinder lernen ihre Ersatzbetreuung bereits vorab kennen und
+                werden auch im Vertretungsfall in vertrauter Atmosphäre
+                begleitet. So bleibt die Betreuung verlässlich und sicher.
+              </p>
+              <LinkButton variant="primary" href="/fuer-eltern/faq">
+                Mehr zur Ersatzbetreuung
+              </LinkButton>
             </div>
 
             <div
@@ -266,9 +253,9 @@ function InfoCardsSection() {
               Wo findet Kindertagespflege statt?
             </h3>
             <p className="text-text-soft leading-relaxed">
-              Im Haushalt der Tagespflegeperson oder in anderen geeigneten
-              Räumen, immer in einer Umgebung, in der sich Kinder wohl und
-              sicher fühlen.
+              In liebevoll gestalteten Räumen mit Geborgenheit, Sicherheit
+              und familiärer Atmosphäre, damit sich Kinder jeden Tag wohl
+              und willkommen fühlen.
             </p>
             <ul className="mt-2 grid grid-cols-2 gap-3 text-center">
               <OrtItem
@@ -279,7 +266,7 @@ function InfoCardsSection() {
                     width={480}
                     height={320}
                     aria-hidden
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 }
                 label="Im Haushalt der Tagespflegeperson"
@@ -292,7 +279,7 @@ function InfoCardsSection() {
                     width={480}
                     height={320}
                     aria-hidden
-                    className="h-20 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                   />
                 }
                 label="In anderen geeigneten Räumlichkeiten"
@@ -480,19 +467,15 @@ const FAQS = [
   },
   {
     q: "Welche Qualifikationen haben Tagespflegepersonen?",
-    a: "Alle Tagespflegepersonen verfügen über eine pädagogische Qualifizierung nach dem bundesweit anerkannten Curriculum und besitzen eine Pflegeerlaubnis des Jugendamtes. Regelmäßige Fortbildungen sind verpflichtend.",
-  },
-  {
-    q: "Wie sind die Betreuungszeiten?",
-    a: "Die Betreuungszeiten werden individuell zwischen Eltern und Tagespflegeperson abgestimmt. Dadurch lassen sich auch ungewöhnliche Arbeitszeiten oft gut abdecken.",
+    a: "Alle Tagespflegepersonen verfügen über eine pädagogische Qualifizierung nach dem bundesweit anerkannten Curriculum und besitzen eine Pflegeerlaubnis des Amtes für Kindertagesbetreuung. Regelmäßige Fortbildungen sind verpflichtend.",
   },
   {
     q: "Was kostet Kindertagespflege?",
-    a: "Die Elternbeiträge sind identisch mit denen einer Krippe oder Kita. Sie sind einkommensabhängig gestaffelt und werden durch die Landeshauptstadt Dresden bezuschusst – für Eltern entstehen also keine zusätzlichen Kosten.",
+    a: "Die Elternbeiträge sind identisch mit denen einer Kita. Unter bestimmten Voraussetzungen kann der Beitrag reduziert werden.",
   },
   {
     q: "Wie finde ich eine passende Tagesmutter oder einen passenden Tagesvater?",
-    a: "Über unsere Suche kannst du Tageseltern in deiner Nähe entdecken und siehst direkt, wer freie Plätze hat. Gerne unterstützen wir dich auch persönlich bei der Auswahl.",
+    a: "Über unsere Suche kannst du Tageseltern in deiner Nähe entdecken und siehst direkt, wer freie Plätze hat.",
   },
 ];
 

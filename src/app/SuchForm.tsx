@@ -2,15 +2,26 @@
 
 import { useState } from "react";
 import { LinkButton } from "@/components/ui/Button";
+import {
+  AdresseAutocomplete,
+  type AdresseTreffer,
+} from "@/components/ui/AdresseAutocomplete";
 
 const RADIUS_MAX_KM = 10;
 
 export function SuchForm() {
   const [adresse, setAdresse] = useState("");
+  const [treffer, setTreffer] = useState<AdresseTreffer | null>(null);
   const [radiusKm, setRadiusKm] = useState(0);
 
+  const adresseUngueltig = adresse.trim() !== "" && !treffer;
+
   const params = new URLSearchParams();
-  if (adresse.trim()) params.set("adresse", adresse.trim());
+  if (treffer) {
+    params.set("adresse", treffer.label);
+    params.set("lat", String(treffer.lat));
+    params.set("lng", String(treffer.lng));
+  }
   if (radiusKm > 0) params.set("radius", String(radiusKm));
   const query = params.toString();
   const href = query
@@ -26,12 +37,14 @@ export function SuchForm() {
         >
           Anschrift
         </label>
-        <input
+        <AdresseAutocomplete
           id="anschrift"
-          type="text"
-          placeholder="z. B. Alaunstraße 36 oder 01099"
           value={adresse}
-          onChange={(e) => setAdresse(e.target.value)}
+          onChange={(value, t) => {
+            setAdresse(value);
+            setTreffer(t);
+          }}
+          placeholder="z. B. Alaunstraße 36 oder 01099"
           className="w-full rounded-xl border border-text-soft/20 px-4 py-3 text-base focus:outline-none focus:border-korallenrot"
         />
 
@@ -61,7 +74,15 @@ export function SuchForm() {
         </div>
       </div>
 
-      <LinkButton variant="primary" href={href} className="w-full">
+      <LinkButton
+        variant="primary"
+        href={adresseUngueltig ? "#" : href}
+        onClick={(e) => {
+          if (adresseUngueltig) e.preventDefault();
+        }}
+        aria-disabled={adresseUngueltig}
+        className={`w-full ${adresseUngueltig ? "opacity-50 cursor-not-allowed" : ""}`}
+      >
         Jetzt finden
       </LinkButton>
     </form>

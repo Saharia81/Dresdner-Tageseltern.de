@@ -63,53 +63,75 @@ export function MapView({
     y: number;
   } | null>(null);
 
-  // Karte initialisieren (einmal)
+  // Karten-Bereitschaft signalisieren, damit nachfolgende Effekte erst
+  // synchronisieren, wenn die Karte wirklich initialisiert ist.
+  const [kartenBereit, setKartenBereit] = useState(false);
+
+  // Karte initialisieren (einmal). In requestAnimationFrame verlegt,
+  // damit Container-Layout sicher steht und Strict-Mode-Double-Mount
+  // den ersten Init sauber abbrechen kann.
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const istMobile = window.matchMedia("(max-width: 767px)").matches;
-    const map = L.map(containerRef.current, {
-      center: DRESDEN_ZENTRUM,
-      zoom: istMobile ? DRESDEN_ZOOM_MOBILE : DRESDEN_ZOOM_DESKTOP,
-      scrollWheelZoom: false, // erst nach Klick aktivieren
-      // @ts-expect-error – kommt vom leaflet-gesture-handling-Plugin
-      gestureHandling: true,
-      gestureHandlingOptions: {
-        text: {
-          touch: "Mit zwei Fingern die Karte bewegen",
-          scroll: "Strg + Mausrad zum Zoomen",
-          scrollMac: "⌘ + Mausrad zum Zoomen",
+
+    let abgebrochen = false;
+    let map: L.Map | null = null;
+
+    const frameId = window.requestAnimationFrame(() => {
+      if (abgebrochen || !containerRef.current) return;
+
+      const istMobile = window.matchMedia("(max-width: 767px)").matches;
+      map = L.map(containerRef.current, {
+        center: DRESDEN_ZENTRUM,
+        zoom: istMobile ? DRESDEN_ZOOM_MOBILE : DRESDEN_ZOOM_DESKTOP,
+        scrollWheelZoom: false, // erst nach Klick aktivieren
+        // @ts-expect-error – kommt vom leaflet-gesture-handling-Plugin
+        gestureHandling: true,
+        gestureHandlingOptions: {
+          text: {
+            touch: "Mit zwei Fingern die Karte bewegen",
+            scroll: "Strg + Mausrad zum Zoomen",
+            scrollMac: "⌘ + Mausrad zum Zoomen",
+          },
         },
-      },
+      });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap",
+        maxZoom: 19,
+      }).addTo(map);
+
+      // Beratungsstellen als feste Pins anlegen (ändern sich nicht).
+      for (const stelle of BERATUNGSSTELLEN) {
+        const icon = pinIcon(PIN_BERATUNGSSTELLE[stelle.schluessel], false);
+        L.marker([stelle.latitude, stelle.longitude], { icon })
+          .addTo(map)
+          .bindTooltip(
+            `<strong>${stelle.name}</strong><br>${stelle.strasse}, ${stelle.plz} Dresden`,
+            { direction: "top", offset: [0, -50] },
+          );
+      }
+
+      mapRef.current = map;
+      setKartenBereit(true);
     });
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap",
-      maxZoom: 19,
-    }).addTo(map);
-
-    // Beratungsstellen als feste Pins anlegen (ändern sich nicht).
-    for (const stelle of BERATUNGSSTELLEN) {
-      const icon = pinIcon(PIN_BERATUNGSSTELLE[stelle.schluessel], false);
-      L.marker([stelle.latitude, stelle.longitude], { icon })
-        .addTo(map)
-        .bindTooltip(
-          `<strong>${stelle.name}</strong><br>${stelle.strasse}, ${stelle.plz} Dresden`,
-          { direction: "top", offset: [0, -50] },
-        );
-    }
-
-    mapRef.current = map;
 
     return () => {
-      map.remove();
-      mapRef.current = null;
+      abgebrochen = true;
+      window.cancelAnimationFrame(frameId);
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      } else if (map) {
+        map.remove();
+      }
       markersRef.current.clear();
+      setKartenBereit(false);
     };
   }, []);
 
   // Marker synchronisieren
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !kartenBereit) return;
 
     const benoetigt = new Set(tagesmuetter.map((t) => t.id));
 
@@ -167,12 +189,12 @@ export function MapView({
       marker.addTo(map);
       markersRef.current.set(tm.id, marker);
     }
-  }, [tagesmuetter, ausgewaehlteId, onSelect, vorschau]);
+  }, [tagesmuetter, ausgewaehlteId, onSelect, vorschau, kartenBereit]);
 
   // Umkreis-Kreis + Such-Marker synchronisieren
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !kartenBereit) return;
 
     if (!suchCoords) {
       umkreisRef.current?.remove();
@@ -218,18 +240,18 @@ export function MapView({
       umkreisRef.current?.remove();
       umkreisRef.current = null;
     }
-  }, [suchCoords, radiusKm]);
+  }, [suchCoords, radiusKm, kartenBereit]);
 
   // Karte schließen, wenn man auf den Hintergrund klickt
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !kartenBereit) return;
     const handler = () => setVorschau(null);
     map.on("click", handler);
     return () => {
       map.off("click", handler);
     };
-  }, []);
+  }, [kartenBereit]);
 
   return (
     <div className="relative h-full w-full">

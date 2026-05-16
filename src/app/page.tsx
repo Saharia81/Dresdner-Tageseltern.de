@@ -289,25 +289,21 @@ export default function Home() {
               image="/images/allgemein/basteln.png"
               title="Kleine Gruppen"
               text="Maximal 5 Kinder werden individuell betreut und begleitet."
-              href="/fuer-eltern/vorteile"
             />
             <FeatureCard
               image="/images/allgemein/feste-bezugsperson-v2.png"
               title="Feste Bezugsperson"
               text="Ein vertrautes Gesicht jeden Tag für Sicherheit und Vertrauen."
-              href="/fuer-eltern/vorteile"
             />
             <FeatureCard
               image="/images/allgemein/ruhige-atmosphaere.png"
               title="Ruhige Atmosphäre"
               text="Weniger Reize, mehr Zeit zum Ankommen und Wohlfühlen."
-              href="/fuer-eltern/vorteile"
             />
             <FeatureCard
               image="/images/allgemein/sparschwein.png"
               title="Gleiche Kosten"
               text="Die Elternbeiträge sind identisch mit denen in Krippe und Kita."
-              href="/fuer-eltern/faq"
             />
           </div>
         </div>
@@ -417,12 +413,10 @@ function FeatureCard({
   image,
   title,
   text,
-  href,
 }: {
   image?: string;
   title: string;
   text: string;
-  href: string;
 }) {
   return (
     <Card className="flex flex-col gap-4 h-full overflow-hidden">
@@ -440,12 +434,6 @@ function FeatureCard({
       )}
       <h3 className="font-bold text-lg hyphens-none">{title}</h3>
       <p className="text-text-soft text-sm flex-1">{text}</p>
-      <Link
-        href={href}
-        className="text-korallenrot font-semibold hover:text-korallenrot-dunkel transition-colors"
-      >
-        Mehr erfahren →
-      </Link>
     </Card>
   );
 }
