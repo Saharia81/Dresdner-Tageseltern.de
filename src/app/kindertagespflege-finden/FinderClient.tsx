@@ -18,15 +18,42 @@ const MapView = dynamic(() => import("./MapView").then((m) => m.MapView), {
 
 const LEER_FILTER: FilterState = {
   beratungsgebiet: "ALLE",
+  adresseQuery: "",
+  radiusKm: 0,
   abDatum: "",
+  bisDatum: "",
   nurFreiePlaetze: false,
 };
+
+// Haversine-Distanz in km zwischen zwei Lat/Lng-Punkten
+function distanzKm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+): number {
+  const R = 6371;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
 
 export function FinderClient() {
   const [filter, setFilter] = useState<FilterState>(LEER_FILTER);
   const [tagesmuetter, setTagesmuetter] = useState<TagesmutterDto[]>([]);
   const [aktiveTm, setAktiveTm] = useState<TagesmutterDto | null>(null);
   const [laden, setLaden] = useState(true);
+  const [suchCoords, setSuchCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [suchFehler, setSuchFehler] = useState<string | null>(null);
 
   // Daten beim Filtern neu laden
   useEffect(() => {
@@ -34,6 +61,7 @@ export function FinderClient() {
     if (filter.beratungsgebiet !== "ALLE")
       params.set("beratungsgebiet", filter.beratungsgebiet);
     if (filter.abDatum) params.set("ab_datum", filter.abDatum);
+    if (filter.bisDatum) params.set("bis_datum", filter.bisDatum);
     if (filter.nurFreiePlaetze) params.set("nur_freie_plaetze", "true");
 
     setLaden(true);
@@ -53,18 +81,86 @@ export function FinderClient() {
         }
       });
     return () => controller.abort();
-  }, [filter]);
+  }, [
+    filter.beratungsgebiet,
+    filter.abDatum,
+    filter.bisDatum,
+    filter.nurFreiePlaetze,
+  ]);
 
-  // Nur Tagesmütter mit Koordinaten auf der Karte zeigen
-  const aufKarte = useMemo(
-    () => tagesmuetter.filter((t) => t.latitude !== null && t.longitude !== null),
-    [tagesmuetter],
-  );
+  // Adresse → Koordinaten via Nominatim (debounced)
+  useEffect(() => {
+    const query = filter.adresseQuery.trim();
+    if (query.length < 3) {
+      setSuchCoords(null);
+      setSuchFehler(null);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({
+          q: `${query}, Dresden, Deutschland`,
+          format: "json",
+          limit: "1",
+        });
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?${params}`,
+          { signal: controller.signal },
+        );
+        const data = (await res.json()) as Array<{
+          lat: string;
+          lon: string;
+        }>;
+        if (data.length === 0) {
+          setSuchCoords(null);
+          setSuchFehler("Adresse nicht gefunden");
+        } else {
+          setSuchCoords({
+            lat: parseFloat(data[0].lat),
+            lng: parseFloat(data[0].lon),
+          });
+          setSuchFehler(null);
+        }
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          setSuchFehler("Geocoding fehlgeschlagen");
+        }
+      }
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [filter.adresseQuery]);
+
+  // Nur Tagesmütter mit Koordinaten + ggf. Umkreisfilter
+  const aufKarte = useMemo(() => {
+    let liste = tagesmuetter.filter(
+      (t) => t.latitude !== null && t.longitude !== null,
+    );
+    if (suchCoords && filter.radiusKm > 0) {
+      liste = liste.filter(
+        (t) =>
+          distanzKm(
+            suchCoords.lat,
+            suchCoords.lng,
+            t.latitude!,
+            t.longitude!,
+          ) <= filter.radiusKm,
+      );
+    }
+    return liste;
+  }, [tagesmuetter, suchCoords, filter.radiusKm]);
 
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 pb-12 md:pb-16">
         <FilterBar value={filter} onChange={setFilter} />
+
+        {suchFehler && (
+          <p className="mt-3 text-sm text-korallenrot">{suchFehler}</p>
+        )}
 
         <div className="mt-6 rounded-3xl overflow-hidden border border-text-soft/15 bg-white shadow-sm">
           <div className="relative h-[70vh] min-h-[480px]">

@@ -2,7 +2,8 @@
 //
 // Query-Parameter (alle optional):
 //   ?beratungsgebiet=MALWINA|OUTLAW|KINDERLAND
-//   ?ab_datum=YYYY-MM-DD           → nur Tagesmütter mit freiem Platz ±1 Monat
+//   ?ab_datum=YYYY-MM-DD           → nur Tagesmütter mit freiem Platz ab diesem Datum
+//   ?bis_datum=YYYY-MM-DD          → optional, zusammen mit ab_datum: Plätze im Zeitraum
 //   ?nur_freie_plaetze=true        → nur Tagesmütter mit mindestens einem freien Platz
 //
 // Hinweise:
@@ -53,12 +54,6 @@ function parseDatum(value: string | null): Date | null {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function plusMonate(d: Date, monate: number): Date {
-  const n = new Date(d);
-  n.setMonth(n.getMonth() + monate);
-  return n;
-}
-
 function hatFreienPlatzInZeitraum(
   fp: FreiePlaetzeDto | null,
   von: Date | null,
@@ -79,6 +74,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const beratungsgebiet = searchParams.get("beratungsgebiet");
   const abDatum = parseDatum(searchParams.get("ab_datum"));
+  const bisDatum = parseDatum(searchParams.get("bis_datum"));
   const nurFreiePlaetze = searchParams.get("nur_freie_plaetze") === "true";
 
   const where: Prisma.TagesmutterWhereInput = { istAktiv: true };
@@ -96,8 +92,8 @@ export async function GET(request: Request) {
     orderBy: [{ reihenfolge: "asc" }, { nachname: "asc" }],
   });
 
-  const fensterVon = abDatum ? plusMonate(abDatum, -1) : null;
-  const fensterBis = abDatum ? plusMonate(abDatum, 1) : null;
+  const fensterVon = abDatum;
+  const fensterBis = bisDatum;
 
   const dtos: TagesmutterDto[] = tagesmuetter.map((tm) => {
     const fp: FreiePlaetzeDto | null = tm.freiePlaetze
@@ -139,7 +135,7 @@ export async function GET(request: Request) {
   });
 
   const gefiltert =
-    nurFreiePlaetze || abDatum
+    nurFreiePlaetze || abDatum || bisDatum
       ? dtos.filter((d) => d.hatFreienPlatz)
       : dtos;
 

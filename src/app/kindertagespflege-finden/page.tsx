@@ -36,7 +36,7 @@ function HeroSection() {
           {/* Bild – oben bündig mit der Menüleiste (keine pt) */}
           <div className="md:order-2 -mx-4 md:mx-0">
             <div
-              className="relative aspect-[3/4] md:aspect-[6/7] overflow-hidden md:rounded-b-3xl"
+              className="relative aspect-[15/8] md:aspect-[4/3] overflow-hidden md:rounded-b-3xl"
               style={{
                 maskImage:
                   "linear-gradient(to right, transparent 0%, black 20%)",
@@ -53,6 +53,9 @@ function HeroSection() {
                 className="object-cover object-center"
               />
             </div>
+            <p className="mt-2 px-4 md:px-0 text-xs text-text-soft text-right">
+              © SIMPLYMAPS.de | Geodaten: © OpenStreetMap-Mitwirkende
+            </p>
           </div>
 
           {/* Textspalte mit Breadcrumb oben */}
@@ -67,21 +70,6 @@ function HeroSection() {
               Entdecke Tageseltern in deiner Nähe und finde die Betreuung, die
               zu deinem Kind und eurer Familie passt.
             </p>
-            <ul className="flex flex-col gap-0 mt-8">
-              {MERKMALE.map((m) => (
-                <li key={m.label} className="flex items-center gap-4">
-                  <Image
-                    src={m.icon}
-                    alt=""
-                    width={313}
-                    height={313}
-                    aria-hidden
-                    className="w-10 h-10 md:w-12 md:h-12 object-contain shrink-0"
-                  />
-                  <span className="text-base md:text-lg">{m.label}</span>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
       </div>
