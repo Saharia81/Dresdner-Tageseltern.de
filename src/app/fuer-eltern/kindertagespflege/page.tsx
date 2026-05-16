@@ -266,14 +266,37 @@ function InfoCardsSection() {
               Wo findet Kindertagespflege statt?
             </h3>
             <p className="text-text-soft leading-relaxed">
-              Im Haushalt der Tagespflegeperson, im Haushalt der Eltern oder
-              in anderen geeigneten Räumen – immer in einer Umgebung, in
-              der sich Kinder wohl und sicher fühlen.
+              Im Haushalt der Tagespflegeperson oder in anderen geeigneten
+              Räumen, immer in einer Umgebung, in der sich Kinder wohl und
+              sicher fühlen.
             </p>
-            <ul className="mt-2 grid grid-cols-3 gap-3 text-center">
-              <OrtItem icon={<HomeIcon />} label="Im Haushalt der Tagespflegeperson" />
-              <OrtItem icon={<FamilyHomeIcon />} label="Im Haushalt der Eltern" />
-              <OrtItem icon={<RoomIcon />} label="In anderen geeigneten Räumlichkeiten" />
+            <ul className="mt-2 grid grid-cols-2 gap-3 text-center">
+              <OrtItem
+                icon={
+                  <Image
+                    src="/images/icons/wohnraum-tagespflegeperson.png"
+                    alt=""
+                    width={480}
+                    height={320}
+                    aria-hidden
+                    className="h-20 w-auto object-contain"
+                  />
+                }
+                label="Im Haushalt der Tagespflegeperson"
+              />
+              <OrtItem
+                icon={
+                  <Image
+                    src="/images/icons/wohnraum-andere-raeume.png"
+                    alt=""
+                    width={480}
+                    height={320}
+                    aria-hidden
+                    className="h-20 w-auto object-contain"
+                  />
+                }
+                label="In anderen geeigneten Räumlichkeiten"
+              />
             </ul>
           </Card>
 
@@ -303,7 +326,12 @@ function InfoCardsSection() {
               durch die Landeshauptstadt Dresden bezuschusst.
             </p>
             <div>
-              <LinkButton variant="primary" href="/fuer-eltern/faq">
+              <LinkButton
+                variant="primary"
+                href="https://www.dresden.de/de/leben/kinder/tagesbetreuung/anmeldung/elternbeitraege.php?pk_kwd=elternbeitraege"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Mehr zu Kosten &amp; Beiträgen
               </LinkButton>
             </div>
@@ -317,9 +345,7 @@ function InfoCardsSection() {
 function OrtItem({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <li className="flex flex-col items-center gap-2">
-      <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-sonnengelb text-text">
-        {icon}
-      </span>
+      {icon}
       <span className="text-xs text-text-soft leading-tight">{label}</span>
     </li>
   );
@@ -339,7 +365,7 @@ const VERGLEICH_ROWS = [
   {
     merkmal: "Bezugsperson",
     icon: <PersonIcon />,
-    tagespflege: "Feste Bezugsperson",
+    tagespflege: "Eine feste Bezugsperson",
     kita: "Wechselndes Personal",
   },
   {
@@ -347,12 +373,6 @@ const VERGLEICH_ROWS = [
     icon: <HeartIcon />,
     tagespflege: "Familiär und individuell",
     kita: "Mehr Kinder, mehr Reize",
-  },
-  {
-    merkmal: "Flexibilität",
-    icon: <ClockIcon />,
-    tagespflege: "Individuelle Betreuungszeiten möglich",
-    kita: "Feste Strukturen und Zeiten",
   },
   {
     merkmal: "Betreuungsort",
@@ -370,7 +390,7 @@ const VERGLEICH_ROWS = [
 
 function VergleichSection() {
   return (
-    <section className="bg-sonnengelb-hell">
+    <section style={{ backgroundColor: "#fdf7e3" }}>
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
         <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
           Kindertagespflege und Kita im Vergleich
@@ -684,51 +704,6 @@ function CalendarHeartIcon() {
   );
 }
 
-function HomeIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4 11 L 12 4 L 20 11 V 20 H 14 V 14 H 10 V 20 H 4 Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function FamilyHomeIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4 11 L 12 4 L 20 11 V 20 H 4 Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <circle cx="9" cy="14" r="1.4" fill="currentColor" />
-      <circle cx="15" cy="14" r="1.4" fill="currentColor" />
-      <path d="M9 18 q 3 -2 6 0" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-function RoomIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect
-        x="3"
-        y="6"
-        width="18"
-        height="13"
-        rx="1.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path d="M3 10 H 21" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
 
 function UsersIcon() {
   return (
@@ -772,15 +747,6 @@ function HeartIcon() {
         d="M12 20 s -7 -4.5 -7 -10 a 4 4 0 0 1 7 -2.6 a 4 4 0 0 1 7 2.6 c 0 5.5 -7 10 -7 10 z"
         fill="currentColor"
       />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 7 V 12 L 16 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }

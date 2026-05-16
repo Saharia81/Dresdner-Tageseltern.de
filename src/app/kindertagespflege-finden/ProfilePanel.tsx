@@ -166,21 +166,21 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
               Alle wichtigen Infos
             </h3>
             <div className="grid gap-3 grid-cols-2">
-              <InfoKarte titel="Adresse" icon={<IconPin />}>
+              <InfoKarte titel="Adresse" icon={<PinIcon src="/images/steckbrief/pin-adresse.png" />}>
                 <p>{tagesmutter.strasse}</p>
                 <p>
                   {tagesmutter.plz} · {tagesmutter.stadtteil}
                 </p>
               </InfoKarte>
-              <InfoKarte titel="Öffnungszeiten" icon={<IconUhr />}>
+              <InfoKarte titel="Öffnungszeiten" icon={<PinIcon src="/images/steckbrief/pin-oeffnungszeiten.png" />}>
                 <p className="whitespace-pre-line">
                   {tagesmutter.oeffnungszeiten}
                 </p>
               </InfoKarte>
-              <InfoKarte titel="Verpflegung" icon={<IconTeller />}>
+              <InfoKarte titel="Verpflegung" icon={<PinIcon src="/images/steckbrief/pin-verpflegung.png" />}>
                 <p>{VERPFLEGUNG_LABEL[tagesmutter.verpflegung]}</p>
               </InfoKarte>
-              <InfoKarte titel="Ersatzbetreuung" icon={<IconHaende />}>
+              <InfoKarte titel="Ersatzbetreuung" icon={<PinIcon src="/images/steckbrief/pin-ersatzbetreuung.png" />}>
                 <p>{tagesmutter.ersatzbetreuung}</p>
               </InfoKarte>
               <LinkKarte
@@ -190,9 +190,9 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
                   ANMELDUNG_FALLBACK_URL
                 }
                 titel={tagesmutter.websiteUrl ? "Zur Website" : "Anmeldung"}
-                icon={<IconGlobus />}
+                icon={<PinIcon src="/images/steckbrief/pin-anmeldung-website.png" />}
               />
-              <InfoKarte titel="Beratungsstelle" icon={<IconHaus />}>
+              <InfoKarte titel="Beratungsstelle" icon={<PinIcon src="/images/steckbrief/pin-beratungsstelle.png" />}>
                 <p>{BERATUNGSGEBIET_LABEL[tagesmutter.beratungsgebiet]}</p>
               </InfoKarte>
             </div>
@@ -304,9 +304,7 @@ function InfoKarte({
 }) {
   return (
     <div className="rounded-2xl bg-[#fdf7e3] p-4 shadow-sm border border-sonnengelb/40 flex flex-col gap-1.5">
-      <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-korallenrot">
-        {icon}
-      </div>
+      {icon}
       <h4 className="font-bold text-sm">{titel}</h4>
       <div className="text-xs text-text-soft leading-relaxed">{children}</div>
     </div>
@@ -330,9 +328,7 @@ function LinkKarte({
       className="group rounded-2xl bg-[#fdf7e3] p-4 shadow-sm border border-sonnengelb/40 hover:shadow-md hover:border-korallenrot/30 transition-all flex flex-col gap-1.5"
     >
       <div className="flex items-center justify-between">
-        <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-korallenrot">
-          {icon}
-        </div>
+        {icon}
         <span className="text-text-soft group-hover:text-korallenrot group-hover:translate-x-1 transition-all">
           <svg
             width="18"
@@ -359,7 +355,7 @@ function LinkKarte({
 }
 
 /* ------------------------------------------------------------------ */
-/* Icons (inline SVG, einheitliche Stilistik)                          */
+/* Icons                                                               */
 /* ------------------------------------------------------------------ */
 
 const STROKE_PROPS = {
@@ -370,58 +366,15 @@ const STROKE_PROPS = {
   strokeLinejoin: "round" as const,
 };
 
-function IconPin() {
+function PinIcon({ src }: { src: string }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" {...STROKE_PROPS}>
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-}
-
-function IconUhr() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" {...STROKE_PROPS}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </svg>
-  );
-}
-
-function IconTeller() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" {...STROKE_PROPS}>
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="4" />
-    </svg>
-  );
-}
-
-function IconHaende() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" {...STROKE_PROPS}>
-      <path d="M9 11V6a2 2 0 1 1 4 0v5" />
-      <path d="M13 8a2 2 0 1 1 4 0v6a6 6 0 0 1-12 0v-3a2 2 0 1 1 4 0" />
-    </svg>
-  );
-}
-
-function IconHaus() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" {...STROKE_PROPS}>
-      <path d="M3 11l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <path d="M9 22V12h6v10" />
-    </svg>
-  );
-}
-
-function IconGlobus() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" {...STROKE_PROPS}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M3 12h18" />
-      <path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z" />
-    </svg>
+    <Image
+      src={src}
+      alt=""
+      width={48}
+      height={48}
+      className="h-12 w-12 object-contain"
+    />
   );
 }
 
@@ -438,16 +391,6 @@ function IconMail() {
     <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_PROPS}>
       <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
       <path d="M22 6l-10 7L2 6" />
-    </svg>
-  );
-}
-
-function IconAnmeldung() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" {...STROKE_PROPS}>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <path d="M14 2v6h6" />
-      <path d="M9 14l2 2 4-4" />
     </svg>
   );
 }

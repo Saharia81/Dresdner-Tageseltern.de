@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { FinderClient } from "./FinderClient";
 
 export const metadata = {
@@ -23,7 +24,9 @@ export default function KindertagespflegeFindenPage() {
   return (
     <main className="bg-creme">
       <HeroSection />
-      <FinderClient />
+      <Suspense fallback={null}>
+        <FinderClient />
+      </Suspense>
     </main>
   );
 }

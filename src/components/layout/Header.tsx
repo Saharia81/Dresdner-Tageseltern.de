@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { MobileNav } from "./MobileNav";
 
@@ -14,12 +15,15 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-sonnengelb shadow-sm relative">
       <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
-        <Link
-          href="/"
-          className="font-extrabold text-sm md:text-base leading-tight flex flex-col"
-        >
-          <span>Dresdner</span>
-          <span>Tageseltern e.&#8239;V.</span>
+        <Link href="/" className="flex items-center" aria-label="Startseite">
+          <Image
+            src="/images/logo-tageseltern.png"
+            alt="Dresdner Tageseltern e.V."
+            width={648}
+            height={123}
+            priority
+            className="h-10 md:h-12 w-auto"
+          />
         </Link>
 
         <nav className="hidden lg:block">

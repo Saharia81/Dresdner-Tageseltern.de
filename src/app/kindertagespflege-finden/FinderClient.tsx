@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
 import { FilterBar, type FilterState } from "./FilterBar";
@@ -45,7 +46,15 @@ function distanzKm(
 }
 
 export function FinderClient() {
-  const [filter, setFilter] = useState<FilterState>(LEER_FILTER);
+  const searchParams = useSearchParams();
+  const [filter, setFilter] = useState<FilterState>(() => {
+    const adresse = searchParams.get("adresse") ?? "";
+    const radiusRaw = Number(searchParams.get("radius") ?? "0");
+    const radiusKm = Number.isFinite(radiusRaw)
+      ? Math.max(0, Math.min(10, Math.round(radiusRaw)))
+      : 0;
+    return { ...LEER_FILTER, adresseQuery: adresse, radiusKm };
+  });
   const [tagesmuetter, setTagesmuetter] = useState<TagesmutterDto[]>([]);
   const [aktiveTm, setAktiveTm] = useState<TagesmutterDto | null>(null);
   const [laden, setLaden] = useState(true);
@@ -164,7 +173,7 @@ export function FinderClient() {
           )}
         </div>
 
-        <div className="order-1 md:order-2 mt-0 md:mt-6 mb-6 md:mb-0">
+        <div className="order-1 md:order-2 mt-0 md:mt-10 mb-10 md:mb-0">
           <div className="rounded-3xl overflow-hidden border border-text-soft/15 bg-white shadow-sm">
             <div className="relative h-[70vh] min-h-[480px]">
               <MapView

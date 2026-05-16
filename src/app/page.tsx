@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LinkButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
+import { SuchForm } from "./SuchForm";
 
 export default function Home() {
   return (
@@ -227,58 +228,24 @@ export default function Home() {
                   Finde liebevolle Tageseltern in deiner Nähe und entdecke
                   freie Plätze für dein Kind.
                 </p>
-                <form className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="plz-stadtteil"
-                      className="block text-sm text-text-soft mb-1"
-                    >
-                      Postleitzahl / Stadtteil
-                    </label>
-                    <input
-                      id="plz-stadtteil"
-                      type="text"
-                      placeholder="z. B. 01067 oder Neustadt"
-                      className="w-full rounded-xl border border-text-soft/20 px-4 py-3 text-base focus:outline-none focus:border-korallenrot"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="betreuungsbeginn"
-                      className="block text-sm text-text-soft mb-1"
-                    >
-                      Gewünschter Betreuungsbeginn
-                    </label>
-                    <input
-                      id="betreuungsbeginn"
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="tt.mm.jjjj"
-                      pattern="\d{2}\.\d{2}\.\d{4}"
-                      className="w-full rounded-xl border border-text-soft/20 px-4 py-3 text-base bg-white focus:outline-none focus:border-korallenrot placeholder:text-text-soft/60"
-                    />
-                  </div>
-                  <LinkButton
-                    variant="primary"
-                    href="/kindertagespflege-finden"
-                    className="w-full"
-                  >
-                    Jetzt finden
-                  </LinkButton>
-                </form>
+                <SuchForm />
               </div>
 
               <div>
                 <div className="relative">
-                  <div className="relative aspect-[8/5] rounded-2xl overflow-hidden">
+                  <Link
+                    href="/kindertagespflege-finden"
+                    aria-label="Zur Tageseltern-Karte"
+                    className="relative block aspect-[8/5] rounded-2xl overflow-hidden group"
+                  >
                     <Image
                       src="/images/hero/karte-dresden-v3.png"
                       alt="Karte von Dresden mit gelben Pins und Stadtansicht der Frauenkirche"
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                     />
-                  </div>
+                  </Link>
                   <div className="absolute -bottom-6 -right-4 md:-bottom-10 md:-right-8 w-24 h-24 md:w-40 md:h-40 rounded-full bg-sonnengelb flex flex-col items-center justify-start text-center italic text-text-soft leading-tight text-xs md:text-lg pt-4 md:pt-8 px-2 md:px-3 shadow-md">
                     <p>
                       Mit Herz
