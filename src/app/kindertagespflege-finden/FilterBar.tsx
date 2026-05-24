@@ -70,11 +70,14 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
   // auch wählen kann, bevor ein Monat ausgewählt ist.
   const [spaeterMoeglich, setSpaeterMoeglich] = useState<boolean>(true);
 
-  // abDatum ist intern „YYYY-MM-01". Für die Dropdowns brauchen wir Monat und Jahr separat.
-  const aktuellerMonat = value.abDatum ? value.abDatum.slice(0, 7) : "";
-  const [jahrTeil, monatTeil] = aktuellerMonat
-    ? aktuellerMonat.split("-")
-    : ["", ""];
+  // Monat und Jahr werden lokal gemerkt, damit die Auswahl des einen
+  // nicht verloren geht, wenn das andere noch nicht gesetzt ist.
+  const [localMonat, setLocalMonat] = useState<string>(
+    value.abDatum ? value.abDatum.slice(5, 7) : "",
+  );
+  const [localJahr, setLocalJahr] = useState<string>(
+    value.abDatum ? value.abDatum.slice(0, 4) : "",
+  );
 
   function setzeMonatJahr(monat: string, jahr: string) {
     const vollstaendig = monat && jahr ? `${jahr}-${monat}` : "";
@@ -84,16 +87,27 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
     onChange({ ...value, abDatum: ab, bisDatum: bis });
   }
 
+  function setzeMonat(monat: string) {
+    setLocalMonat(monat);
+    setzeMonatJahr(monat, localJahr);
+  }
+
+  function setzeJahr(jahr: string) {
+    setLocalJahr(jahr);
+    setzeMonatJahr(localMonat, jahr);
+  }
+
   function setzeFlexibilitaet(neu: boolean) {
     setSpaeterMoeglich(neu);
-    if (!aktuellerMonat) {
+    const aktuellesMonatJahr = localMonat && localJahr ? `${localJahr}-${localMonat}` : "";
+    if (!aktuellesMonatJahr) {
       onChange({ ...value, bisDatum: "" });
       return;
     }
     const offset = neu ? FLEX_MONATE : 0;
     onChange({
       ...value,
-      bisDatum: monatPlusFuenfzehnter(aktuellerMonat, offset),
+      bisDatum: monatPlusFuenfzehnter(aktuellesMonatJahr, offset),
     });
   }
 
@@ -161,10 +175,10 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
           </span>
           <div className="grid grid-cols-2 gap-2">
             <select
-              value={monatTeil}
-              onChange={(e) => setzeMonatJahr(e.target.value, jahrTeil)}
+              value={localMonat}
+              onChange={(e) => setzeMonat(e.target.value)}
               className={`w-full rounded-xl border border-text-soft/20 px-3 py-2.5 bg-white text-base focus:outline-none focus:border-korallenrot ${
-                monatTeil ? "" : "text-text-soft/50"
+                localMonat ? "" : "text-text-soft/50"
               }`}
               aria-label="Monat"
             >
@@ -180,10 +194,10 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
               ))}
             </select>
             <select
-              value={jahrTeil}
-              onChange={(e) => setzeMonatJahr(monatTeil, e.target.value)}
+              value={localJahr}
+              onChange={(e) => setzeJahr(e.target.value)}
               className={`w-full rounded-xl border border-text-soft/20 px-3 py-2.5 bg-white text-base focus:outline-none focus:border-korallenrot ${
-                jahrTeil ? "" : "text-text-soft/50"
+                localJahr ? "" : "text-text-soft/50"
               }`}
               aria-label="Jahr"
             >

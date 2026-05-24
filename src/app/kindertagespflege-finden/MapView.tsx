@@ -9,7 +9,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
-import { PIN_BERATUNGSSTELLE, PIN_TAGESMUTTER, type Beratungsgebiet } from "@/types";
+import { BERATUNGSSTELLE_URL, PIN_BERATUNGSSTELLE, PIN_TAGESMUTTER, type Beratungsgebiet } from "@/types";
 import { BERATUNGSSTELLEN } from "./beratungsstellen";
 import { PreviewCard } from "./PreviewCard";
 
@@ -107,15 +107,53 @@ export function MapView({
         maxZoom: 19,
       }).addTo(map);
 
+      // Auf Mobile berechnet Leaflet die Container-Größe manchmal zu früh
+      // (bevor der Browser das Layout abgeschlossen hat). invalidateSize()
+      // korrigiert das nach einem kurzen Tick.
+      window.setTimeout(() => map?.invalidateSize(), 300);
+
       // Beratungsstellen als feste Pins anlegen (ändern sich nicht).
       for (const stelle of BERATUNGSSTELLEN) {
         const icon = beratungsstellenIcon(PIN_BERATUNGSSTELLE[stelle.schluessel], false);
-        const marker = L.marker([stelle.latitude, stelle.longitude], { icon })
-          .addTo(map)
-          .bindTooltip(
-            `<strong>${stelle.name}</strong><br>${stelle.strasse}, ${stelle.plz} Dresden`,
-            { direction: "top", offset: [0, -28] },
-          );
+        const url = BERATUNGSSTELLE_URL[stelle.schluessel];
+
+        // Popup statt Tooltip, damit der Link klickbar bleibt.
+        // Der Timer verhindert, dass das Fenster schließt, während die Maus
+        // die kurze Lücke zwischen Marker und Popup-Box überquert.
+        let schliessTimer: ReturnType<typeof setTimeout> | null = null;
+
+        const popup = L.popup({
+          closeButton: false,
+          offset: [0, -6] as [number, number],
+          autoPan: false,
+        }).setContent(
+          `<a href="${url}" target="_blank" rel="noopener noreferrer" class="beratung-popup-link">${stelle.name}</a>` +
+            `<br><span class="beratung-popup-adresse">${stelle.strasse}, ${stelle.plz} Dresden</span>`,
+        );
+
+        const marker = L.marker([stelle.latitude, stelle.longitude], { icon }).addTo(map);
+        marker.bindPopup(popup);
+
+        marker.on("mouseover", () => {
+          if (schliessTimer) clearTimeout(schliessTimer);
+          marker.openPopup();
+        });
+        marker.on("mouseout", () => {
+          schliessTimer = setTimeout(() => marker.closePopup(), 250);
+        });
+
+        // Wenn die Maus ins Popup gleitet → Timer abbrechen
+        popup.on("add", () => {
+          const el = popup.getElement();
+          if (!el) return;
+          el.addEventListener("mouseenter", () => {
+            if (schliessTimer) clearTimeout(schliessTimer);
+          });
+          el.addEventListener("mouseleave", () => {
+            schliessTimer = setTimeout(() => marker.closePopup(), 250);
+          });
+        });
+
         beratungsstellenMarkersRef.current.set(stelle.schluessel, marker);
       }
 

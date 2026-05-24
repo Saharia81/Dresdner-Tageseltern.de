@@ -71,7 +71,16 @@
       "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue; $os = Get-CimInstance Win32_OperatingSystem; $free = [math]::Round\\($os.FreePhysicalMemory/1MB,1\\); \"Node-Prozesse weg. Freier RAM: $free GB\"; if \\($free -lt 3\\) { \"WARNUNG: weniger als 3 GB frei - Dev-Modus kann crashen\" })",
       "PowerShell(\"Server gestoppt\")",
       "Bash(git push *)",
-      "PowerShell(Start-Process powershell -ArgumentList '-NoExit', '-Command', 'cd \"c:\\\\Visual Studio\\\\Dresdner-Tageseltern.de\"; npm run dev' -WindowStyle Normal)"
+      "PowerShell(Start-Process powershell -ArgumentList '-NoExit', '-Command', 'cd \"c:\\\\Visual Studio\\\\Dresdner-Tageseltern.de\"; npm run dev' -WindowStyle Normal)",
+      "Bash(ipconfig)",
+      "Bash(Get-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "Bash(Stop-Process -Force)",
+      "PowerShell(Stop-Process -Force)",
+      "Bash(grep -Hm1 ^description: 'c:\\\\Visual Studio\\\\Dresdner-Tageseltern.de/.claude/skills/*/SKILL.md')",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts',{}\\), indent=2\\)\\)\")",
+      "PowerShell(cd \"c:\\\\Visual Studio\\\\Dresdner-Tageseltern.de\"; \\(Get-Content package.json | ConvertFrom-Json\\).scripts)",
+      "PowerShell(Start-Sleep -Seconds 6; try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -TimeoutSec 5 -UseBasicParsing; \"Status: $\\($r.StatusCode\\)\" } catch { \"Noch nicht bereit: $_\" })",
+      "PowerShell(Start-Sleep -Seconds 7; try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -TimeoutSec 5 -UseBasicParsing; \"✓ Läuft – Status: $\\($r.StatusCode\\)\" } catch { \"Noch nicht bereit: $_\" })"
     ]
   }
 }

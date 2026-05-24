@@ -17,28 +17,45 @@ export function MobileNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <>
+    <div className="lg:hidden">
+      {/* Burger-Button */}
       <button
         type="button"
-        aria-label="Menü öffnen"
+        aria-label={open ? "Menü schließen" : "Menü öffnen"}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="lg:hidden inline-flex flex-col justify-center items-center w-10 h-10 gap-1.5"
+        className="flex flex-col justify-center items-center w-12 h-12 gap-1.5"
+        style={{ touchAction: "manipulation" }}
       >
-        <span className={`block w-6 h-0.5 bg-text transition-transform ${open ? "translate-y-2 rotate-45" : ""}`} />
-        <span className={`block w-6 h-0.5 bg-text transition-opacity ${open ? "opacity-0" : ""}`} />
-        <span className={`block w-6 h-0.5 bg-text transition-transform ${open ? "-translate-y-2 -rotate-45" : ""}`} />
+        <span
+          className="block w-6 h-0.5 bg-text transition-transform duration-300"
+          style={open ? { transform: "translateY(8px) rotate(45deg)" } : {}}
+        />
+        <span
+          className="block w-6 h-0.5 bg-text transition-opacity duration-300"
+          style={open ? { opacity: 0 } : {}}
+        />
+        <span
+          className="block w-6 h-0.5 bg-text transition-transform duration-300"
+          style={open ? { transform: "translateY(-8px) rotate(-45deg)" } : {}}
+        />
       </button>
 
+      {/* Dropdown */}
       {open && (
-        <nav className="lg:hidden absolute top-full left-0 right-0 bg-sonnengelb shadow-md">
-          <ul className="flex flex-col py-4">
+        <nav
+          className="fixed left-0 right-0 bg-sonnengelb shadow-lg"
+          style={{ top: "64px", zIndex: 9999 }}
+          aria-label="Hauptnavigation"
+        >
+          <ul className="flex flex-col">
             {NAV.map((item) => (
-              <li key={item.href}>
+              <li key={item.href} className="border-b border-black/5 last:border-0">
                 <Link
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="block px-6 py-3 hover:bg-creme transition-colors"
+                  className="block px-6 py-4 text-base font-semibold hover:bg-creme active:bg-creme transition-colors"
+                  style={{ touchAction: "manipulation" }}
                 >
                   {item.label}
                 </Link>
@@ -47,6 +64,6 @@ export function MobileNav() {
           </ul>
         </nav>
       )}
-    </>
+    </div>
   );
 }

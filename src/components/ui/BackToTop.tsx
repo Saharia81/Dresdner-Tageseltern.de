@@ -8,7 +8,7 @@ export function BackToTop() {
         window.scrollTo({ top: 0, behavior: "smooth" })
       }
       aria-label="Nach oben"
-      className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors"
+      className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors touch-manipulation [&>*]:pointer-events-none"
     >
       <svg
         width="18"
