@@ -11,7 +11,14 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   await prisma.tagesmutter.upsert({
     where: { slug: "beispiel-tagesmutter" },
-    update: {},
+    update: {
+      einrichtungsfotoUrls: JSON.stringify([
+        "/images/allgemein/basteln.png",
+        "/images/allgemein/eingewoehnung-v2.png",
+        "/images/allgemein/feste-bezugsperson-v2.png",
+        "/images/allgemein/ruhige-atmosphaere.png",
+      ]),
+    },
     create: {
       slug: "beispiel-tagesmutter",
       vorname: "Anna",

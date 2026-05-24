@@ -1,6 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Poppins } from "next/font/google";
 import { MobileNav } from "./MobileNav";
+
+const poppins = Poppins({ subsets: ["latin"], weight: ["400"] });
 
 const NAV = [
   { href: "/fuer-eltern/kindertagespflege", label: "Was ist Kindertagespflege?" },
@@ -15,15 +18,20 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-sonnengelb shadow-sm relative">
       <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center" aria-label="Startseite">
+        <Link href="/" className="flex items-center gap-3" aria-label="Startseite">
           <Image
-            src="/images/logo-tageseltern.png"
-            alt="Dresdner Tageseltern e.V."
-            width={648}
-            height={123}
+            src="/images/logo-icon.png"
+            alt=""
+            width={200}
+            height={200}
             priority
-            className="h-10 md:h-12 w-auto"
+            className="h-10 md:h-12 w-auto rounded-sm"
           />
+          {/* Schriftzug */}
+          <div className={`${poppins.className} flex flex-col leading-none`}>
+            <span className="text-sm md:text-base tracking-wide">Dresdner</span>
+            <span className="text-sm md:text-base tracking-wide" style={{marginTop: '-4px'}}>Tageseltern e.V.</span>
+          </div>
         </Link>
 
         <nav className="hidden lg:block">

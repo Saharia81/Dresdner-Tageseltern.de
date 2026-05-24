@@ -2,8 +2,9 @@
 
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
+import type { Beratungsgebiet } from "@/types";
 import { FilterBar, type FilterState } from "./FilterBar";
 import { ProfilePanel } from "./ProfilePanel";
 
@@ -70,6 +71,38 @@ export function FinderClient() {
   const [tagesmuetter, setTagesmuetter] = useState<TagesmutterDto[]>([]);
   const [aktiveTm, setAktiveTm] = useState<TagesmutterDto | null>(null);
   const [laden, setLaden] = useState(true);
+  const [hoveredBeratungsstelle, setHoveredBeratungsstelle] = useState<Beratungsgebiet | null>(null);
+
+  // History-API: Steckbrief öffnen → Eintrag pushen, Browser-Zurück → Panel schließen.
+  // steckbriefImHistory verhindert, dass beim Wechsel zwischen Tagesmüttern
+  // mehrere Einträge gestapelt werden.
+  const steckbriefImHistory = useRef(false);
+
+  useEffect(() => {
+    if (aktiveTm && !steckbriefImHistory.current) {
+      history.pushState({ steckbrief: true }, "");
+      steckbriefImHistory.current = true;
+    } else if (!aktiveTm) {
+      steckbriefImHistory.current = false;
+    }
+  }, [aktiveTm]);
+
+  useEffect(() => {
+    const handler = () => {
+      steckbriefImHistory.current = false;
+      setAktiveTm(null);
+    };
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
+  }, []);
+
+  const handleClose = () => {
+    if (steckbriefImHistory.current) {
+      history.back(); // löst popstate aus → setzt aktiveTm auf null
+    } else {
+      setAktiveTm(null);
+    }
+  };
 
   // Daten beim Filtern neu laden
   useEffect(() => {
@@ -125,7 +158,7 @@ export function FinderClient() {
       <div className="mx-auto max-w-7xl px-4 pb-12 md:pb-16 flex flex-col">
         {/* Mobile: Karte zuerst, Filter danach. Desktop: Filter oben, Karte unten. */}
         <div className="order-2 md:order-1">
-          <FilterBar value={filter} onChange={setFilter} />
+          <FilterBar value={filter} onChange={setFilter} onBeratungsstelleHover={setHoveredBeratungsstelle} />
         </div>
 
         <div className="order-1 md:order-2 mt-0 md:mt-10 mb-10 md:mb-0">
@@ -137,6 +170,7 @@ export function FinderClient() {
                 ausgewaehlteId={aktiveTm?.id ?? null}
                 suchCoords={filter.adresseCoords}
                 radiusKm={filter.radiusKm}
+                hoveredBeratungsstelle={hoveredBeratungsstelle}
               />
               {laden && (
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[400] bg-white rounded-full px-4 py-2 shadow-md text-sm text-text-soft">
@@ -163,7 +197,7 @@ export function FinderClient() {
 
       <ProfilePanel
         tagesmutter={aktiveTm}
-        onClose={() => setAktiveTm(null)}
+        onClose={handleClose}
       />
     </>
   );

@@ -349,37 +349,37 @@ export default function Home() {
       </section>
 
       {/* 6 — Verein-Intro */}
-      <section className="bg-creme">
-        <div className="mx-auto max-w-6xl px-4 pt-8 md:pt-10 lg:pt-12 pb-20 md:pb-24 lg:pb-28">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="flex justify-center mb-6">
+      <section style={{ backgroundColor: "#fdf7e3" }}>
+        <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16">
+            <div className="text-center md:text-left max-w-lg">
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
+                Wir sind der Dresdner Tageseltern e.V.
+              </h2>
+              <p className="text-text-soft text-lg leading-relaxed mb-4">
+                Ein Zusammenschluss von über 50 Tageseltern in Dresden.
+              </p>
+              <p className="italic text-text-soft text-lg mb-10">
+                Ihr wollt mehr über uns erfahren?
+              </p>
+              <LinkButton variant="primary" href="/ueber-uns">
+                Lernt uns kennen
+              </LinkButton>
+            </div>
+            <div className="hidden md:block w-72 h-72 relative flex-shrink-0">
               <Image
-                src="/images/hero/herzapricot.png"
-                alt=""
-                width={1536}
-                height={1024}
-                aria-hidden
-                className="w-32 md:w-44 select-none"
+                src="/images/logo-icon.png"
+                alt="Logo Dresdner Tageseltern e.V."
+                fill
+                className="object-cover rounded-2xl shadow-md"
               />
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
-              Wir sind der Dresdner Tageseltern e.V.
-            </h2>
-            <p className="text-text-soft text-lg leading-relaxed mb-4">
-              Ein Zusammenschluss von über 50 Tageseltern in Dresden.
-            </p>
-            <p className="italic text-text-soft text-lg mb-10">
-              Ihr wollt mehr über uns erfahren?
-            </p>
-            <LinkButton variant="primary" href="/ueber-uns">
-              Lernt uns kennen
-            </LinkButton>
           </div>
         </div>
       </section>
 
       {/* 7 — Testimonials */}
-      <section style={{ backgroundColor: "#fdf7e3" }}>
+      <section className="bg-creme">
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
             Das sagen Eltern

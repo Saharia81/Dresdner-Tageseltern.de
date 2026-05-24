@@ -6,20 +6,15 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { GestureHandling } from "leaflet-gesture-handling";
+import "leaflet-gesture-handling";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
-import { PIN_BERATUNGSSTELLE, PIN_TAGESMUTTER } from "@/types";
+import { PIN_BERATUNGSSTELLE, PIN_TAGESMUTTER, type Beratungsgebiet } from "@/types";
 import { BERATUNGSSTELLEN } from "./beratungsstellen";
 import { PreviewCard } from "./PreviewCard";
 
-// Gesture-Handling-Plugin nur einmal registrieren.
-// "as unknown" weil das Plugin keine offiziellen Leaflet-Typen ergänzt.
-(
-  L.Map as unknown as {
-    addInitHook: (name: string, key: string, handler: unknown) => void;
-  }
-).addInitHook("addHandler", "gestureHandling", GestureHandling);
+// leaflet-gesture-handling registriert sich beim Import selbst via L.Map.addInitHook.
+// Kein manueller addInitHook nötig — der doppelte Aufruf bricht Touch-Geräte.
 
 const DRESDEN_ZENTRUM: [number, number] = [51.0504, 13.7373];
 const DRESDEN_ZOOM_DESKTOP = 12;
@@ -35,12 +30,23 @@ function pinIcon(bild: string, ausgewaehlt: boolean): L.Icon {
   });
 }
 
+function beratungsstellenIcon(bild: string, hover: boolean): L.Icon {
+  const groesse = hover ? 54 : 36;
+  return L.icon({
+    iconUrl: bild,
+    iconSize: [groesse, groesse],
+    iconAnchor: [groesse / 2, groesse],
+    className: "tm-pin tm-pin-beratung",
+  });
+}
+
 type Props = {
   tagesmuetter: TagesmutterDto[];
   onSelect: (tm: TagesmutterDto) => void;
   ausgewaehlteId: string | null;
   suchCoords: { lat: number; lng: number } | null;
   radiusKm: number;
+  hoveredBeratungsstelle: Beratungsgebiet | null;
 };
 
 export function MapView({
@@ -49,10 +55,12 @@ export function MapView({
   ausgewaehlteId,
   suchCoords,
   radiusKm,
+  hoveredBeratungsstelle,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
+  const beratungsstellenMarkersRef = useRef<Map<Beratungsgebiet, L.Marker>>(new Map());
   const umkreisRef = useRef<L.Circle | null>(null);
   const suchMarkerRef = useRef<L.CircleMarker | null>(null);
 
@@ -101,13 +109,14 @@ export function MapView({
 
       // Beratungsstellen als feste Pins anlegen (ändern sich nicht).
       for (const stelle of BERATUNGSSTELLEN) {
-        const icon = pinIcon(PIN_BERATUNGSSTELLE[stelle.schluessel], false);
-        L.marker([stelle.latitude, stelle.longitude], { icon })
+        const icon = beratungsstellenIcon(PIN_BERATUNGSSTELLE[stelle.schluessel], false);
+        const marker = L.marker([stelle.latitude, stelle.longitude], { icon })
           .addTo(map)
           .bindTooltip(
             `<strong>${stelle.name}</strong><br>${stelle.strasse}, ${stelle.plz} Dresden`,
-            { direction: "top", offset: [0, -50] },
+            { direction: "top", offset: [0, -28] },
           );
+        beratungsstellenMarkersRef.current.set(stelle.schluessel, marker);
       }
 
       mapRef.current = map;
@@ -241,6 +250,16 @@ export function MapView({
       umkreisRef.current = null;
     }
   }, [suchCoords, radiusKm, kartenBereit]);
+
+  // Beratungsstellen-Pin vergrößern beim Hover über den Link in der Legende
+  useEffect(() => {
+    for (const [schluessel, marker] of beratungsstellenMarkersRef.current) {
+      const stelle = BERATUNGSSTELLEN.find((s) => s.schluessel === schluessel);
+      if (!stelle) continue;
+      const hover = schluessel === hoveredBeratungsstelle;
+      marker.setIcon(beratungsstellenIcon(PIN_BERATUNGSSTELLE[schluessel], hover));
+    }
+  }, [hoveredBeratungsstelle]);
 
   // Karte schließen, wenn man auf den Hintergrund klickt
   useEffect(() => {

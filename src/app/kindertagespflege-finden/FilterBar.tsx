@@ -24,6 +24,7 @@ export type FilterState = {
 type Props = {
   value: FilterState;
   onChange: (next: FilterState) => void;
+  onBeratungsstelleHover?: (schluessel: Beratungsgebiet | null) => void;
 };
 
 const RADIUS_MAX_KM = 10;
@@ -64,12 +65,10 @@ function monatPlusFuenfzehnter(monat: string, offset: number): string {
   return `${ny}-${String(nm).padStart(2, "0")}-15`;
 }
 
-export function FilterBar({ value, onChange }: Props) {
+export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
   // „Ja, etwas später ist möglich" wird lokal gehalten, damit der User „Ja"
   // auch wählen kann, bevor ein Monat ausgewählt ist.
-  const [spaeterMoeglich, setSpaeterMoeglich] = useState(
-    () => value.bisDatum !== "",
-  );
+  const [spaeterMoeglich, setSpaeterMoeglich] = useState<boolean>(true);
 
   // abDatum ist intern „YYYY-MM-01". Für die Dropdowns brauchen wir Monat und Jahr separat.
   const aktuellerMonat = value.abDatum ? value.abDatum.slice(0, 7) : "";
@@ -207,23 +206,21 @@ export function FilterBar({ value, onChange }: Props) {
               <input
                 type="radio"
                 name="betreuungsbeginn-flexibel"
-                checked={!spaeterMoeglich}
-                onChange={() => setzeFlexibilitaet(false)}
+                checked={spaeterMoeglich}
+                onChange={() => setzeFlexibilitaet(true)}
                 className="h-4 w-4 text-korallenrot focus:ring-korallenrot"
               />
-              <span className="text-sm">Nein</span>
+              <span className="text-sm">Ja, etwas später ist auch möglich</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 name="betreuungsbeginn-flexibel"
-                checked={spaeterMoeglich}
-                onChange={() => setzeFlexibilitaet(true)}
+                checked={!spaeterMoeglich}
+                onChange={() => setzeFlexibilitaet(false)}
                 className="h-4 w-4 text-korallenrot focus:ring-korallenrot"
               />
-              <span className="text-sm">
-                Ja, etwas später ist möglich
-              </span>
+              <span className="text-sm">Nein</span>
             </label>
           </div>
         </fieldset>
@@ -231,8 +228,9 @@ export function FilterBar({ value, onChange }: Props) {
 
       {/* Karte 3 – Pin-Legende */}
       <div className="rounded-2xl bg-white p-4 shadow-sm border border-text-soft/10">
-        <h3 className="text-base font-bold mb-2">Pin-Legende</h3>
-        <ul className="space-y-1.5">
+        <h3 className="text-base font-bold mb-3">Pin-Legende</h3>
+        <ul className="space-y-3">
+          {/* Haupteintrag – Tageseltern */}
           <li className="flex items-center gap-3">
             <Image
               src={PIN_TAGESMUTTER}
@@ -240,35 +238,42 @@ export function FilterBar({ value, onChange }: Props) {
               width={32}
               height={32}
               aria-hidden
-              className="h-7 w-7 object-contain shrink-0"
+              className="h-9 w-9 object-contain shrink-0"
             />
-            <span className="text-sm">Tagesmütter/Tagesväter</span>
+            <span className="font-semibold text-sm">Tagesmütter / Tagesväter</span>
           </li>
-          {(["MALWINA", "OUTLAW", "KINDERLAND"] as Beratungsgebiet[]).map(
-            (b) => (
-              <li key={b} className="flex items-center gap-3">
-                <Image
-                  src={PIN_BERATUNGSSTELLE[b]}
-                  alt=""
-                  width={32}
-                  height={32}
-                  aria-hidden
-                  className="h-7 w-7 object-contain shrink-0"
-                />
-                <span className="text-sm">
+
+          {/* Trennlinie */}
+          <li aria-hidden className="border-t border-text-soft/10" />
+
+          {/* Beratungsstellen – weniger prominent */}
+          <li>
+            <p className="text-xs text-text-soft mb-2">Beratung &amp; Vermittlung</p>
+            <ul className="space-y-2">
+              {(["MALWINA", "OUTLAW", "KINDERLAND"] as Beratungsgebiet[]).map((b) => (
+                <li key={b} className="flex items-center gap-2">
+                  <Image
+                    src={PIN_BERATUNGSSTELLE[b]}
+                    alt=""
+                    width={28}
+                    height={28}
+                    aria-hidden
+                    className="h-6 w-6 object-contain shrink-0 opacity-80"
+                  />
                   <a
                     href={BERATUNGSSTELLE_URL[b]}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline hover:text-korallenrot transition-colors"
+                    className="text-xs text-text-soft underline hover:text-korallenrot transition-colors"
+                    onMouseEnter={() => onBeratungsstelleHover?.(b)}
+                    onMouseLeave={() => onBeratungsstelleHover?.(null)}
                   >
                     {BERATUNGSGEBIET_LABEL[b]}
-                  </a>{" "}
-                  <span className="text-text-soft">(Beratung/Vermittlung)</span>
-                </span>
-              </li>
-            ),
-          )}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </li>
         </ul>
       </div>
     </div>
