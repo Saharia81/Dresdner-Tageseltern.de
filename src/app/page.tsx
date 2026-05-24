@@ -78,7 +78,7 @@ export default function Home() {
                 Atmosphäre.
               </p>
               <div className="flex justify-center md:justify-start">
-                <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
+                <div className="flex flex-col items-stretch gap-4 md:flex-row md:items-center w-full md:w-auto">
                   <LinkButton
                     variant="primary"
                     href="/kindertagespflege-finden"
@@ -362,7 +362,7 @@ export default function Home() {
               <p className="italic text-text-soft text-lg mb-10">
                 Ihr wollt mehr über uns erfahren?
               </p>
-              <LinkButton variant="primary" href="/ueber-uns">
+              <LinkButton variant="primary" href="/ueber-uns" className="w-full">
                 Lernt uns kennen
               </LinkButton>
             </div>

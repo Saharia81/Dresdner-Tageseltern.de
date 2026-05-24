@@ -162,7 +162,7 @@ export function FinderClient() {
         </div>
 
         <div className="order-1 md:order-2 mt-0 md:mt-10 mb-10 md:mb-0">
-          <div className="rounded-3xl overflow-hidden border border-text-soft/15 bg-white shadow-sm">
+          <div className="rounded-3xl overflow-hidden border border-text-soft/15 bg-white shadow-sm isolate">
             <div className="relative h-[70vh] min-h-[480px]">
               <MapView
                 tagesmuetter={aufKarte}

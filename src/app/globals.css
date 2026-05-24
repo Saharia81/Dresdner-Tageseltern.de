@@ -45,6 +45,9 @@
   --color-text: #2f2a26;
   --color-text-soft: #5a534c;
 
+  /* Akzent-Braun – für Fokus-/Auswahlrahmen */
+  --color-braun: #8a7060;
+
   /* Schriftarten */
   --font-sans: "Nunito", system-ui, -apple-system, sans-serif;
 

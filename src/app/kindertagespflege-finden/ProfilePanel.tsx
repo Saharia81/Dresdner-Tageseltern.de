@@ -53,7 +53,7 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
   return (
     <>
       <div
-        className="fixed inset-0 z-[1000] bg-black/30 md:bg-black/10"
+        className="fixed top-16 inset-x-0 bottom-0 z-[1000] bg-black/30 md:bg-black/10"
         onClick={onClose}
         aria-hidden
       />
@@ -61,7 +61,7 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-label={`Steckbrief ${tagesmutter.vorname} ${tagesmutter.nachname}`}
-        className="fixed inset-0 md:inset-y-0 md:right-0 md:left-auto md:w-[480px] z-[1001] bg-white shadow-2xl overflow-y-auto"
+        className="fixed top-16 right-0 bottom-0 left-0 md:left-auto md:w-[480px] z-[1001] bg-white shadow-2xl overflow-y-auto"
       >
         {/* Sticky Header */}
         <div className="sticky top-0 z-10 bg-creme px-4 py-3 flex items-center justify-between border-b border-text-soft/10">
@@ -86,14 +86,6 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
             </svg>
             Zurück
           </button>
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-korallenrot"
-            aria-hidden
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 21s-7-4.35-7-10a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.65-7 10-7 10z" />
-            </svg>
-          </div>
         </div>
 
         <div className="px-4 pt-8 pb-8 space-y-6">

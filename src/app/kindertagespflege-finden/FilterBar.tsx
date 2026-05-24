@@ -115,7 +115,21 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
     <div className="grid gap-4 md:grid-cols-3">
       {/* Karte 1 – Umkreissuche */}
       <div className="rounded-2xl bg-white p-5 shadow-sm border border-text-soft/10">
-        <h3 className="text-base font-bold mb-3">In meiner Nähe</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-bold">In meiner Nähe</h3>
+          {(value.adresseQuery !== "" || value.adresseCoords !== null || value.radiusKm !== 0) && (
+            <button
+              type="button"
+              onClick={() =>
+                onChange({ ...value, adresseQuery: "", adresseCoords: null, radiusKm: 0 })
+              }
+              className="text-xs text-text-soft hover:text-korallenrot transition-colors flex items-center gap-1"
+              aria-label="Umkreisfilter zurücksetzen"
+            >
+              <span>×</span> Zurücksetzen
+            </button>
+          )}
+        </div>
         <label className="block mb-3">
           <span className="block text-sm text-text-soft mb-1">
             Adresse oder PLZ
@@ -133,7 +147,11 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
               })
             }
             placeholder="z.B. Alaunstraße 36 oder 01099"
-            className="w-full rounded-xl border border-text-soft/20 px-4 py-2.5 bg-white text-base focus:outline-none focus:border-korallenrot"
+            className={`w-full rounded-xl border px-4 py-2.5 bg-white text-base focus:outline-none transition-colors ${
+              value.adresseCoords
+                ? "border-braun text-text"
+                : "border-text-soft/20 text-text-soft/50 focus:border-braun"
+            }`}
           />
         </label>
         <label className="block">
@@ -167,7 +185,23 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
 
       {/* Karte 2 – Betreuungsbeginn (Zeitraum) */}
       <div className="rounded-2xl bg-white p-5 shadow-sm border border-text-soft/10">
-        <h3 className="text-base font-bold mb-3">Betreuungsbeginn</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-bold">Betreuungsbeginn</h3>
+          {(localMonat !== "" || localJahr !== "") && (
+            <button
+              type="button"
+              onClick={() => {
+                setLocalMonat("");
+                setLocalJahr("");
+                onChange({ ...value, abDatum: "", bisDatum: "" });
+              }}
+              className="text-xs text-text-soft hover:text-korallenrot transition-colors flex items-center gap-1"
+              aria-label="Betreuungsbeginn-Filter zurücksetzen"
+            >
+              <span>×</span> Zurücksetzen
+            </button>
+          )}
+        </div>
 
         <div className="block mb-4">
           <span className="block text-sm text-text-soft mb-1.5">
@@ -177,8 +211,10 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
             <select
               value={localMonat}
               onChange={(e) => setzeMonat(e.target.value)}
-              className={`w-full rounded-xl border border-text-soft/20 px-3 py-2.5 bg-white text-base focus:outline-none focus:border-korallenrot ${
-                localMonat ? "" : "text-text-soft/50"
+              className={`w-full rounded-xl border px-3 py-2.5 bg-white text-base focus:outline-none transition-colors ${
+                localMonat
+                  ? "border-braun text-text"
+                  : "border-text-soft/20 text-text-soft/50 focus:border-braun"
               }`}
               aria-label="Monat"
             >
@@ -196,8 +232,10 @@ export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
             <select
               value={localJahr}
               onChange={(e) => setzeJahr(e.target.value)}
-              className={`w-full rounded-xl border border-text-soft/20 px-3 py-2.5 bg-white text-base focus:outline-none focus:border-korallenrot ${
-                localJahr ? "" : "text-text-soft/50"
+              className={`w-full rounded-xl border px-3 py-2.5 bg-white text-base focus:outline-none transition-colors ${
+                localJahr
+                  ? "border-braun text-text"
+                  : "border-text-soft/20 text-text-soft/50 focus:border-braun"
               }`}
               aria-label="Jahr"
             >

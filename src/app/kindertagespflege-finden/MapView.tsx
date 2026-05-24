@@ -204,39 +204,26 @@ export function MapView({
 
       const marker = L.marker([tm.latitude, tm.longitude], { icon });
 
-      let touched = false;
       marker.on("mouseover", (e) => {
-        const point = map.latLngToContainerPoint(e.latlng);
-        setVorschau({ tm, x: point.x, y: point.y });
+        // Nur auf Desktop (hover-fähige Geräte) Vorschau zeigen
+        if (!window.matchMedia("(hover: none)").matches) {
+          const point = map.latLngToContainerPoint(e.latlng);
+          setVorschau({ tm, x: point.x, y: point.y });
+        }
       });
       marker.on("mouseout", () => {
-        if (!touched) setVorschau(null);
+        setVorschau(null);
       });
       marker.on("click", () => {
-        // Mobile: erster Tap = Vorschau, zweiter Tap = Profil öffnen
-        const istTouch = window.matchMedia("(hover: none)").matches;
-        if (istTouch) {
-          if (vorschau?.tm.id === tm.id) {
-            onSelect(tm);
-            setVorschau(null);
-          } else {
-            const point = map.latLngToContainerPoint(marker.getLatLng());
-            touched = true;
-            setVorschau({ tm, x: point.x, y: point.y });
-            setTimeout(() => {
-              touched = false;
-            }, 50);
-          }
-        } else {
-          onSelect(tm);
-          setVorschau(null);
-        }
+        // Auf allen Geräten direkt Steckbrief öffnen
+        onSelect(tm);
+        setVorschau(null);
       });
 
       marker.addTo(map);
       markersRef.current.set(tm.id, marker);
     }
-  }, [tagesmuetter, ausgewaehlteId, onSelect, vorschau, kartenBereit]);
+  }, [tagesmuetter, ausgewaehlteId, onSelect, kartenBereit]);
 
   // Umkreis-Kreis + Such-Marker synchronisieren
   useEffect(() => {
