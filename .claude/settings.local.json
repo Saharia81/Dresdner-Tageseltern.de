@@ -69,7 +69,8 @@
       "PowerShell(\"Node-Prozesse weg, starte Build...\")",
       "PowerShell(\"Server gestoppt, baue neu...\")",
       "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue; $os = Get-CimInstance Win32_OperatingSystem; $free = [math]::Round\\($os.FreePhysicalMemory/1MB,1\\); \"Node-Prozesse weg. Freier RAM: $free GB\"; if \\($free -lt 3\\) { \"WARNUNG: weniger als 3 GB frei - Dev-Modus kann crashen\" })",
-      "PowerShell(\"Server gestoppt\")"
+      "PowerShell(\"Server gestoppt\")",
+      "Bash(git push *)"
     ]
   }
 }
