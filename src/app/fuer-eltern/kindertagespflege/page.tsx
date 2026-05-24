@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { LinkButton } from "@/components/ui/Button";
@@ -78,7 +79,7 @@ function HeroSection() {
               Kindertagespflege?
             </h1>
             <p className="text-lg text-text-soft mb-6 max-w-xl leading-relaxed">
-              Kindertagespflege ist eine liebevolle und flexible
+              Kindertagespflege ist eine liebevolle und individuelle
               Betreuungsform für Kinder von 0 bis 3 Jahren, meist im
               Haushalt der Tagespflegeperson oder in geeigneten Räumen. In
               kleinen Gruppen werden Kinder individuell begleitet,
@@ -282,7 +283,7 @@ function InfoCardsSection() {
                     className="h-12 w-auto object-contain"
                   />
                 }
-                label="In anderen geeigneten Räumlichkeiten"
+                label={<>In separat<br />angemieteten Räumen</>}
               />
             </ul>
           </Card>
@@ -297,7 +298,7 @@ function InfoCardsSection() {
               individuell – für einen guten Start voller Vertrauen.
             </p>
             <div>
-              <LinkButton variant="primary" href="/fuer-eltern/faq">
+              <LinkButton variant="primary" href="/fuer-eltern/faq" className="w-full">
                 Mehr zur Eingewöhnung
               </LinkButton>
             </div>
@@ -318,6 +319,7 @@ function InfoCardsSection() {
                 href="https://www.dresden.de/de/leben/kinder/tagesbetreuung/anmeldung/elternbeitraege.php?pk_kwd=elternbeitraege"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-full"
               >
                 Mehr zu Kosten &amp; Beiträgen
               </LinkButton>
@@ -329,7 +331,7 @@ function InfoCardsSection() {
   );
 }
 
-function OrtItem({ icon, label }: { icon: React.ReactNode; label: string }) {
+function OrtItem({ icon, label }: { icon: ReactNode; label: ReactNode }) {
   return (
     <li className="flex flex-col items-center gap-2">
       {icon}
@@ -342,111 +344,287 @@ function OrtItem({ icon, label }: { icon: React.ReactNode; label: string }) {
 /* 5 — Vergleich Kindertagespflege / Kita                              */
 /* ------------------------------------------------------------------ */
 
-const VERGLEICH_ROWS = [
-  {
-    merkmal: "Gruppengröße",
-    icon: <UsersIcon />,
-    tagespflege: "Maximal 5 Kinder",
-    kita: "Größere Gruppen",
-  },
-  {
-    merkmal: "Bezugsperson",
-    icon: <PersonIcon />,
-    tagespflege: "Eine feste Bezugsperson",
-    kita: "Wechselndes Personal",
-  },
-  {
-    merkmal: "Atmosphäre",
-    icon: <HeartIcon />,
-    tagespflege: "Familiär und individuell",
-    kita: "Mehr Kinder, mehr Reize",
-  },
-  {
-    merkmal: "Betreuungsort",
-    icon: <HouseIcon />,
-    tagespflege: "Häusliche Umgebung oder kleine Räume",
-    kita: "Kita-Gebäude",
-  },
-  {
-    merkmal: "Kosten für Eltern",
-    icon: <CoinIcon />,
-    tagespflege: "Gleiche Elternbeiträge wie in der Kita",
-    kita: "Gleiche Elternbeiträge",
-  },
-];
+/* Vergleich-Icons --------------------------------------------------- */
+
+function VgHouseHeartIcon() {
+  return (
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M3 11L12 3l9 8v10H3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
+      <path
+        d="M12 19s-4-2.5-4-5.5a2.2 2.2 0 0 1 4-1.3 2.2 2.2 0 0 1 4 1.3c0 3-4 5.5-4 5.5z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function VgBuildingIcon() {
+  return (
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="2" y="7" width="20" height="14" rx="1" stroke="currentColor" strokeWidth="1.6"/>
+      <path d="M2 11h20" stroke="currentColor" strokeWidth="1.4"/>
+      <rect x="6" y="14" width="3" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.2"/>
+      <rect x="15" y="14" width="3" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.2"/>
+      <path d="M10 21v-4h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+      <path d="M8 7V5a4 4 0 0 1 8 0v2" stroke="currentColor" strokeWidth="1.4"/>
+    </svg>
+  );
+}
+
+function VgUsersIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.7"/>
+      <circle cx="17" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.7"/>
+      <path d="M2 19c1-3 4-4.5 6-4.5s5 1.5 6 4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+      <path d="M15 19c.8-2.4 3-3.5 4.5-3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function VgPersonIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="7" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
+      <path d="M5 20c1.5-4 5-5.5 7-5.5s5.5 1.5 7 5.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function VgHeartIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"
+        stroke="currentColor" strokeWidth="1.7"
+      />
+    </svg>
+  );
+}
+
+function VgHouseIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 11L12 4l8 7v9H4z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+      <path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function VgEuroIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M17 6.5A7 7 0 1 0 17 17.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+      <path d="M5 10h9M5 14h9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function VgFamilyIcon() {
+  return (
+    <svg width="72" height="56" viewBox="0 0 90 60" fill="none" aria-hidden>
+      <circle cx="20" cy="10" r="5" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M13 30c0-5 3-9 7-9s7 4 7 9v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M13 38h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="52" cy="10" r="5" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M45 30c0-5 3-9 7-9s7 4 7 9v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M45 38h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="36" cy="20" r="4" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M30 40c0-4 2.5-8 6-8s6 4 6 8v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M30 46h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+/* Zeilen-Konfiguration (Farben + Icons, kein JSX im module-scope) --- */
+
+function buildRows() {
+  return [
+    {
+      merkmal: "Gruppengröße",
+      iconBg: "bg-korallenrot/15",
+      iconColor: "text-korallenrot",
+      IconComponent: VgUsersIcon,
+      ktpContent: <>Maximal 5 Kinder</>,
+      kitaContent: <>Bis zu 15 Kinder pro Gruppe</>,
+    },
+    {
+      merkmal: "Bezugsperson",
+      iconBg: "bg-sonnengelb/60",
+      iconColor: "text-[#9a6a00]",
+      IconComponent: VgPersonIcon,
+      ktpContent: <>Eine feste Bezugsperson</>,
+      kitaContent: <>Wechselndes Personal</>,
+    },
+    {
+      merkmal: "Atmosphäre",
+      iconBg: "bg-green-100",
+      iconColor: "text-green-600",
+      IconComponent: VgHeartIcon,
+      ktpContent: <>Familiär und individuell</>,
+      kitaContent: <>Mehr Reize, unpersönlicher</>,
+    },
+    {
+      merkmal: "Betreuungsort",
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-500",
+      IconComponent: VgHouseIcon,
+      ktpContent: <>Häusliche Umgebung oder gemütliche Räume</>,
+      kitaContent: <>Kita-Gebäude</>,
+    },
+    {
+      merkmal: "Kosten für Eltern",
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-500",
+      IconComponent: VgEuroIcon,
+      ktpContent: <>Gleiche Elternbeiträge wie in der Kita/Krippe</>,
+      kitaContent: <>Gleiche Elternbeiträge</>,
+    },
+  ];
+}
 
 function VergleichSection() {
+  const rows = buildRows();
   return (
     <section style={{ backgroundColor: "#fdf7e3" }}>
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
-          Kindertagespflege und Kita im Vergleich
-        </h2>
+
+        {/* Kopf */}
+        <div className="flex flex-col items-center text-center mb-12">
+          <Image
+            src={IMAGES.herzAccent}
+            alt=""
+            width={1536}
+            height={1024}
+            aria-hidden
+            className="w-28 h-auto select-none mb-2"
+          />
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-3">
+            Kindertagespflege und Kita im Vergleich
+          </h2>
+          <p className="text-text-soft max-w-xl leading-relaxed">
+            Zwei wertvolle Betreuungsformen mit unterschiedlichen Stärken.<br />
+            Finden Sie das Beste für Ihr Kind und Ihre Familie.
+          </p>
+        </div>
 
         {/* Desktop: Tabelle */}
-        <div className="hidden md:block rounded-3xl bg-white shadow-sm overflow-hidden">
-          <table className="w-full text-left">
+        <div className="hidden md:block rounded-3xl bg-white shadow-sm overflow-hidden mb-5">
+          <table className="w-full">
             <thead>
-              <tr className="bg-sonnengelb">
-                <th className="px-6 py-4 font-extrabold">&nbsp;</th>
-                <th className="px-6 py-4 font-extrabold">Kindertagespflege</th>
-                <th className="px-6 py-4 font-extrabold">Kita</th>
+              <tr>
+                <th className="px-6 py-5 text-left font-extrabold bg-korallenrot text-white w-[28%]">
+                  Kriterium
+                </th>
+                <th className="px-6 py-5 text-center font-extrabold bg-korallenrot text-white w-[36%]">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <VgHouseHeartIcon />
+                    Kindertagespflege
+                  </div>
+                </th>
+                <th className="px-6 py-5 text-center font-extrabold bg-korallenrot text-white w-[36%]">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <VgBuildingIcon />
+                    Kita
+                  </div>
+                </th>
               </tr>
             </thead>
-            <tbody>
-              {VERGLEICH_ROWS.map((row, i) => (
-                <tr
-                  key={row.merkmal}
-                  className={i % 2 === 0 ? "bg-white" : "bg-creme/40"}
-                >
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-semibold text-text whitespace-nowrap"
-                  >
+            <tbody className="divide-y divide-text/5">
+              {rows.map((row) => (
+                <tr key={row.merkmal} className="bg-white">
+                  <th scope="row" className="px-6 py-5 font-semibold text-text text-left">
                     <span className="inline-flex items-center gap-3">
-                      <span className="inline-flex w-8 h-8 items-center justify-center rounded-full bg-sonnengelb text-text">
-                        {row.icon}
+                      <span
+                        className={`inline-flex w-9 h-9 shrink-0 items-center justify-center rounded-full ${row.iconBg} ${row.iconColor}`}
+                      >
+                        <row.IconComponent />
                       </span>
                       {row.merkmal}
                     </span>
                   </th>
-                  <td className="px-6 py-4 text-text-soft">
-                    {row.tagespflege}
+                  <td className="px-6 py-5 text-center text-sm leading-relaxed">
+                    {row.ktpContent}
                   </td>
-                  <td className="px-6 py-4 text-text-soft">{row.kita}</td>
+                  <td className="px-6 py-5 text-center text-sm leading-relaxed text-text-soft">
+                    {row.kitaContent}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Mobile: Karten-Layout pro Merkmal */}
-        <div className="md:hidden grid gap-4">
-          {VERGLEICH_ROWS.map((row) => (
-            <Card key={row.merkmal} className="flex flex-col gap-3">
-              <p className="flex items-center gap-3 font-extrabold">
-                <span className="inline-flex w-8 h-8 items-center justify-center rounded-full bg-sonnengelb text-text">
-                  {row.icon}
-                </span>
-                {row.merkmal}
-              </p>
-              <div className="grid gap-2">
-                <div className="rounded-xl bg-creme/60 p-3">
-                  <p className="text-xs uppercase tracking-wide text-text-soft mb-1">
-                    Kindertagespflege
-                  </p>
-                  <p className="text-sm">{row.tagespflege}</p>
+        {/* Footer-Box */}
+        <div className="hidden md:flex items-center gap-5 rounded-2xl bg-white border border-text/5 shadow-sm px-6 py-5 mb-0">
+          <span className="inline-flex w-12 h-12 shrink-0 items-center justify-center rounded-full bg-korallenrot/15 text-korallenrot">
+            <VgHeartIcon />
+          </span>
+          <div className="flex-1">
+            <p className="font-extrabold text-korallenrot">
+              Beide Betreuungsformen haben ihre Stärken.
+            </p>
+            <p className="text-text-soft text-sm mt-0.5">
+              Was zählt, ist das, was am besten zu Ihnen und Ihrem Kind passt.
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile: Tab-Header + Karten */}
+        <div className="md:hidden">
+
+          {/* Tab-Header */}
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="flex flex-col items-center gap-1.5 bg-korallenrot text-white rounded-2xl py-4 px-3">
+              <VgHouseHeartIcon />
+              <span className="font-extrabold text-sm">Kindertagespflege</span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5 bg-korallenrot text-white rounded-2xl py-4 px-3">
+              <VgBuildingIcon />
+              <span className="font-extrabold text-sm">Kita</span>
+            </div>
+          </div>
+
+          {/* Karten */}
+          <div className="grid gap-4">
+            {rows.map((row) => (
+              <div key={row.merkmal} className="bg-white rounded-2xl border border-text/5 shadow-sm overflow-hidden">
+                {/* Merkmal-Kopf */}
+                <div className="flex justify-center items-center gap-3 px-4 py-3 border-b border-text/20">
+                  <span className={`inline-flex w-9 h-9 shrink-0 items-center justify-center rounded-full ${row.iconBg} ${row.iconColor}`}>
+                    <row.IconComponent />
+                  </span>
+                  <span className="font-extrabold text-sm">{row.merkmal}</span>
                 </div>
-                <div className="rounded-xl bg-white border border-text/5 p-3">
-                  <p className="text-xs uppercase tracking-wide text-text-soft mb-1">
-                    Kita
-                  </p>
-                  <p className="text-sm">{row.kita}</p>
+                {/* Zweispaltig */}
+                <div className="grid grid-cols-2 divide-x divide-text/20">
+                  <div className="px-4 py-3">
+                    <p className="text-sm text-text-soft leading-relaxed">{row.ktpContent}</p>
+                  </div>
+                  <div className="px-4 py-3">
+                    <p className="text-sm text-text-soft leading-relaxed">{row.kitaContent}</p>
+                  </div>
                 </div>
               </div>
-            </Card>
-          ))}
+            ))}
+
+            {/* Footer-Box */}
+            <div className="flex items-start gap-4 rounded-2xl bg-white border border-text/5 shadow-sm p-4 overflow-hidden relative">
+              <span className="inline-flex w-11 h-11 shrink-0 items-center justify-center rounded-full bg-korallenrot/15 text-korallenrot">
+                <VgHeartIcon />
+              </span>
+              <div className="flex-1">
+                <p className="font-extrabold text-korallenrot text-sm leading-snug">
+                  Beide Betreuungsformen haben ihre Stärken.
+                </p>
+                <p className="text-text-soft text-xs mt-1 leading-relaxed">
+                  Was zählt, ist das, was am besten zu Ihnen und Ihrem Kind passt.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
     </section>
   );
@@ -614,70 +792,48 @@ function CalendarHeartIcon() {
 }
 
 
-function UsersIcon() {
+function VergleichUsersIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="8" cy="9" r="3" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="17" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.8" />
-      <path
-        d="M2 19 c 1 -3 4 -4.5 6 -4.5 s 5 1.5 6 4.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M15 19 c .8 -2.4 3 -3.5 4.5 -3.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="8" cy="9" r="3" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="17" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M2 19c1-3 4-4.5 6-4.5s5 1.5 6 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M15 19c.8-2.4 3-3.5 4.5-3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 
-function PersonIcon() {
+function VergleichPersonIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.8" />
-      <path
-        d="M5 20 c 1.5 -4 5 -5.5 7 -5.5 s 5.5 1.5 7 5.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5 20c1.5-4 5-5.5 7-5.5s5.5 1.5 7 5.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 
-function HeartIcon() {
+function VergleichHeartIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M12 20 s -7 -4.5 -7 -10 a 4 4 0 0 1 7 -2.6 a 4 4 0 0 1 7 2.6 c 0 5.5 -7 10 -7 10 z"
-        fill="currentColor"
-      />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" fill="currentColor" />
     </svg>
   );
 }
 
-function HouseIcon() {
+function VergleichHouseIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4 11 L 12 4 L 20 11 V 20 H 4 Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 11L12 4l8 7v9H4z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function CoinIcon() {
+function VergleichCoinIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M9 10 h 5 a 2 2 0 0 1 0 4 h -4 a 2 2 0 0 0 0 4 h 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 10h5a2 2 0 0 1 0 4h-4a2 2 0 0 0 0 4h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
