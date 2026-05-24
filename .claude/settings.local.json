@@ -54,7 +54,22 @@
       "PowerShell($pid = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess; if \\($pid\\) { Stop-Process -Id $pid -Force; \"Stopped $pid\" } else { \"Nothing running on 3000\" })",
       "PowerShell($port_pid = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty OwningProcess; if \\($port_pid\\) { Stop-Process -Id $port_pid -Force; \"Stopped $port_pid\" } else { \"Nothing running on 3000\" })",
       "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"c:\\\\Visual Studio Code\\\\dresdner-tageseltern.de\\\\Fotos\\\\icon wohnraum.png\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\"; $img.Dispose\\(\\))",
-      "Bash(npx tsx *)"
+      "Bash(npx tsx *)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { try { Stop-Process -Id $_ -Force -ErrorAction Stop } catch {} }; \"ok\")",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run dev)",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, @{N='RAM_MB';E={[math]::Round\\($_.WorkingSet64/1MB,0\\)}}, StartTime | Sort-Object RAM_MB -Descending)",
+      "PowerShell($nodes = @\\(Get-Process node -ErrorAction SilentlyContinue\\); \"Node-Prozesse: $\\($nodes.Count\\)\"; if \\($nodes.Count -gt 0\\) { $nodes | Select-Object Id, @{N='RAM_MB';E={[math]::Round\\($_.WorkingSet64/1MB,0\\)}}, StartTime | Format-Table })",
+      "PowerShell($os = Get-CimInstance Win32_OperatingSystem; \"Total RAM: $\\([math]::Round\\($os.TotalVisibleMemorySize/1MB,1\\)\\) GB\"; \"Free RAM:  $\\([math]::Round\\($os.FreePhysicalMemory/1MB,1\\)\\) GB\")",
+      "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue; $remaining = @\\(Get-Process node -ErrorAction SilentlyContinue\\).Count; \"Node-Prozesse nach Kill: $remaining\")",
+      "Read(//c/Users/Romy/AppData/Local/Temp/claude/c--Visual-Studio-Code-dresdner-tageseltern-de/17aa4e12-caf4-42b0-b7e5-42aa7aaf31a4/tasks/**)",
+      "Bash(break)",
+      "PowerShell($nodes = @\\(Get-Process node -ErrorAction SilentlyContinue\\); \"Node-Prozesse: $\\($nodes.Count\\)\"; $os = Get-CimInstance Win32_OperatingSystem; \"Free RAM: $\\([math]::Round\\($os.FreePhysicalMemory/1MB,1\\)\\) GB\")",
+      "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue; $os = Get-CimInstance Win32_OperatingSystem; \"Frei: $\\([math]::Round\\($os.FreePhysicalMemory/1MB,1\\)\\) GB\")",
+      "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(\"Node-Prozesse weg, starte Build...\")",
+      "PowerShell(\"Server gestoppt, baue neu...\")",
+      "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue; $os = Get-CimInstance Win32_OperatingSystem; $free = [math]::Round\\($os.FreePhysicalMemory/1MB,1\\); \"Node-Prozesse weg. Freier RAM: $free GB\"; if \\($free -lt 3\\) { \"WARNUNG: weniger als 3 GB frei - Dev-Modus kann crashen\" })",
+      "PowerShell(\"Server gestoppt\")"
     ]
   }
 }

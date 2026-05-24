@@ -3,8 +3,8 @@ import Link from "next/link";
 import { MobileNav } from "./MobileNav";
 
 const NAV = [
-  { href: "/kindertagespflege-finden", label: "Tageseltern finden" },
   { href: "/fuer-eltern/kindertagespflege", label: "Was ist Kindertagespflege?" },
+  { href: "/kindertagespflege-finden", label: "Tageseltern finden" },
   { href: "/fuer-eltern", label: "Für Eltern" },
   { href: "/fuer-tageseltern", label: "Für Tageseltern" },
   { href: "/ueber-uns", label: "Über uns" },

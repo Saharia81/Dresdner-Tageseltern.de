@@ -266,7 +266,7 @@ function InfoCardsSection() {
                     width={480}
                     height={320}
                     aria-hidden
-                    className="h-16 w-auto object-contain"
+                    className="h-12 w-auto object-contain"
                   />
                 }
                 label="Im Haushalt der Tagespflegeperson"
@@ -279,7 +279,7 @@ function InfoCardsSection() {
                     width={480}
                     height={320}
                     aria-hidden
-                    className="h-16 w-auto object-contain"
+                    className="h-12 w-auto object-contain"
                   />
                 }
                 label="In anderen geeigneten Räumlichkeiten"
@@ -526,36 +526,31 @@ function FinalCtaSection() {
   return (
     <section className="bg-creme">
       <div className="mx-auto max-w-6xl px-4 pb-20 md:pb-24">
-        <div className="rounded-3xl bg-white p-8 md:p-12 shadow-sm relative overflow-hidden">
-          <div className="grid gap-8 md:grid-cols-[auto_1fr] items-center">
-            <DresdenIllustration />
-
-            <div>
-              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
-                Bereit, die passende Betreuung für dein Kind zu finden?
-              </h2>
-              <p className="text-text-soft mb-6">
-                Wir sind gerne für dich da und unterstützen dich bei allen
-                Fragen.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <CtaButton
-                  href="/kindertagespflege-finden"
-                  label="Tageseltern finden"
-                  hint="Freie Plätze entdecken"
-                  variant="primary"
-                />
-                <CtaButton
-                  href="/fuer-eltern"
-                  label="Beratung für Eltern"
-                  hint="Wir sind für dich da"
-                  variant="secondary"
-                />
-              </div>
+        <div className="relative overflow-hidden rounded-3xl bg-white p-8 md:p-12 shadow-sm">
+          <Image
+            src="/images/allgemein/frauenkirche.png"
+            alt=""
+            aria-hidden
+            fill
+            sizes="(min-width: 768px) 38vw, 0px"
+            className="hidden md:block !left-auto !w-[38%] object-cover object-left pointer-events-none select-none [mask-image:linear-gradient(to_right,transparent_0%,black_45%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_45%)]"
+          />
+          <div className="relative md:max-w-[62%]">
+            <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+              Bereit, die passende Betreuung für dein Kind in Dresden zu finden?
+            </h2>
+            <p className="text-text-soft mb-6">
+              Weil die ersten Jahre besondere Begleitung verdienen
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <CtaButton
+                href="/kindertagespflege-finden"
+                label="Tageseltern finden"
+                hint="Freie Plätze entdecken"
+                variant="primary"
+              />
             </div>
           </div>
-
-          <SkylineDecoration />
         </div>
       </div>
     </section>
@@ -574,7 +569,7 @@ function CtaButton({
   variant: "primary" | "secondary";
 }) {
   const base =
-    "flex flex-col items-start rounded-2xl px-5 py-3 transition-colors";
+    "flex flex-col items-start rounded-3xl px-10 py-3 transition-colors";
   const styles =
     variant === "primary"
       ? "bg-korallenrot text-white hover:bg-korallenrot-dunkel"
@@ -590,75 +585,6 @@ function CtaButton({
         {hint}
       </span>
     </Link>
-  );
-}
-
-/**
- * Kleine Dresden-„Karten"-Illustration links im CTA: stilisierter
- * Elbbogen mit Pins. Reines SVG → keine Bildabhängigkeit.
- */
-function DresdenIllustration() {
-  return (
-    <svg
-      width="220"
-      height="160"
-      viewBox="0 0 220 160"
-      fill="none"
-      aria-hidden
-      className="hidden md:block text-korallenrot"
-    >
-      <rect
-        x="6"
-        y="6"
-        width="208"
-        height="148"
-        rx="20"
-        fill="var(--color-sonnengelb-hell)"
-      />
-      <path
-        d="M10 110 C 40 60, 90 120, 130 80 S 200 70, 215 95"
-        stroke="var(--color-sonnengelb)"
-        strokeWidth="6"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <g fill="currentColor">
-        <circle cx="55" cy="75" r="6" />
-        <circle cx="105" cy="60" r="6" />
-        <circle cx="150" cy="85" r="6" />
-        <circle cx="180" cy="100" r="6" />
-      </g>
-      <path
-        d="M55 75 v 12 M105 60 v 12 M150 85 v 12 M180 100 v 12"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-    </svg>
-  );
-}
-
-function SkylineDecoration() {
-  return (
-    <svg
-      className="hidden lg:block absolute right-4 bottom-4 text-korallenrot opacity-70"
-      width="260"
-      height="60"
-      viewBox="0 0 260 60"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M0 50 L20 40 L30 45 L45 25 L55 30 L70 15 L82 30 L95 20 L110 40 L125 30 L140 35 L160 20 L175 30 L195 40 L215 30 L235 40 L260 35"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M232 14 c -3 -4, -10 -4, -10 2 c 0 6, 10 10, 10 10 c 0 0, 10 -4, 10 -10 c 0 -6, -7 -6, -10 -2 z"
-        fill="currentColor"
-      />
-    </svg>
   );
 }
 

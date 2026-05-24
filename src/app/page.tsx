@@ -338,20 +338,47 @@ export default function Home() {
               <h2 className="hidden md:block text-3xl md:text-4xl font-extrabold mb-6">
                 Eingewöhnung mit Herz und Zeit
               </h2>
-              <p className="text-text-soft text-lg mb-8 leading-relaxed">
+              <p className="text-text-soft text-lg leading-relaxed">
                 Jedes Kind ist einzigartig und so ist auch jede
                 Eingewöhnung. Wir nehmen uns Zeit, geben Sicherheit und
                 begleiten Familien Schritt für Schritt, Hand in Hand.
               </p>
-              <LinkButton variant="primary" href="/fuer-eltern/faq">
-                Mehr zur Eingewöhnung
-              </LinkButton>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 6 — Testimonials */}
+      {/* 6 — Verein-Intro */}
+      <section className="bg-creme">
+        <div className="mx-auto max-w-6xl px-4 pt-8 md:pt-10 lg:pt-12 pb-20 md:pb-24 lg:pb-28">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="flex justify-center mb-6">
+              <Image
+                src="/images/hero/herzapricot.png"
+                alt=""
+                width={1536}
+                height={1024}
+                aria-hidden
+                className="w-32 md:w-44 select-none"
+              />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
+              Wir sind der Dresdner Tageseltern e.V.
+            </h2>
+            <p className="text-text-soft text-lg leading-relaxed mb-4">
+              Ein Zusammenschluss von über 50 Tageseltern in Dresden.
+            </p>
+            <p className="italic text-text-soft text-lg mb-10">
+              Ihr wollt mehr über uns erfahren?
+            </p>
+            <LinkButton variant="primary" href="/ueber-uns">
+              Lernt uns kennen
+            </LinkButton>
+          </div>
+        </div>
+      </section>
+
+      {/* 7 — Testimonials */}
       <section style={{ backgroundColor: "#fdf7e3" }}>
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
