@@ -1,3 +1,4 @@
+import React from "react";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -211,7 +212,7 @@ function ErsatzbetreuungSection() {
                 werden auch im Vertretungsfall in vertrauter Atmosphäre
                 begleitet. So bleibt die Betreuung verlässlich und sicher.
               </p>
-              <LinkButton variant="primary" href="/fuer-eltern/faq">
+              <LinkButton variant="primary" href="/fuer-eltern/faq" className="w-full sm:w-auto">
                 Mehr zur Ersatzbetreuung
               </LinkButton>
             </div>
@@ -634,65 +635,149 @@ function VergleichSection() {
 /* 6 — FAQ                                                             */
 /* ------------------------------------------------------------------ */
 
-const FAQS = [
-  {
-    q: "Für welches Alter ist Kindertagespflege?",
-    a: "Bei uns werden Kinder im Alter von 0 bis 3 Jahren betreut – also genau in der Zeit, in der eine familiäre, ruhige Umgebung besonders wichtig ist.",
-  },
-  {
-    q: "Wie viele Kinder werden betreut?",
-    a: "Eine Tagespflegeperson betreut maximal 5 Kinder gleichzeitig. So bleibt genug Zeit für jedes einzelne Kind und es entstehen echte, vertrauensvolle Beziehungen.",
-  },
-  {
-    q: "Welche Qualifikationen haben Tagespflegepersonen?",
-    a: "Alle Tagespflegepersonen verfügen über eine pädagogische Qualifizierung nach dem bundesweit anerkannten Curriculum und besitzen eine Pflegeerlaubnis des Amtes für Kindertagesbetreuung. Regelmäßige Fortbildungen sind verpflichtend.",
-  },
-  {
-    q: "Was kostet Kindertagespflege?",
-    a: "Die Elternbeiträge sind identisch mit denen einer Kita. Unter bestimmten Voraussetzungen kann der Beitrag reduziert werden.",
-  },
-  {
-    q: "Wie finde ich eine passende Tagesmutter oder einen passenden Tagesvater?",
-    a: "Über unsere Suche kannst du Tageseltern in deiner Nähe entdecken und siehst direkt, wer freie Plätze hat.",
-  },
-];
+function buildFaqItems() {
+  return [
+    {
+      iconBg: "bg-korallenrot/15",
+      iconColor: "text-korallenrot",
+      IconComponent: FaqCalendarIcon,
+      q: "Für welches Alter ist Kindertagespflege?",
+      a: "Bei uns werden Kinder im Alter von 0 bis 3 Jahren betreut – also genau in der Zeit, in der eine familiäre, ruhige Umgebung besonders wichtig ist.",
+    },
+    {
+      iconBg: "bg-sonnengelb/60",
+      iconColor: "text-[#9a6a00]",
+      IconComponent: FaqPeopleIcon,
+      q: "Wie viele Kinder werden betreut?",
+      a: "Eine Tagespflegeperson betreut maximal 5 Kinder gleichzeitig. So bleibt genug Zeit für jedes einzelne Kind und es entstehen echte, vertrauensvolle Beziehungen.",
+    },
+    {
+      iconBg: "bg-green-100",
+      iconColor: "text-green-600",
+      IconComponent: FaqCertIcon,
+      q: "Welche Qualifikationen haben Tagespflegepersonen?",
+      a: "Alle Tagespflegepersonen verfügen über eine pädagogische Qualifizierung nach dem bundesweit anerkannten Curriculum und besitzen eine Pflegeerlaubnis des Amtes für Kindertagesbetreuung. Regelmäßige Fortbildungen sind verpflichtend.",
+    },
+    {
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-500",
+      IconComponent: FaqEuroIcon,
+      q: "Was kostet Kindertagespflege?",
+      a: <>Die Elternbeiträge sind identisch mit denen einer Kita. Unter bestimmten Voraussetzungen kann der Beitrag reduziert werden.{" "}<a href="https://www.dresden.de/de/leben/kinder/tagesbetreuung/anmeldung/elternbeitraege.php?pk_campaign=Shortcut&pk_kwd=elternbeitraege" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-korallenrot transition-colors">Hier mehr erfahren.</a></>,
+    },
+    {
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-500",
+      IconComponent: FaqSearchIcon,
+      q: "Wie finde ich eine passende Tagesmutter oder einen passenden Tagesvater?",
+      a: "Über unsere Suche kannst du Tageseltern in deiner Nähe entdecken und siehst direkt, wer freie Plätze hat.",
+    },
+  ];
+}
 
 function FaqSection() {
+  const items = buildFaqItems();
   return (
     <section className="bg-creme">
-      <div className="mx-auto max-w-3xl px-4 py-20 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
-          Häufige Fragen
-        </h2>
-        <div className="rounded-3xl bg-white shadow-sm divide-y divide-text/10 overflow-hidden">
-          {FAQS.map((item) => (
-            <FaqItem key={item.q} q={item.q} a={item.a} />
+      <div className="mx-auto max-w-2xl px-4 py-20 md:py-24">
+
+        {/* Kopf */}
+        <div className="flex flex-col items-center text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold">
+            Häufige Fragen
+          </h2>
+          <p className="text-text-soft max-w-sm leading-relaxed mt-3">
+            Antworten auf die wichtigsten Fragen rund um die Kindertagespflege.
+          </p>
+        </div>
+
+        {/* Akkordeon-Karten */}
+        <div className="space-y-4">
+          {items.map((item) => (
+            <FaqCard key={item.q} {...item} />
           ))}
         </div>
+
+        {/* Noch Fragen? */}
+        <div className="mt-6">
+          <NochFragenCard />
+        </div>
+
       </div>
     </section>
   );
 }
 
 /**
- * Natives <details>-Element: zugänglich (Keyboard + Screenreader),
- * funktioniert ohne JavaScript, eignet sich daher gut für eine spätere
- * Übernahme nach WordPress / Elementor.
+ * Natives <details>-Element mit farbigem Icon-Kreis.
+ * Zugänglich (Keyboard + Screenreader), kein JavaScript nötig.
  */
-function FaqItem({ q, a }: { q: string; a: string }) {
+function FaqCard({
+  iconBg,
+  iconColor,
+  IconComponent,
+  q,
+  a,
+}: {
+  iconBg: string;
+  iconColor: string;
+  IconComponent: () => React.ReactElement;
+  q: string;
+  a: React.ReactNode;
+}) {
   return (
-    <details className="group">
-      <summary className="flex items-center justify-between gap-4 cursor-pointer list-none px-6 py-5 hover:bg-creme/60 transition-colors">
-        <span className="font-semibold text-base md:text-lg">{q}</span>
+    <details className="group bg-white rounded-2xl shadow-sm overflow-hidden">
+      <summary className="flex items-center gap-4 cursor-pointer list-none px-5 py-5 hover:bg-creme/60 transition-colors">
+        {/* Icon-Kreis */}
+        <span
+          className={`inline-flex w-12 h-12 shrink-0 items-center justify-center rounded-full ${iconBg} ${iconColor}`}
+        >
+          <IconComponent />
+        </span>
+        {/* Frage */}
+        <span className="flex-1 font-bold text-base md:text-lg text-text leading-snug">{q}</span>
+        {/* + dreht sich zu × */}
         <span
           aria-hidden
-          className="inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full bg-sonnengelb text-text transition-transform group-open:rotate-45"
+          className="inline-flex w-9 h-9 shrink-0 items-center justify-center rounded-full border-2 border-korallenrot text-korallenrot transition-transform duration-200 group-open:rotate-45"
         >
           <PlusIcon />
         </span>
       </summary>
-      <div className="px-6 pb-6 text-text-soft leading-relaxed">{a}</div>
+      {/* Antwort – eingerückt bündig mit dem Fragetext */}
+      <div className="px-5 pb-6 pt-1 text-text-soft leading-relaxed text-[0.95rem]">
+        <div className="pl-16">{a}</div>
+      </div>
     </details>
+  );
+}
+
+function NochFragenCard() {
+  return (
+    <div
+      className="flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl p-5"
+      style={{ backgroundColor: "#fdf0d0" }}
+    >
+      <span
+        className="inline-flex w-12 h-12 shrink-0 items-center justify-center rounded-full"
+        style={{ backgroundColor: "#f5a623" }}
+      >
+        <FaqLightbulbIcon />
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="font-bold text-text text-lg leading-tight">Noch Fragen?</p>
+        <p className="text-text-soft text-sm mt-0.5">
+          Wir sind gerne für Sie da und helfen Ihnen weiter.
+        </p>
+      </div>
+      <a
+        href="mailto:info@dresdner-tageseltern.de"
+        className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors bg-korallenrot text-white hover:bg-korallenrot-dunkel w-full sm:w-auto"
+      >
+        <FaqChatIcon />
+        E-Mail schreiben
+      </a>
+    </div>
   );
 }
 
@@ -711,7 +796,7 @@ function FinalCtaSection() {
             aria-hidden
             fill
             sizes="(min-width: 768px) 38vw, 0px"
-            className="hidden md:block !left-auto !w-[38%] object-cover object-left pointer-events-none select-none [mask-image:linear-gradient(to_right,transparent_0%,black_45%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_45%)]"
+            className="!left-auto !w-full md:!w-[38%] object-cover object-top md:object-left pointer-events-none select-none opacity-20 md:opacity-100 [mask-image:linear-gradient(to_right,transparent_0%,black_45%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_45%)]"
           />
           <div className="relative md:max-w-[62%]">
             <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
@@ -720,12 +805,22 @@ function FinalCtaSection() {
             <p className="text-text-soft mb-6">
               Weil die ersten Jahre besondere Begleitung verdienen
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex items-center gap-6">
               <CtaButton
                 href="/kindertagespflege-finden"
                 label="Tageseltern finden"
                 hint="Freie Plätze entdecken"
                 variant="primary"
+                className="w-full sm:w-auto sm:px-16"
+              />
+              {/* Herz – Desktop neben dem Button */}
+              <Image
+                src="/images/hero/herzapricot-transparent.png"
+                alt=""
+                width={400}
+                height={280}
+                aria-hidden
+                className="hidden md:block pointer-events-none select-none w-28 h-auto"
               />
             </div>
           </div>
@@ -740,11 +835,13 @@ function CtaButton({
   label,
   hint,
   variant,
+  className = "",
 }: {
   href: string;
   label: string;
   hint: string;
   variant: "primary" | "secondary";
+  className?: string;
 }) {
   const base =
     "flex flex-col items-start rounded-3xl px-10 py-3 transition-colors";
@@ -753,7 +850,7 @@ function CtaButton({
       ? "bg-korallenrot text-white hover:bg-korallenrot-dunkel"
       : "bg-sonnengelb text-text hover:bg-sonnengelb/80";
   return (
-    <Link href={href} className={`${base} ${styles}`}>
+    <Link href={href} className={`${base} ${styles} ${className}`}>
       <span className="font-semibold leading-tight">{label}</span>
       <span
         className={`text-xs leading-tight ${
@@ -842,6 +939,96 @@ function PlusIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path d="M12 5 V 19 M5 12 H 19" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* FAQ-Icons                                                            */
+/* ------------------------------------------------------------------ */
+
+/** Kalender mit Punkten */
+function FaqCalendarIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8 3v4M16 3v4M3 10h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="8" cy="15" r="1" fill="currentColor" />
+      <circle cx="12" cy="15" r="1" fill="currentColor" />
+      <circle cx="16" cy="15" r="1" fill="currentColor" />
+      <circle cx="8" cy="19" r="1" fill="currentColor" />
+      <circle cx="12" cy="19" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Gruppe von Personen */
+function FaqPeopleIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="9" cy="8" r="3" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="17" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M3 19c1-3.5 4-5 6-5s5 1.5 6 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M16 19c.8-2.8 3-4 4.5-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Zertifikat / Abzeichen */
+function FaqCertIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="3" width="13" height="17" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M7 8h6M7 12h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="18" cy="17" r="3.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M16 22l2-2.5 2 2.5" stroke="currentColor" strokeWidth="1.5"
+        strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Euro-Zeichen */
+function FaqEuroIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M17 6.5A7 7 0 1 0 17 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M5 10h9M5 14h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Lupe mit Herz */
+function FaqSearchIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M16 16l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M11 14.5s-3-1.8-3-4.2a2.1 2.1 0 0 1 3-1.9 2.1 2.1 0 0 1 3 1.9c0 2.4-3 4.2-3 4.2z"
+        fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Glühbirne (weiß auf orangem Hintergrund) */
+function FaqLightbulbIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M9 21h6M12 3a6 6 0 0 1 4.6 9.9C15.4 14.3 15 15 15 16v1H9v-1c0-1-.4-1.7-1.6-3.1A6 6 0 0 1 12 3z"
+        stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Sprechblase für den Kontakt-Button */
+function FaqChatIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+      />
     </svg>
   );
 }
