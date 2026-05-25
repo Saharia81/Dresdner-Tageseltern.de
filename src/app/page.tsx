@@ -62,9 +62,8 @@ export default function Home() {
                 />
               </div>
               <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-                Kleine Gruppen.
-                <br />
-                Große Geborgenheit.
+                <span className="block whitespace-nowrap">Kleine Gruppen.</span>
+                <span className="block whitespace-nowrap">Große Geborgenheit.</span>
               </h1>
               <p className="text-lg text-text-soft mb-8 max-w-lg">
                 Kindertagespflege in Dresden mit festen Bezugspersonen,
@@ -275,7 +274,7 @@ export default function Home() {
       {/* 4 — Feature-Grid */}
       <section style={{ backgroundColor: "#fdf7e3" }}>
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-4">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-left md:text-center mb-4">
             Warum sich Familien für Kindertagespflege entscheiden
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
@@ -317,7 +316,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Mobile-only: Überschrift über dem Foto */}
             <h2 className="md:hidden text-3xl font-extrabold">
-              Eingewöhnung mit Herz und Zeit
+              Eingewöhnung<br className="md:hidden" /> mit Herz<br className="hidden md:block" /> und Zeit
             </h2>
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden md:mt-8">
               <Image
@@ -330,13 +329,16 @@ export default function Home() {
             </div>
             <div>
               <h2 className="hidden md:block text-3xl md:text-4xl font-extrabold mb-6">
-                Eingewöhnung mit Herz und Zeit
+                Eingewöhnung<br className="md:hidden" /> mit Herz<br className="hidden md:block" /> und Zeit
               </h2>
-              <p className="text-text-soft text-lg leading-relaxed">
+              <p className="text-text-soft text-lg leading-relaxed mb-6">
                 Jedes Kind ist einzigartig und so ist auch jede
                 Eingewöhnung. Wir nehmen uns Zeit, geben Sicherheit und
                 begleiten Familien Schritt für Schritt, Hand in Hand.
               </p>
+              <LinkButton variant="primary" href="/fuer-eltern/eingewoehnung-und-ersatzbetreuung" className="w-full sm:w-auto">
+                Mehr zur Eingewöhnung
+              </LinkButton>
             </div>
           </div>
         </div>
@@ -346,7 +348,7 @@ export default function Home() {
       <section style={{ backgroundColor: "#fdf7e3" }}>
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
           <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16">
-            <div className="text-center md:text-left max-w-lg">
+            <div className="text-left max-w-lg">
               <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
                 Wir sind der Dresdner Tageseltern e.V.
               </h2>

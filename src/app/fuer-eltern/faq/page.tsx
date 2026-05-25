@@ -196,7 +196,7 @@ function NochFragenCard() {
       <div className="flex-1 min-w-0">
         <p className="font-bold text-text text-lg leading-tight">Noch Fragen?</p>
         <p className="text-text-soft text-sm mt-0.5">
-          Wir sind gerne für Sie da und helfen Ihnen weiter.
+          Wir sind gerne für euch da und helfen euch weiter.
         </p>
       </div>
 

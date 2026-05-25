@@ -148,7 +148,7 @@ function AlltagSection() {
   return (
     <section style={{ backgroundColor: "#fdf7e3" }}>
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-left md:text-center mb-12">
           Ein Tag in der Kindertagespflege
         </h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -207,7 +207,7 @@ function ErsatzbetreuungSection() {
                 werden auch im Vertretungsfall in vertrauter Atmosphäre
                 begleitet. So bleibt die Betreuung verlässlich und sicher.
               </p>
-              <LinkButton variant="primary" href="/fuer-eltern/faq" className="w-full sm:w-auto">
+              <LinkButton variant="primary" href="/fuer-eltern/eingewoehnung-und-ersatzbetreuung#ersatzbetreuung" className="w-full sm:w-auto">
                 Mehr zur Ersatzbetreuung
               </LinkButton>
             </div>
@@ -486,7 +486,7 @@ function VergleichSection() {
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
 
         {/* Kopf */}
-        <div className="flex flex-col items-center text-center mb-12">
+        <div className="flex flex-col items-start md:items-center text-left md:text-center mb-12">
           <Image
             src={IMAGES.herzAccent}
             alt=""
@@ -500,7 +500,7 @@ function VergleichSection() {
           </h2>
           <p className="text-text-soft max-w-xl leading-relaxed">
             Zwei wertvolle Betreuungsformen mit unterschiedlichen Stärken.<br />
-            Finden Sie das Beste für Ihr Kind und Ihre Familie.
+            Findet das Beste für euer Kind und eure Familie.
           </p>
         </div>
 
@@ -561,7 +561,7 @@ function VergleichSection() {
               Beide Betreuungsformen haben ihre Stärken.
             </p>
             <p className="text-text-soft text-sm mt-0.5">
-              Was zählt, ist das, was am besten zu Ihnen und Ihrem Kind passt.
+              Was zählt, ist das, was am besten zu euch und eurem Kind passt.
             </p>
           </div>
         </div>
@@ -614,7 +614,7 @@ function VergleichSection() {
                   Beide Betreuungsformen haben ihre Stärken.
                 </p>
                 <p className="text-text-soft text-xs mt-1 leading-relaxed">
-                  Was zählt, ist das, was am besten zu Ihnen und Ihrem Kind passt.
+                  Was zählt, ist das, was am besten zu euch und eurem Kind passt.
                 </p>
               </div>
             </div>
@@ -677,7 +677,7 @@ function FaqSection() {
       <div className="mx-auto max-w-2xl px-4 py-20 md:py-24">
 
         {/* Kopf */}
-        <div className="flex flex-col items-center text-center mb-12">
+        <div className="flex flex-col items-start md:items-center text-left md:text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-extrabold">
             Häufige Fragen
           </h2>
@@ -761,7 +761,7 @@ function NochFragenCard() {
       <div className="flex-1 min-w-0">
         <p className="font-bold text-text text-lg leading-tight">Noch Fragen?</p>
         <p className="text-text-soft text-sm mt-0.5">
-          Wir sind gerne für Sie da und helfen Ihnen weiter.
+          Wir sind gerne für euch da und helfen euch weiter.
         </p>
       </div>
       <a

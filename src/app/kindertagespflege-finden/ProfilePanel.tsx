@@ -158,7 +158,7 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
           <section className="rounded-3xl bg-white border border-text-soft/10 p-5 shadow-sm">
             <h3 className="text-lg font-extrabold mb-1.5">Kontakt</h3>
             <p className="text-sm text-text-soft mb-4">
-              Ich freue mich darauf, Sie und Ihr Kind kennenzulernen!
+              Ich freue mich darauf, euch und euer Kind kennenzulernen!
             </p>
             <div className="flex flex-col gap-2.5">
               <a

@@ -359,7 +359,7 @@ function ErsatzbetreuungSection() {
             <p className="text-text-soft leading-relaxed max-w-lg">
               Für Ausfallzeiten der Kindertagespflegeperson durch Urlaub,
               Krankheit oder Fortbildung gibt es in Dresden verschiedene
-              Ersatzbetreuungsformen. So ist die Betreuung Ihres Kindes auch
+              Ersatzbetreuungsformen. So ist die Betreuung eures Kindes auch
               dann gut gesichert.
             </p>
           </div>
@@ -434,7 +434,7 @@ function FinalCtaSection() {
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
         <div className="relative overflow-hidden rounded-3xl bg-white p-8 md:p-12 shadow-sm">
           <Image
-            src="/images/allgemein/frauenkirche.png"
+            src="/images/kindertagespflege/frauenkiche.png"
             alt=""
             aria-hidden
             fill

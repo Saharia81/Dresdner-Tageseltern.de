@@ -3,18 +3,41 @@
 import Link from "next/link";
 import { useState } from "react";
 
-const NAV = [
+const NAV: Array<
+  | { href: string; label: string; children?: undefined }
+  | { label: string; href?: undefined; children: { href: string; label: string }[] }
+> = [
   { href: "/", label: "Startseite" },
   { href: "/fuer-eltern/kindertagespflege", label: "Was ist Kindertagespflege?" },
   { href: "/kindertagespflege-finden", label: "Tageseltern finden" },
-  { href: "/fuer-eltern", label: "Für Eltern" },
-  { href: "/fuer-tageseltern", label: "Für Tageseltern" },
+  {
+    label: "Für Eltern",
+    children: [
+{ href: "/fuer-eltern/eingewoehnung-und-ersatzbetreuung", label: "Eingewöhnung & Ersatzbetreuung" },
+      { href: "/fuer-eltern/aktionswoche-kindertagespflege", label: "Aktionswoche Kindertagespflege" },
+      { href: "/fuer-eltern/downloads", label: "Downloads" },
+    ],
+  },
+  {
+    label: "Für Tageseltern",
+    children: [
+      { href: "/fuer-tageseltern/mitglied-werden", label: "Mitglied werden" },
+      { href: "/fuer-tageseltern/bannervermietung", label: "Bannervermietung" },
+      { href: "/fuer-tageseltern/vereinsnews", label: "Vereinsnews" },
+    ],
+  },
   { href: "/ueber-uns", label: "Über uns" },
   { href: "/kontakt", label: "Kontakt" },
 ];
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const [expandedLabel, setExpandedLabel] = useState<string | null>(null);
+
+  function close() {
+    setOpen(false);
+    setExpandedLabel(null);
+  }
 
   return (
     <div className="lg:hidden">
@@ -49,18 +72,72 @@ export function MobileNav() {
           aria-label="Hauptnavigation"
         >
           <ul className="flex flex-col">
-            {NAV.map((item) => (
-              <li key={item.href} className="border-b border-black/5 last:border-0">
-                <Link
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="block px-6 py-4 text-base font-semibold hover:bg-creme active:bg-creme transition-colors"
-                  style={{ touchAction: "manipulation" }}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {NAV.map((item) => {
+              if (item.children) {
+                const isExpanded = expandedLabel === item.label;
+                return (
+                  <li key={item.label} className="border-b border-black/5">
+                    {/* Akkordeon-Header */}
+                    <button
+                      type="button"
+                      onClick={() => setExpandedLabel(isExpanded ? null : item.label)}
+                      className="flex items-center justify-between w-full px-6 py-4 text-base font-semibold hover:bg-creme active:bg-creme transition-colors"
+                      style={{ touchAction: "manipulation" }}
+                    >
+                      {item.label}
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden
+                        className="transition-transform duration-200"
+                        style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+                      >
+                        <path
+                          d="M6 9l6 6 6-6"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+
+                    {/* Untermenü */}
+                    {isExpanded && (
+                      <ul className="bg-creme">
+                        {item.children.map((child) => (
+                          <li key={child.href} className="border-t border-black/5">
+                            <Link
+                              href={child.href}
+                              onClick={close}
+                              className="block px-8 py-3 text-sm font-medium hover:bg-sonnengelb/60 active:bg-sonnengelb/60 transition-colors"
+                              style={{ touchAction: "manipulation" }}
+                            >
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              }
+
+              return (
+                <li key={item.href} className="border-b border-black/5 last:border-0">
+                  <Link
+                    href={item.href}
+                    onClick={close}
+                    className="block px-6 py-4 text-base font-semibold hover:bg-creme active:bg-creme transition-colors"
+                    style={{ touchAction: "manipulation" }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       )}
