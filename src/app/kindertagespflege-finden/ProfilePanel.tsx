@@ -109,12 +109,6 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
                 <p className="text-text-soft mt-0.5">
                   {tagesmutter.einrichtungsname || "Kindertagespflegeperson"}
                 </p>
-                {tagesmutter.schmetterling && (
-                  <p className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold text-korallenrot">
-                    <span aria-hidden>🦋</span>
-                    Schmetterling-Tagespflege
-                  </p>
-                )}
               </div>
             </div>
 
@@ -142,8 +136,8 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
               <InfoKarte titel="Verpflegung" icon={<PinIcon src="/images/steckbrief/pin-verpflegung.png" />}>
                 <p>{VERPFLEGUNG_LABEL[tagesmutter.verpflegung]}</p>
               </InfoKarte>
-              <InfoKarte titel="Ersatzbetreuung" icon={<PinIcon src="/images/steckbrief/pin-ersatzbetreuung.png" />}>
-                <p>{tagesmutter.ersatzbetreuung}</p>
+              <InfoKarte titel="Ersatzbetreuung" icon={<PinIcon src="/images/steckbrief/pin-ersatzbetreuung.png" />} infoHref="/fuer-eltern/faq">
+                <p>{tagesmutter.ersatzbetreuung.replace(/Schmetterling-Partnerschaft/gi, "Schmetterlingsmodell")}</p>
               </InfoKarte>
               <LinkKarte
                 href={
@@ -351,16 +345,35 @@ function FreiePlaetzeKarte({
 function InfoKarte({
   titel,
   icon,
+  infoHref,
   children,
 }: {
   titel: string;
   icon: React.ReactNode;
+  infoHref?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="rounded-2xl bg-[#fdf7e3] p-4 shadow-sm border border-sonnengelb/40 flex flex-col gap-1.5">
       {icon}
-      <h4 className="font-bold text-sm">{titel}</h4>
+      <h4 className="font-bold text-sm flex items-center gap-1.5">
+        {titel}
+        {infoHref && (
+          <a
+            href={infoHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Mehr über ${titel} erfahren`}
+            className="inline-flex text-text-soft/60 hover:text-korallenrot transition-colors"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
+              <path d="M12 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="12" cy="7.5" r="1.1" fill="currentColor" />
+            </svg>
+          </a>
+        )}
+      </h4>
       <div className="text-xs text-text-soft leading-relaxed">{children}</div>
     </div>
   );

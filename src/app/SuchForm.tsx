@@ -45,7 +45,11 @@ export function SuchForm() {
             setTreffer(t);
           }}
           placeholder="z. B. Alaunstraße 36 oder 01099"
-          className="w-full rounded-xl border border-text-soft/20 px-4 py-3 text-base focus:outline-none focus:border-korallenrot"
+          className={`w-full rounded-xl border px-4 py-3 text-base focus:outline-none transition-colors ${
+            treffer
+              ? "border-braun text-text"
+              : "border-text-soft/20 text-text-soft/50 focus:border-braun"
+          }`}
         />
 
         <div className="mt-4 flex items-baseline justify-between">

@@ -96,7 +96,7 @@ const zeilen: Zeile[] = [
     Website: "",
     "Öffnungszeiten": "Mo–Fr 7:30–16:00 Uhr",
     Verpflegung: "Ich koche selbst",
-    Ersatzbetreuung: "Schmetterling-Partnerschaft mit Carolin Becker",
+    Ersatzbetreuung: "Schmetterlingsmodell mit Carolin Becker",
     Beratungsstelle: "Kinderland",
     Schmetterling: "ja",
     "Schmetterling-Partnername": "Carolin Becker",

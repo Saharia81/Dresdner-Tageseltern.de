@@ -62,7 +62,7 @@ function HeroSection() {
             >
               <Image
                 src={IMAGES.hero}
-                alt="Tagesmutter mit drei Kleinkindern in einem gelben Krippenwagen unter blühenden Kirschbäumen in Dresden"
+                alt="Frau schiebt einen gelben Bollerwagen mit zwei Kleinkindern durch eine Dresdner Straße – Dresdner Tageseltern e.V."
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -199,7 +199,7 @@ function AlltagKarte({
 
 function ErsatzbetreuungSection() {
   return (
-    <section className="bg-creme">
+    <section id="ersatzbetreuung" className="bg-creme">
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
         <div className="rounded-3xl bg-white shadow-sm overflow-hidden">
           <div className="grid gap-8 md:grid-cols-[minmax(0,24rem)_1fr] items-center md:items-stretch p-6 md:p-10">
@@ -531,7 +531,7 @@ function VergleichSection() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-text/5">
+            <tbody className="divide-y divide-text/15">
               {rows.map((row) => (
                 <tr key={row.merkmal} className="bg-white">
                   <th scope="row" className="px-6 py-5 font-semibold text-text text-left">
@@ -755,8 +755,7 @@ function FaqCard({
 function NochFragenCard() {
   return (
     <div
-      className="flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl p-5"
-      style={{ backgroundColor: "#fdf0d0" }}
+      className="flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl shadow-sm p-5 bg-white"
     >
       <span
         className="inline-flex w-12 h-12 shrink-0 items-center justify-center rounded-full"

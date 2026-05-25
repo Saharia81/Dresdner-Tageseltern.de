@@ -6,8 +6,6 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet-gesture-handling";
-import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
 import { BERATUNGSSTELLE_URL, PIN_BERATUNGSSTELLE, PIN_TAGESMUTTER, type Beratungsgebiet } from "@/types";
 import { BERATUNGSSTELLEN } from "./beratungsstellen";
@@ -28,6 +26,90 @@ function pinIcon(bild: string, ausgewaehlt: boolean): L.Icon {
     iconAnchor: [groesse / 2, groesse], // Pin-Spitze unten
     className: ausgewaehlt ? "tm-pin tm-pin-aktiv" : "tm-pin",
   });
+}
+
+function stackIcon(anzahl: number, ausgewaehlt: boolean): L.DivIcon {
+  const groesse = ausgewaehlt ? 78 : 60;
+  return L.divIcon({
+    html: `<div style="position:relative;width:${groesse}px;height:${groesse}px">
+      <img src="${PIN_TAGESMUTTER}" style="width:100%;height:100%;display:block" />
+      <span style="
+        position:absolute;top:3px;right:3px;
+        background:#c0392b;color:white;
+        font-size:11px;font-weight:700;line-height:1;
+        min-width:19px;height:19px;padding:0 4px;
+        border-radius:10px;
+        display:flex;align-items:center;justify-content:center;
+        border:2px solid white;
+        box-shadow:0 1px 4px rgba(0,0,0,0.4);
+        font-family:system-ui,sans-serif;
+        box-sizing:border-box;
+      ">${anzahl}</span>
+    </div>`,
+    iconSize: [groesse, groesse],
+    iconAnchor: [groesse / 2, groesse],
+    className: ausgewaehlt ? "tm-pin tm-pin-aktiv" : "tm-pin",
+  });
+}
+
+function erstelleAuswahlPopup(
+  gruppe: TagesmutterDto[],
+  onAuswaehlen: (tm: TagesmutterDto) => void,
+): L.Popup {
+  const popup = L.popup({
+    closeButton: true,
+    offset: [0, -10] as [number, number],
+    autoPan: true,
+    maxWidth: 250,
+  });
+
+  const html = `
+    <div style="padding:2px 0">
+      <p style="font-weight:700;font-size:12px;color:#888;margin:0 0 8px;font-family:system-ui,sans-serif">
+        ${gruppe.length} Tageseltern an dieser Adresse
+      </p>
+      ${gruppe
+        .map(
+          (tm, i) => `
+        <button data-idx="${i}" style="
+          display:block;width:100%;text-align:left;
+          padding:8px 10px;margin:3px 0;
+          border:1px solid #e8dfc8;background:#fdf7e3;
+          border-radius:8px;cursor:pointer;
+          font-size:13px;font-weight:600;color:#333;
+          font-family:system-ui,sans-serif;
+        ">${tm.vorname} ${tm.nachname}</button>
+      `,
+        )
+        .join("")}
+    </div>
+  `;
+
+  popup.setContent(html);
+
+  popup.on("add", () => {
+    const el = popup.getElement();
+    if (!el) return;
+    el.querySelectorAll<HTMLButtonElement>("button[data-idx]").forEach((btn) => {
+      btn.addEventListener("mouseover", () => {
+        btn.style.background = "#f8796c";
+        btn.style.color = "white";
+        btn.style.borderColor = "#f8796c";
+      });
+      btn.addEventListener("mouseout", () => {
+        btn.style.background = "#fdf7e3";
+        btn.style.color = "#333";
+        btn.style.borderColor = "#e8dfc8";
+      });
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.idx ?? "0");
+        onAuswaehlen(gruppe[idx]);
+        popup.close();
+      });
+    });
+  });
+
+  return popup;
 }
 
 function beratungsstellenIcon(bild: string, hover: boolean): L.Icon {
@@ -91,16 +173,7 @@ export function MapView({
       map = L.map(containerRef.current, {
         center: DRESDEN_ZENTRUM,
         zoom: istMobile ? DRESDEN_ZOOM_MOBILE : DRESDEN_ZOOM_DESKTOP,
-        scrollWheelZoom: false, // erst nach Klick aktivieren
-        // @ts-expect-error – kommt vom leaflet-gesture-handling-Plugin
-        gestureHandling: true,
-        gestureHandlingOptions: {
-          text: {
-            touch: "Mit zwei Fingern die Karte bewegen",
-            scroll: "Strg + Mausrad zum Zoomen",
-            scrollMac: "⌘ + Mausrad zum Zoomen",
-          },
-        },
+        scrollWheelZoom: false, // aktiviert sich nach erstem Klick in die Karte
       });
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap",
@@ -180,48 +253,71 @@ export function MapView({
     const map = mapRef.current;
     if (!map || !kartenBereit) return;
 
-    const benoetigt = new Set(tagesmuetter.map((t) => t.id));
-
-    // Entfernen, was nicht mehr in der Liste ist
-    for (const [id, marker] of markersRef.current) {
-      if (!benoetigt.has(id)) {
+    // Alle vorhandenen TM-Marker entfernen (Rebuild, da Gruppen sich ändern können)
+    const bereitsEntfernt = new Set<L.Marker>();
+    for (const marker of markersRef.current.values()) {
+      if (!bereitsEntfernt.has(marker)) {
         marker.remove();
-        markersRef.current.delete(id);
+        bereitsEntfernt.add(marker);
       }
     }
+    markersRef.current.clear();
 
-    // Hinzufügen oder Icon aktualisieren
+    // Nach Koordinaten gruppieren
+    const gruppen = new Map<string, TagesmutterDto[]>();
     for (const tm of tagesmuetter) {
       if (tm.latitude === null || tm.longitude === null) continue;
-      const ausgewaehlt = tm.id === ausgewaehlteId;
-      const icon = pinIcon(PIN_TAGESMUTTER, ausgewaehlt);
+      const key = `${tm.latitude.toFixed(6)},${tm.longitude.toFixed(6)}`;
+      if (!gruppen.has(key)) gruppen.set(key, []);
+      gruppen.get(key)!.push(tm);
+    }
 
-      const vorhanden = markersRef.current.get(tm.id);
-      if (vorhanden) {
-        vorhanden.setIcon(icon);
-        continue;
-      }
+    // Marker je Gruppe anlegen
+    for (const gruppe of gruppen.values()) {
+      const lat = gruppe[0].latitude!;
+      const lng = gruppe[0].longitude!;
+      const istStack = gruppe.length > 1;
+      const enthaeltAusgewaehlt = gruppe.some((tm) => tm.id === ausgewaehlteId);
 
-      const marker = L.marker([tm.latitude, tm.longitude], { icon });
+      if (istStack) {
+        // ── Stack-Pin: Zahl-Badge + Auswahl-Popup ─────────────────────
+        const icon = stackIcon(gruppe.length, enthaeltAusgewaehlt);
+        const marker = L.marker([lat, lng], { icon });
 
-      marker.on("mouseover", (e) => {
-        // Nur auf Desktop (hover-fähige Geräte) Vorschau zeigen
-        if (!window.matchMedia("(hover: none)").matches) {
-          const point = map.latLngToContainerPoint(e.latlng);
-          setVorschau({ tm, x: point.x, y: point.y });
+        marker.on("click", () => {
+          setVorschau(null);
+          const popup = erstelleAuswahlPopup(gruppe, (tm) => {
+            onSelect(tm);
+          });
+          marker.bindPopup(popup).openPopup();
+        });
+
+        marker.addTo(map);
+        for (const tm of gruppe) {
+          markersRef.current.set(tm.id, marker);
         }
-      });
-      marker.on("mouseout", () => {
-        setVorschau(null);
-      });
-      marker.on("click", () => {
-        // Auf allen Geräten direkt Steckbrief öffnen
-        onSelect(tm);
-        setVorschau(null);
-      });
+      } else {
+        // ── Einzelner Pin: bestehendes Verhalten ──────────────────────
+        const tm = gruppe[0];
+        const ausgewaehlt = tm.id === ausgewaehlteId;
+        const icon = pinIcon(PIN_TAGESMUTTER, ausgewaehlt);
+        const marker = L.marker([lat, lng], { icon });
 
-      marker.addTo(map);
-      markersRef.current.set(tm.id, marker);
+        marker.on("mouseover", (e) => {
+          if (!window.matchMedia("(hover: none)").matches) {
+            const point = map.latLngToContainerPoint(e.latlng);
+            setVorschau({ tm, x: point.x, y: point.y });
+          }
+        });
+        marker.on("mouseout", () => setVorschau(null));
+        marker.on("click", () => {
+          onSelect(tm);
+          setVorschau(null);
+        });
+
+        marker.addTo(map);
+        markersRef.current.set(tm.id, marker);
+      }
     }
   }, [tagesmuetter, ausgewaehlteId, onSelect, kartenBereit]);
 
@@ -286,14 +382,27 @@ export function MapView({
     }
   }, [hoveredBeratungsstelle]);
 
-  // Karte schließen, wenn man auf den Hintergrund klickt
+  // Karte schließen, wenn man auf den Hintergrund klickt.
+  // Scroll-Zoom: nach Klick aktivieren, beim Verlassen der Karte wieder deaktivieren.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !kartenBereit) return;
-    const handler = () => setVorschau(null);
-    map.on("click", handler);
+    const container = containerRef.current;
+    if (!map || !container || !kartenBereit) return;
+
+    const handleClick = () => {
+      setVorschau(null);
+      map.scrollWheelZoom.enable();
+    };
+    const handleMouseLeave = () => {
+      map.scrollWheelZoom.disable();
+    };
+
+    map.on("click", handleClick);
+    container.addEventListener("mouseleave", handleMouseLeave);
+
     return () => {
-      map.off("click", handler);
+      map.off("click", handleClick);
+      container.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [kartenBereit]);
 
