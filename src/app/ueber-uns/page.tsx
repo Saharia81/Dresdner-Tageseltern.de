@@ -130,8 +130,9 @@ function HeroSection() {
               Wir sind der <strong>Dresdner Tages Eltern e.V.</strong> und setzen
               uns dafür ein, Kindertagespflege in Dresden sichtbarer,
               verständlicher und besser vernetzt zu machen. Mit viel Herz,
-              Erfahrung und Engagement möchten wir Familien Orientierung geben
-              und Tageseltern stärken.
+              Erfahrung und Engagement möchten wir Familien bei der Suche nach
+              einem geeigneten Betreuungsplatz unterstützen und
+              Kindertagespflege in Dresden stärken.
             </p>
           </div>
 

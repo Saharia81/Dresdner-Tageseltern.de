@@ -31,13 +31,7 @@ export default function Home() {
 
             <div className="md:order-2">
               <div
-                className="relative aspect-[8/9] rounded-3xl overflow-hidden"
-                style={{
-                  maskImage:
-                    "linear-gradient(to right, transparent 0%, black 25%)",
-                  WebkitMaskImage:
-                    "linear-gradient(to right, transparent 0%, black 25%)",
-                }}
+                className="relative aspect-[8/9] rounded-3xl overflow-hidden [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0%,black_25%)] md:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_25%)]"
               >
                 <Image
                   src="/images/hero/hero-tagesmutter.png"

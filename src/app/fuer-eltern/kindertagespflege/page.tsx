@@ -6,9 +6,9 @@ import { LinkButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
 export const metadata = {
-  title: "Was ist Kindertagespflege? – Dresdner Tages Eltern e.V.",
+  title: "Was ist Kindertagespflege? | Dresdner Tages Eltern e.V.",
   description:
-    "Kindertagespflege erklärt: Alltag, Eingewöhnung, Ersatzbetreuung, Kosten und Unterschiede zur Kita – warm, persönlich und in kleinen Gruppen begleitet.",
+    "Kindertagespflege erklärt: Alltag, Eingewöhnung, Ersatzbetreuung, Kosten und Unterschiede zur Kita. Warm, persönlich und in kleinen Gruppen begleitet.",
 };
 
 /**
@@ -52,19 +52,14 @@ function HeroSection() {
           {/* Bild – oben bündig mit der Menüleiste (keine pt) */}
           <div className="md:order-2 -mx-4 md:mx-0">
             <div
-              className="relative aspect-[3/4] md:aspect-[5/6] overflow-hidden md:rounded-b-3xl"
-              style={{
-                maskImage:
-                  "linear-gradient(to right, transparent 0%, black 20%)",
-                WebkitMaskImage:
-                  "linear-gradient(to right, transparent 0%, black 20%)",
-              }}
+              className="relative aspect-[3/4] md:aspect-[5/6] overflow-hidden md:rounded-b-3xl [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0%,black_20%)] md:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_20%)]"
             >
               <Image
                 src={IMAGES.hero}
                 alt="Frau schiebt einen gelben Bollerwagen mit zwei Kleinkindern durch eine Dresdner Straße – Dresdner Tageseltern e.V."
                 fill
                 priority
+                quality={85}
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover object-center"
               />
@@ -296,10 +291,10 @@ function InfoCardsSection() {
             <p className="text-text-soft leading-relaxed flex-1">
               Jedes Kind bekommt die Zeit, die es braucht. Gemeinsam mit
               den Eltern gestalten wir die Eingewöhnung behutsam und
-              individuell – für einen guten Start voller Vertrauen.
+              individuell, für einen guten Start voller Vertrauen.
             </p>
             <div>
-              <LinkButton variant="primary" href="/fuer-eltern/faq" className="w-full">
+              <LinkButton variant="primary" href="/fuer-eltern/eingewoehnung-und-ersatzbetreuung" className="w-full">
                 Mehr zur Eingewöhnung
               </LinkButton>
             </div>
@@ -642,7 +637,7 @@ function buildFaqItems() {
       iconColor: "text-korallenrot",
       IconComponent: FaqCalendarIcon,
       q: "Für welches Alter ist Kindertagespflege?",
-      a: "Bei uns werden Kinder im Alter von 0 bis 3 Jahren betreut – also genau in der Zeit, in der eine familiäre, ruhige Umgebung besonders wichtig ist.",
+      a: "Bei uns werden Kinder im Alter von 0 bis 3 Jahren betreut, also genau in der Zeit, in der eine familiäre, ruhige Umgebung besonders wichtig ist.",
     },
     {
       iconBg: "bg-sonnengelb/60",

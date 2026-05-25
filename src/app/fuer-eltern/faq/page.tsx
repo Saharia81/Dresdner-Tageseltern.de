@@ -17,7 +17,7 @@ function buildFaqs() {
       iconColor: "text-korallenrot",
       IconComponent: CalendarIcon,
       q: "Für welches Alter ist Kindertagespflege?",
-      a: "Bei uns werden Kinder im Alter von 0 bis 3 Jahren betreut – also genau in der Zeit, in der eine familiäre, ruhige Umgebung besonders wichtig ist.",
+      a: "Bei uns werden Kinder im Alter von 0 bis 3 Jahren betreut, also genau in der Zeit, in der eine familiäre, ruhige Umgebung besonders wichtig ist.",
     },
     {
       iconBg: "bg-sonnengelb/60",

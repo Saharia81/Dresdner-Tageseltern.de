@@ -165,6 +165,7 @@ export function MapView({
 
     let abgebrochen = false;
     let map: L.Map | null = null;
+    let sizeTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const frameId = window.requestAnimationFrame(() => {
       if (abgebrochen || !containerRef.current) return;
@@ -183,7 +184,11 @@ export function MapView({
       // Auf Mobile berechnet Leaflet die Container-Größe manchmal zu früh
       // (bevor der Browser das Layout abgeschlossen hat). invalidateSize()
       // korrigiert das nach einem kurzen Tick.
-      window.setTimeout(() => map?.invalidateSize(), 300);
+      // sizeTimeoutId wird im Cleanup gecancelt, damit der Aufruf nicht
+      // auf einer bereits zerstörten Karte landet (z. B. React-Strict-Mode-Doppel-Mount).
+      sizeTimeoutId = window.setTimeout(() => {
+        if (!abgebrochen) map?.invalidateSize();
+      }, 300);
 
       // Beratungsstellen als feste Pins anlegen (ändern sich nicht).
       for (const stelle of BERATUNGSSTELLEN) {
@@ -237,6 +242,7 @@ export function MapView({
     return () => {
       abgebrochen = true;
       window.cancelAnimationFrame(frameId);
+      if (sizeTimeoutId !== null) window.clearTimeout(sizeTimeoutId);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;

@@ -39,13 +39,7 @@ function HeroSection() {
           {/* Bild – oben bündig mit der Menüleiste (keine pt) */}
           <div className="md:order-2 -mx-4 md:mx-0">
             <div
-              className="relative aspect-[15/8] md:aspect-[4/3] overflow-hidden md:rounded-b-3xl"
-              style={{
-                maskImage:
-                  "linear-gradient(to right, transparent 0%, black 20%)",
-                WebkitMaskImage:
-                  "linear-gradient(to right, transparent 0%, black 20%)",
-              }}
+              className="relative aspect-[15/8] md:aspect-[4/3] overflow-hidden md:rounded-b-3xl [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0%,black_20%)] md:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_20%)]"
             >
               <Image
                 src={IMAGES.hero}
