@@ -59,10 +59,14 @@
 /* ============================================================
    Body-Defaults
    ============================================================ */
+html {
+  overflow-x: clip; /* verhindert horizontales Scrollen auf html-Ebene (z. B. bei Browser-Zoom-Out) */
+}
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  overflow-x: clip; /* clip statt hidden: erzeugt keinen Scroll-Container und bricht position: sticky nicht */
 }
 
 /* ============================================================

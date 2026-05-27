@@ -15,7 +15,7 @@ const NAV: Array<
     label: "Für Eltern",
     children: [
       { href: "/fuer-eltern/eingewoehnung-und-ersatzbetreuung", label: "Eingewöhnung & Ersatzbetreuung" },
-      { href: "/fuer-eltern/aktionswoche-kindertagespflege", label: "Aktionswoche Kindertagespflege" },
+      { href: "/fuer-eltern/aktionswoche", label: "Aktionswoche Kindertagespflege" },
       { href: "/fuer-eltern/downloads", label: "Downloads" },
     ],
   },
