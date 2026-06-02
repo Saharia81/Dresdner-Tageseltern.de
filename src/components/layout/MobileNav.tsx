@@ -15,15 +15,6 @@ const NAV: Array<
     children: [
 { href: "/fuer-eltern/eingewoehnung-und-ersatzbetreuung", label: "Eingewöhnung & Ersatzbetreuung" },
       { href: "/fuer-eltern/aktionswoche", label: "Aktionswoche Kindertagespflege" },
-      { href: "/fuer-eltern/downloads", label: "Downloads" },
-    ],
-  },
-  {
-    label: "Für Tageseltern",
-    children: [
-      { href: "/fuer-tageseltern/mitglied-werden", label: "Mitglied werden" },
-      { href: "/fuer-tageseltern/bannervermietung", label: "Bannervermietung" },
-      { href: "/fuer-tageseltern/vereinsnews", label: "Vereinsnews" },
     ],
   },
   { href: "/ueber-uns", label: "Über uns" },

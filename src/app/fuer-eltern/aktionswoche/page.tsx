@@ -29,9 +29,11 @@ const IMG = {
   kaufpark3:         resolveImg("/images/aktionswoche/kaufpark3.jpg") ?? "/images/aktionswoche/kaufpark3.jpg",
   kaufpark4:         resolveImg("/images/aktionswoche/kaufpark-4.jpg") ?? "/images/aktionswoche/kaufpark-4.jpg",
   bolzplatzButton:   resolveImg("/images/aktionswoche/bolzplatz-button.png") ?? "/images/aktionswoche/bolzplatz-button.png",
-  ostraParkRegen:    resolveImg("/images/aktionswoche/ostrapark-1.png"),   // Kinder in Regenjacken
-  ostraParkZelt:     resolveImg("/images/aktionswoche/ostrapark-2.png"),   // Stand/Zelt im Regen
+  alaunPark1:        resolveImg("/images/aktionswoche/alaunpark-1.jpg"),
+  alaunPark2:        resolveImg("/images/aktionswoche/alaunpark-2.jpg"),
+  alaunPark3:        resolveImg("/images/aktionswoche/alaunpark-3.jpg"),
   haende:            resolveImg("/images/aktionswoche/haende.png"),        // Bunte bemalte Hände
+  danke:             resolveImg("/images/aktionswoche/danke.png"),
 };
 
 /* ------------------------------------------------------------------ */
@@ -44,7 +46,7 @@ export default function AktionswochePage() {
       <HeroSection />
       <RueckblickSection />
       <BolzplatzSection />
-      <OstraparkSection />
+      <AlaunparkSection />
       <DankesSection />
     </main>
   );
@@ -184,14 +186,14 @@ function BolzplatzSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/* 4 — Ostrapark                                                        */
+/* 4 — Alaunpark                                                        */
 /* ------------------------------------------------------------------ */
 
-function OstraparkSection() {
+function AlaunparkSection() {
   return (
     <section style={{ backgroundColor: "#fdf7e3" }}>
       <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-        <OstraparkEvent />
+        <AlaunparkEvent />
       </div>
     </section>
   );
@@ -260,12 +262,13 @@ function BolzplatzEvent() {
 
       {/* bolzplatz-button.png – gleiche Höhe wie Carousel-Bilder (aspect-[3/4], halbe Spaltenbreite) */}
       <div className="flex items-center justify-center">
-        <div className="relative aspect-square w-full max-w-[200px] md:max-w-none rounded-2xl overflow-hidden shadow-sm">
+        <div className="relative aspect-square w-full max-w-[180px] md:max-w-[260px] rounded-2xl overflow-hidden shadow-sm">
           <Image
             src={IMG.bolzplatzButton}
             alt="Bolzplatz-Aktion – Schaltfläche"
             fill
-            sizes="(max-width: 768px) 50vw, 12vw"
+            sizes="(max-width: 768px) 180px, 260px"
+            quality={90}
             className="object-cover object-center"
           />
         </div>
@@ -274,62 +277,99 @@ function BolzplatzEvent() {
   );
 }
 
-/* Ostrapark ---------------------------------------------------------- */
+/* Alaunpark ---------------------------------------------------------- */
 
-function OstraparkEvent() {
+function AlaunparkEvent() {
   return (
-    <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-start">
-      {/* Bilder */}
-      <div className="flex flex-col gap-3">
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-sm">
-          {IMG.ostraParkRegen ? (
-            <Image
-              src={IMG.ostraParkRegen}
-              alt="Kinder in bunten Regenjacken spielen bei der Aktionswoche im Ostrapark"
-              fill
-              sizes="(max-width: 768px) 100vw, 45vw"
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-sonnengelb/30 flex items-center justify-center">
-              <span className="text-text-soft text-sm italic">Foto folgt</span>
-            </div>
-          )}
-        </div>
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-sm w-3/4">
-          {IMG.ostraParkZelt ? (
-            <Image
-              src={IMG.ostraParkZelt}
-              alt="Aktionsstand im Regen bei der Aktionswoche im Ostrapark"
-              fill
-              sizes="(max-width: 768px) 75vw, 34vw"
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-sonnengelb/20 flex items-center justify-center">
-              <span className="text-text-soft text-sm italic">Foto folgt</span>
-            </div>
-          )}
-        </div>
+    <div className="flex flex-col gap-10 md:gap-12">
+      {/* 3 Bilder nebeneinander – mittleres im Querformat, gleiche Höhe */}
+      <div className="flex flex-col sm:flex-row gap-5 md:gap-6 items-center sm:items-stretch justify-center">
+        <AlaunparkImage
+          src={IMG.alaunPark1}
+          alt="Kinder in bunten Regenjacken spielen bei der Aktionswoche im Alaunpark"
+          flex="sm:flex-1"
+          aspect="aspect-square"
+          sizes="(max-width: 640px) 80vw, 28vw"
+        />
+        <AlaunparkImage
+          src={IMG.alaunPark2}
+          alt="Aktionsstand im Regen bei der Aktionswoche im Alaunpark"
+          flex="sm:flex-[1.6]"
+          aspect="aspect-[8/5]"
+          sizes="(max-width: 640px) 80vw, 45vw"
+        />
+        <AlaunparkImage
+          src={IMG.alaunPark3}
+          alt="Gemeinsame Aktion bei der Aktionswoche im Alaunpark"
+          flex="sm:flex-1"
+          aspect="aspect-square"
+          sizes="(max-width: 640px) 80vw, 28vw"
+        />
       </div>
 
-      {/* Text */}
-      <div className="flex flex-col justify-center gap-4 md:pt-4">
-        <div className="flex items-start gap-3">
-          <span className="text-2xl shrink-0 mt-0.5" aria-hidden>
-            ☂️
-          </span>
-          <h3 className="text-2xl md:text-3xl font-bold italic leading-tight text-korallenrot">
-            Nass, aber schön im Ostrapark
+      {/* Text mit Regenschirm-Icon links */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-8 sm:gap-20 md:gap-28 max-w-5xl mx-auto">
+        <span
+          aria-hidden
+          className="block w-16 h-16 md:w-20 md:h-20 bg-korallenrot shrink-0"
+          style={{
+            maskImage: "url(/images/aktionswoche/regenschirm-icon1.png)",
+            maskSize: "contain",
+            maskRepeat: "no-repeat",
+            maskPosition: "center",
+            WebkitMaskImage: "url(/images/aktionswoche/regenschirm-icon1.png)",
+            WebkitMaskSize: "contain",
+            WebkitMaskRepeat: "no-repeat",
+            WebkitMaskPosition: "center",
+          }}
+        />
+        <div className="flex flex-col gap-4">
+          <h3 className="text-2xl md:text-3xl font-bold leading-tight text-text">
+            Nass, aber sichtbar im Alaunpark und Ostrapark
           </h3>
+          <p className="text-text-soft leading-relaxed">
+            Im Alaunpark fiel unsere Aktion wortwörtlich ins Wasser. Doch
+            schlechtes Wetter gibt es nicht: Trotz Regen hatten wir eine schöne
+            gemeinsame Zeit, wurden ordentlich nass und haben gezeigt, dass
+            Engagement auch bei heftigen Regenschauern leuchten kann.
+          </p>
         </div>
-        <p className="text-text-soft leading-relaxed">
-          Im Ostrapark fiel unsere Aktion wortwörtlich ins Wasser. Doch
-          schlechtes Wetter gibt es nicht: Trotz Regen hatten wir eine schöne
-          gemeinsame Zeit, wurden ordentlich nass und haben gezeigt, dass
-          Engagement auch bei grauem Himmel leuchten kann.
-        </p>
       </div>
+    </div>
+  );
+}
+
+function AlaunparkImage({
+  src,
+  alt,
+  flex,
+  aspect,
+  sizes,
+}: {
+  src: string | undefined;
+  alt: string;
+  flex: string;
+  aspect: string;
+  sizes: string;
+}) {
+  return (
+    <div
+      className={`${flex} ${aspect} relative w-full max-w-[20rem] sm:max-w-none rounded-2xl overflow-hidden shadow-md`}
+    >
+      {src ? (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes={sizes}
+          quality={90}
+          className="object-cover"
+        />
+      ) : (
+        <div className="w-full h-full bg-sonnengelb/30 flex items-center justify-center">
+          <span className="text-text-soft text-sm italic">Foto folgt</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -344,36 +384,29 @@ function DankesSection() {
       <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
         {/* Dankesbox */}
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center mb-12">
-          <div className="flex items-start gap-4">
-            <span
-              className="inline-flex w-12 h-12 shrink-0 items-center justify-center rounded-full mt-1"
-              style={{ backgroundColor: "#f5a623" }}
-            >
-              <HeartWhiteIcon />
-            </span>
-            <div>
-              <h2 className="text-xl md:text-2xl font-extrabold italic mb-3 leading-snug">
-                Gemeinsam machen wir Kindertagespflege sichtbar.
-              </h2>
-              <p className="text-text-soft leading-relaxed text-sm mb-4">
-                Ein herzliches Dankeschön an alle Tageseltern, Familien,
-                Unterstützer:innen und Besucher:innen, die die Aktionswoche
-                2026 möglich gemacht haben.
-              </p>
-              <p className="font-bold text-sm text-korallenrot">
-                Auch im nächsten Mai sind wir wieder dabei.
-              </p>
-            </div>
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold leading-tight text-text mb-4">
+              Gemeinsam machen wir Kindertagespflege sichtbar.
+            </h2>
+            <p className="text-text-soft leading-relaxed mb-4">
+              Ein herzliches Dankeschön an alle Tageseltern, Familien,
+              Unterstützer:innen und Besucher:innen, die die Aktionswoche
+              2026 möglich gemacht haben.
+            </p>
+            <p className="font-bold text-korallenrot">
+              Auch im nächsten Mai sind wir wieder dabei.
+            </p>
           </div>
 
           {/* Bild */}
-          <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-sm">
-            {IMG.haende ? (
+          <div className="relative aspect-[3/2] rounded-2xl overflow-hidden shadow-sm">
+            {IMG.danke ? (
               <Image
-                src={IMG.haende}
-                alt="Bunte bemalte Hände – Gemeinsam für Kindertagespflege"
+                src={IMG.danke}
+                alt="Danke – Aktionswoche Kindertagespflege Dresden"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
+                quality={90}
                 className="object-cover object-center"
               />
             ) : (
