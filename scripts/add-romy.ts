@@ -3,13 +3,8 @@
 
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
-const dbUrl = process.env.DATABASE_URL ?? "file:./prisma/dev.db";
-const dbPath = dbUrl.startsWith("file:") ? dbUrl.slice("file:".length) : dbUrl;
-const prisma = new PrismaClient({
-  adapter: new PrismaBetterSqlite3({ url: dbPath }),
-});
+const prisma = new PrismaClient();
 
 async function geocode(strasse: string, plz: string) {
   const params = new URLSearchParams({
@@ -58,7 +53,7 @@ async function main() {
       nachname: "Weber",
       einrichtungsname: "Bei Romy in Striesen",
       fotoUrl: "/images/steckbriefe/placeholder.svg",
-      einrichtungsfotoUrls: JSON.stringify([]),
+      einrichtungsfotoUrls: [],
       strasse: "Eibenstocker Straße 85",
       plz: "01277",
       stadtteil: "Striesen",

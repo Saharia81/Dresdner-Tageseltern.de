@@ -24,22 +24,13 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import * as XLSX from "xlsx";
 import { PrismaClient, Prisma } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const EXCEL_PFAD = resolve(process.cwd(), "mitglieder.xlsx");
 const PLATZHALTER_FOTO = "/images/steckbriefe/placeholder.svg";
 const NOMINATIM_USER_AGENT =
   "DresdnerTageselternImport/1.0 (info@dresdner-tageseltern.de)";
 
-// ----------------------------------------------------------------
-// Prisma-Client
-// ----------------------------------------------------------------
-
-const dbUrl = process.env.DATABASE_URL ?? "file:./prisma/dev.db";
-const dbPath = dbUrl.startsWith("file:") ? dbUrl.slice("file:".length) : dbUrl;
-const prisma = new PrismaClient({
-  adapter: new PrismaBetterSqlite3({ url: dbPath }),
-});
+const prisma = new PrismaClient();
 
 // ----------------------------------------------------------------
 // Helfer
@@ -227,7 +218,7 @@ async function importiereExcel(): Promise<void> {
           zeilenNr,
         ),
         fotoUrl: PLATZHALTER_FOTO,
-        einrichtungsfotoUrls: JSON.stringify([]),
+        einrichtungsfotoUrls: [],
         strasse: pflicht(str(z["Straße"]), "Straße", zeilenNr),
         plz: pflicht(str(z["PLZ"]), "PLZ", zeilenNr),
         stadtteil: pflicht(str(z["Stadtteil"]), "Stadtteil", zeilenNr),

@@ -1,7 +1,7 @@
 // Prisma-Client als Singleton, damit im Dev-Mode (HMR) nicht
 // bei jedem Reload eine neue DB-Verbindung entsteht.
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -9,12 +9,8 @@ const globalForPrisma = globalThis as unknown as {
 
 function createClient() {
   const url = process.env.DATABASE_URL;
-  if (!url) {
-    throw new Error("DATABASE_URL ist nicht gesetzt – siehe .env.example");
-  }
-  // url-Format: "file:./prisma/dev.db" → für better-sqlite3 brauchen wir den reinen Pfad.
-  const dbPath = url.startsWith("file:") ? url.slice("file:".length) : url;
-  const adapter = new PrismaBetterSqlite3({ url: dbPath });
+  if (!url) throw new Error("DATABASE_URL ist nicht gesetzt – siehe .env.example");
+  const adapter = new PrismaPg({ connectionString: url });
   return new PrismaClient({ adapter });
 }
 
