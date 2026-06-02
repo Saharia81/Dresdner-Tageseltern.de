@@ -50,17 +50,6 @@ export type TagesmutterDto = {
   hatFreienPlatz: boolean;
 };
 
-function parseEinrichtungsfotos(value: string): string[] {
-  try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed)
-      ? parsed.filter((x): x is string => typeof x === "string")
-      : [];
-  } catch {
-    return [];
-  }
-}
-
 function parseDatum(value: string | null): Date | null {
   if (!value) return null;
   const d = new Date(value);
@@ -128,7 +117,7 @@ export async function GET(request: Request) {
       nachname: tm.nachname,
       einrichtungsname: tm.einrichtungsname,
       fotoUrl: tm.fotoUrl,
-      einrichtungsfotoUrls: parseEinrichtungsfotos(tm.einrichtungsfotoUrls),
+      einrichtungsfotoUrls: tm.einrichtungsfotoUrls,
       strasse: tm.strasse,
       plz: tm.plz,
       stadtteil: tm.stadtteil,

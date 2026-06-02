@@ -1,23 +1,21 @@
 // Beispiel-Daten zum Entwickeln. Mit `npx prisma db seed` ausführen.
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const url = process.env.DATABASE_URL ?? "file:./prisma/dev.db";
-const dbPath = url.startsWith("file:") ? url.slice("file:".length) : url;
-const adapter = new PrismaBetterSqlite3({ url: dbPath });
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
   await prisma.tagesmutter.upsert({
     where: { slug: "beispiel-tagesmutter" },
     update: {
-      einrichtungsfotoUrls: JSON.stringify([
+      einrichtungsfotoUrls: [
         "/images/allgemein/basteln.png",
         "/images/allgemein/eingewoehnung-v2.png",
         "/images/allgemein/feste-bezugsperson-v2.png",
         "/images/allgemein/ruhige-atmosphaere.png",
-      ]),
+      ],
     },
     create: {
       slug: "beispiel-tagesmutter",
@@ -25,7 +23,7 @@ async function main() {
       nachname: "Beispiel",
       einrichtungsname: "Sonnenkinder",
       fotoUrl: "/images/steckbriefe/placeholder.svg",
-      einrichtungsfotoUrls: JSON.stringify([]),
+      einrichtungsfotoUrls: [],
       strasse: "Musterstraße 1",
       plz: "01069",
       stadtteil: "Südvorstadt",

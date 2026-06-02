@@ -165,7 +165,7 @@ export function MapView({
 
     let abgebrochen = false;
     let map: L.Map | null = null;
-    let sizeTimeoutId: ReturnType<typeof setTimeout> | null = null;
+    let sizeTimeoutId: number | null = null;
 
     const frameId = window.requestAnimationFrame(() => {
       if (abgebrochen || !containerRef.current) return;
