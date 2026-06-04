@@ -326,7 +326,7 @@ function FreiePlaetzeKarte({
       </div>
       {plaetze.length === 0 ? (
         <p className="text-text-soft">
-          Aktuell sind keine freien Plätze eingetragen.
+          Zukünftig werden hier freie Plätze angezeigt.
         </p>
       ) : (
         <ul className="grid grid-cols-3 gap-2">
