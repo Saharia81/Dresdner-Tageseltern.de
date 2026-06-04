@@ -37,11 +37,11 @@ const VORSTAND: VorstandPerson[] = [
     text: "Mit Ideen, Worten und Herz gestaltet sie die Kommunikation unseres Vereins.",
   },
   {
-    name: "Andrea Frühbing",
+    name: "Andrea Frübing",
     rolle: "Kassenwart",
     initial: "A",
     farbe: "bg-sonnengelb-hell",
-    foto: "/images/vorstand/andrea.png",
+    foto: "/images/vorstand/andrea.jpg",
     fotoClassName: "object-center scale-125",
     text: "Mit Sorgfalt und Überblick kümmert sie sich um unsere Finanzen.",
   },
