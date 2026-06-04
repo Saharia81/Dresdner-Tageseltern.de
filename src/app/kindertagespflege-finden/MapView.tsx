@@ -18,21 +18,38 @@ const DRESDEN_ZENTRUM: [number, number] = [51.0504, 13.7373];
 const DRESDEN_ZOOM_DESKTOP = 12;
 const DRESDEN_ZOOM_MOBILE = 11;
 
-function pinIcon(bild: string, ausgewaehlt: boolean): L.Icon {
+function pinIcon(bild: string, ausgewaehlt: boolean): L.DivIcon {
   const groesse = ausgewaehlt ? 78 : 60;
-  return L.icon({
-    iconUrl: bild,
+  // DivIcon statt L.icon: Der Wrapper ist pointer-events:none, nur der
+  // Hotspot über dem runden Nadel-Körper (oben) ist anklickbar/hoverbar.
+  // So reagieren die durchsichtigen Ecken des Bildes NICHT mehr auf die Maus.
+  const hot = Math.round(groesse * 0.66); // Durchmesser des Trefferbereichs
+  const hotLeft = Math.round((groesse - hot) / 2);
+  return L.divIcon({
+    html: `<div style="position:relative;width:${groesse}px;height:${groesse}px;pointer-events:none">
+      <img src="${bild}" style="width:100%;height:100%;display:block;pointer-events:none" />
+      <span style="
+        position:absolute;left:${hotLeft}px;top:0;
+        width:${hot}px;height:${hot}px;
+        border-radius:50%;
+        pointer-events:auto;cursor:pointer;
+      "></span>
+    </div>`,
     iconSize: [groesse, groesse],
     iconAnchor: [groesse / 2, groesse], // Pin-Spitze unten
-    className: ausgewaehlt ? "tm-pin tm-pin-aktiv" : "tm-pin",
+    className: ausgewaehlt
+      ? "tm-pin tm-pin-aktiv tm-pin-hotspot"
+      : "tm-pin tm-pin-hotspot",
   });
 }
 
 function stackIcon(anzahl: number, ausgewaehlt: boolean): L.DivIcon {
   const groesse = ausgewaehlt ? 78 : 60;
+  const hot = Math.round(groesse * 0.66);
+  const hotLeft = Math.round((groesse - hot) / 2);
   return L.divIcon({
-    html: `<div style="position:relative;width:${groesse}px;height:${groesse}px">
-      <img src="${PIN_TAGESMUTTER}" style="width:100%;height:100%;display:block" />
+    html: `<div style="position:relative;width:${groesse}px;height:${groesse}px;pointer-events:none">
+      <img src="${PIN_TAGESMUTTER}" style="width:100%;height:100%;display:block;pointer-events:none" />
       <span style="
         position:absolute;top:3px;right:3px;
         background:#c0392b;color:white;
@@ -44,11 +61,20 @@ function stackIcon(anzahl: number, ausgewaehlt: boolean): L.DivIcon {
         box-shadow:0 1px 4px rgba(0,0,0,0.4);
         font-family:system-ui,sans-serif;
         box-sizing:border-box;
+        pointer-events:none;
       ">${anzahl}</span>
+      <span style="
+        position:absolute;left:${hotLeft}px;top:0;
+        width:${hot}px;height:${hot}px;
+        border-radius:50%;
+        pointer-events:auto;cursor:pointer;
+      "></span>
     </div>`,
     iconSize: [groesse, groesse],
     iconAnchor: [groesse / 2, groesse],
-    className: ausgewaehlt ? "tm-pin tm-pin-aktiv" : "tm-pin",
+    className: ausgewaehlt
+      ? "tm-pin tm-pin-aktiv tm-pin-hotspot"
+      : "tm-pin tm-pin-hotspot",
   });
 }
 
