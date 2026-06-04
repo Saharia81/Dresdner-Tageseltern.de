@@ -6,6 +6,8 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet-gesture-handling";
+import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
 import { BERATUNGSSTELLE_URL, PIN_BERATUNGSSTELLE, type Beratungsgebiet } from "@/types";
 import { BERATUNGSSTELLEN } from "./beratungsstellen";
@@ -187,7 +189,17 @@ export function MapView({
         center: DRESDEN_ZENTRUM,
         zoom: istMobile ? DRESDEN_ZOOM_MOBILE : DRESDEN_ZOOM_DESKTOP,
         scrollWheelZoom: false, // aktiviert sich nach erstem Klick in die Karte
-      });
+        // Mobil: 1 Finger scrollt die Seite, 2 Finger verschieben/zoomen die Karte.
+        // Desktop: Strg + Mausrad zum Zoomen.
+        gestureHandling: istMobile,
+        gestureHandlingOptions: {
+          text: {
+            touch: "Zum Verschieben zwei Finger benutzen",
+            scroll: "Zum Zoomen Strg + Mausrad benutzen",
+            scrollMac: "Zum Zoomen ⌘ + Mausrad benutzen",
+          },
+        },
+      } as L.MapOptions);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap",
         maxZoom: 19,

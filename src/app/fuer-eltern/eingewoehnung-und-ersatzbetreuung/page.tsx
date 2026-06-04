@@ -312,7 +312,7 @@ const ERSATZ_MODELLE = [
     punkte: [
       "Die Vertretung findet in der vertrauten Umgebung des Kindes statt.",
       "Die Kindergruppe bleibt zusammen.",
-      "Durch regelmäßige Treffen lernen die Kinder die Ersatztagesmutter kennen.",
+      "Durch regelmäßige Treffen lernen die Kinder die Ersatztagespflegeperson kennen.",
     ],
   },
   {
