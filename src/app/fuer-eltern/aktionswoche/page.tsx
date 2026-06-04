@@ -328,7 +328,7 @@ function AlaunparkEvent() {
             Nass, aber sichtbar im Alaunpark und Ostrapark
           </h3>
           <p className="text-text-soft leading-relaxed">
-            Im Alaunpark fiel unsere Aktion wortwörtlich ins Wasser. Doch
+            Im Alaunpark und im Ostrapark fiel unsere Aktion wortwörtlich ins Wasser. Doch
             schlechtes Wetter gibt es nicht: Trotz Regen hatten wir eine schöne
             gemeinsame Zeit, wurden ordentlich nass und haben gezeigt, dass
             Engagement auch bei heftigen Regenschauern leuchten kann.

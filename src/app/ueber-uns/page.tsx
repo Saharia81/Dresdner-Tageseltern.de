@@ -5,7 +5,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Über uns",
   description:
-    "Wir für Tageseltern – mit Herz, Erfahrung und Engagement. Lerne unseren Vorstand und unser Maskottchen Älbert kennen.",
+    "Wir für Tageseltern – mit Herz, Erfahrung und Engagement. Lerne unseren Vorstand und unser Maskottchen Albärt kennen.",
 });
 
 type VorstandPerson = {
@@ -24,9 +24,9 @@ const VORSTAND: VorstandPerson[] = [
     rolle: "Vorsitzende",
     initial: "D",
     farbe: "bg-sonnengelb-hell",
-    foto: "/images/vorstand/dana.png",
+    foto: "/images/vorstand/dana.jpg",
     fotoClassName: "object-center",
-    text: "Mit Herz und Leidenschaft für die Kindertagespflege und unseren Verein.",
+    text: "Sie macht sich für die Bedürfnisse von Kindern, Familien und Tageseltern stark.",
   },
   {
     name: "Diana Schulze",
@@ -60,6 +60,7 @@ export default function UeberUnsPage() {
     <main>
       <HeroSection />
       <VorstandSection />
+      <MaskottchenSection />
     </main>
   );
 }
@@ -140,8 +141,18 @@ function VorstandSection() {
   return (
     <section style={{ backgroundColor: "#fdf7e3" }}>
       <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-        <h2 className="text-3xl md:text-4xl font-extrabold leading-tight text-text text-center mb-12 md:mb-16">
-          Unser Vorstand
+        <h2 className="relative text-3xl md:text-4xl font-extrabold leading-tight text-text text-center mb-12 md:mb-16">
+          <span className="relative inline-block">
+            <Image
+              src="/images/hero/herzapricot.png"
+              alt=""
+              width={1536}
+              height={1024}
+              aria-hidden
+              className="absolute right-full top-1/2 -translate-y-1/2 mr-3 w-24 md:w-32 h-auto select-none max-w-none"
+            />
+            Unser Vorstand
+          </span>
         </h2>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -154,9 +165,57 @@ function VorstandSection() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Maskottchen ALBERT                                                  */
+/* ------------------------------------------------------------------ */
+
+function MaskottchenSection() {
+  return (
+    <section style={{ backgroundColor: "#fdf7e3" }}>
+      <div className="mx-auto max-w-6xl px-4 pt-16 pb-16 md:pt-24 md:pb-20">
+        <div className="relative rounded-2xl bg-sonnengelb-hell shadow-sm p-6 md:py-4 md:px-10 md:pl-[480px]">
+          <div className="hidden md:block absolute -left-8 bottom-0 w-[432px] h-[518px] pointer-events-none">
+            <Image
+              src="/images/vorstand/Albert1.png"
+              alt="Maskottchen Albärt – ein Panda mit Albärt-Schal"
+              fill
+              className="object-contain object-bottom"
+            />
+          </div>
+          <div className="flex flex-col md:flex-row items-end gap-8 md:gap-12">
+            <div className="relative md:hidden w-[346px] h-[389px] flex-shrink-0 -mt-32 self-center">
+              <Image
+                src="/images/vorstand/Albert1.png"
+                alt="Maskottchen Albärt – ein Panda mit Albärt-Schal"
+                fill
+                className="object-contain object-bottom"
+              />
+            </div>
+            <div className="flex-1 text-center md:text-left pb-2 md:pb-0">
+              <h2 className="text-3xl md:text-4xl font-extrabold leading-tight text-text mb-6">
+                Hallo ich bin Albärt
+              </h2>
+              <p className="text-text-soft text-lg leading-relaxed">
+                Ich bin das Maskottchen des Dresdner Tageseltern e.V. und bei
+                vielen unserer Aktionen mit dabei.
+              </p>
+              <p className="text-text-soft text-lg leading-relaxed mt-3">
+                Ob bei Festen, Veranstaltungen oder Infoständen, ich sorge
+                für gute Laune, zaubere Kindern ein Lächeln ins Gesicht und
+                unterstütze den Verein dabei, die Kindertagespflege in Dresden
+                noch bekannter zu machen.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function VorstandKarte({ person }: { person: VorstandPerson }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm flex flex-col items-center text-center gap-4">
+    <div className="rounded-2xl bg-sonnengelb-hell p-6 shadow-sm flex flex-col items-center text-center gap-4">
       {/* Portrait-Kreis */}
       <div
         className={`relative aspect-square w-28 md:w-32 rounded-full overflow-hidden ${person.farbe} shadow-sm`}
@@ -166,7 +225,8 @@ function VorstandKarte({ person }: { person: VorstandPerson }) {
             src={person.foto}
             alt={`Portrait von ${person.name}`}
             fill
-            sizes="128px"
+            sizes="(max-width: 768px) 256px, 384px"
+            quality={90}
             className={`object-cover ${person.fotoClassName ?? "object-center"}`}
           />
         ) : (

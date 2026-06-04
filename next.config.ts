@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.76.60"],
   images: {
     // Erlaubte Qualitätsstufen: 75 = Standard, 85 = schärfere Fotos
-    qualities: [75, 85],
+    qualities: [75, 85, 90],
   },
 };
 
