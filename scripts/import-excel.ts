@@ -214,15 +214,24 @@ function findeGalerie(nr: number): string[] {
 // Geocoding via Nominatim (OpenStreetMap)
 // ----------------------------------------------------------------
 
+// Entfernt Zusätze wie "HH" (Hinterhaus), "VH", "RH", "Hinterhaus" usw., die
+// Nominatim sonst als Teil der Hausnummer missdeutet und falsch verortet.
+function bereinigeStrasse(strasse: string): string {
+  return strasse
+    .replace(/\b(HH|VH|RH|GH|SH|Hinterhaus|Vorderhaus|Gartenhaus)\b/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 async function geocode(
   strasse: string,
   plz: string,
-  stadt = "Dresden",
 ): Promise<{ latitude: number; longitude: number } | null> {
+  // Über die PLZ statt einer festen Stadt geocoden – sonst landen Adressen
+  // außerhalb Dresdens (z. B. Ottendorf-Okrilla, 01458) falsch.
   const params = new URLSearchParams({
-    street: strasse,
+    street: bereinigeStrasse(strasse),
     postalcode: plz,
-    city: stadt,
     country: "Germany",
     format: "json",
     limit: "1",
