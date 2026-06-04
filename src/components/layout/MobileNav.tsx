@@ -18,7 +18,6 @@ const NAV: Array<
     ],
   },
   { href: "/ueber-uns", label: "Über uns" },
-  { href: "/kontakt", label: "Kontakt" },
 ];
 
 export function MobileNav() {

@@ -201,13 +201,13 @@ function NochFragenCard() {
       </div>
 
       {/* CTA */}
-      <Link
-        href="/kontakt"
+      <a
+        href="mailto:info@dresdner-tageseltern.de"
         className="inline-flex items-center gap-2 rounded-full border-2 border-korallenrot text-korallenrot px-5 py-2.5 font-semibold text-sm hover:bg-korallenrot hover:text-white transition-colors whitespace-nowrap"
       >
         <ChatBubbleIcon />
         Kontakt aufnehmen
-      </Link>
+      </a>
     </div>
   );
 }
