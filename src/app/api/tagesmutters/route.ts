@@ -43,6 +43,7 @@ export type TagesmutterDto = {
   oeffnungszeiten: string;
   ersatzbetreuung: string;
   verpflegung: "SELBST_GEKOCHT" | "CATERING";
+  verpflegungHinweis: string | null;
   beratungsgebiet: "MALWINA" | "OUTLAW" | "KINDERLAND";
   schmetterling: boolean;
   schmetterlingPartner: string | null;
@@ -130,6 +131,7 @@ export async function GET(request: Request) {
       oeffnungszeiten: tm.oeffnungszeiten,
       ersatzbetreuung: tm.ersatzbetreuung,
       verpflegung: tm.verpflegung,
+      verpflegungHinweis: tm.verpflegungHinweis,
       beratungsgebiet: tm.beratungsgebiet,
       schmetterling: tm.schmetterling,
       schmetterlingPartner: tm.schmetterlingPartner,

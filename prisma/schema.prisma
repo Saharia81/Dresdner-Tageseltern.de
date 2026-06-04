@@ -52,6 +52,7 @@ model Tagesmutter {
   oeffnungszeiten       String
   ersatzbetreuung       String
   verpflegung           Verpflegung
+  verpflegungHinweis    String?  // abweichender Wortlaut, überschreibt das Standard-Label
   beratungsgebiet       Beratungsgebiet
 
   // Schmetterling-Partnerschaft

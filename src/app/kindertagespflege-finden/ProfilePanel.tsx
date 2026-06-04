@@ -134,7 +134,10 @@ export function ProfilePanel({ tagesmutter, onClose }: Props) {
                 </p>
               </InfoKarte>
               <InfoKarte titel="Verpflegung" icon={<PinIcon src="/images/steckbrief/pin-verpflegung.png" />}>
-                <p>{VERPFLEGUNG_LABEL[tagesmutter.verpflegung]}</p>
+                <p>
+                  {tagesmutter.verpflegungHinweis ??
+                    VERPFLEGUNG_LABEL[tagesmutter.verpflegung]}
+                </p>
               </InfoKarte>
               <InfoKarte titel="Ersatzbetreuung" icon={<PinIcon src="/images/steckbrief/pin-ersatzbetreuung.png" />} infoHref="/fuer-eltern/eingewoehnung-und-ersatzbetreuung#ersatzbetreuung">
                 <p>{tagesmutter.ersatzbetreuung.replace(/Schmetterling-Partnerschaft/gi, "Schmetterlingsmodell")}</p>
