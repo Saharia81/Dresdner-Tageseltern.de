@@ -8,18 +8,27 @@ type Props = {
   x: number; // Pixel relativ zum Karten-Container
   y: number;
   onClick: () => void;
+  nachUnten?: boolean; // true = Karte unterhalb des Pins (kein Platz oben)
 };
 
 function hatFreiePlaetze(tm: TagesmutterDto): boolean {
   return tm.hatFreienPlatz;
 }
 
-export function PreviewCard({ tagesmutter, x, y, onClick }: Props) {
+export function PreviewCard({
+  tagesmutter,
+  x,
+  y,
+  onClick,
+  nachUnten = false,
+}: Props) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="absolute z-[500] -translate-x-1/2 -translate-y-full mt-[-68px] cursor-pointer text-left pointer-events-auto"
+      className={`absolute z-[1000] -translate-x-1/2 cursor-pointer text-left pointer-events-auto ${
+        nachUnten ? "mt-[12px]" : "-translate-y-full mt-[-68px]"
+      }`}
       style={{ left: x, top: y }}
       aria-label={`${tagesmutter.vorname} ${tagesmutter.nachname} – Profil öffnen`}
     >
@@ -51,8 +60,12 @@ export function PreviewCard({ tagesmutter, x, y, onClick }: Props) {
           )}
         </div>
       </div>
-      {/* kleines Dreieck nach unten */}
-      <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-white rotate-45 border-r border-b border-text-soft/15" />
+      {/* kleines Dreieck: zeigt zum Pin */}
+      {nachUnten ? (
+        <div className="absolute left-1/2 -translate-x-1/2 -top-1.5 w-3 h-3 bg-white rotate-45 border-l border-t border-text-soft/15" />
+      ) : (
+        <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-white rotate-45 border-r border-b border-text-soft/15" />
+      )}
     </button>
   );
 }

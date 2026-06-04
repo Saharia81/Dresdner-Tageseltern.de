@@ -85,13 +85,3 @@ body {
   color: var(--color-text-soft);
   font-size: 0.85em;
 }
-
-/* ============================================================
-   Tagesmutter-Pins: nur der runde Nadel-Körper (Hotspot) reagiert
-   auf die Maus, nicht die durchsichtigen Ecken des Bild-Rechtecks.
-   Das äußere Element ist durchlässig; Events des inneren Hotspots
-   (pointer-events:auto) sprudeln zum Leaflet-Marker hoch.
-   ============================================================ */
-.leaflet-marker-icon.tm-pin-hotspot {
-  pointer-events: none;
-}

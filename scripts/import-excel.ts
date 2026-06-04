@@ -182,7 +182,7 @@ function parseDatum(value: unknown): Date | null {
 // Bilder aus dem Ordner ermitteln
 // ----------------------------------------------------------------
 
-const BILD_ENDUNGEN = [".jpg", ".jpeg", ".png", ".webp"];
+const BILD_ENDUNGEN = [".jpg", ".jpeg", ".png", ".webp", ".avif"];
 
 function findeProfilbild(nr: number): string | null {
   const ordner = join(BILDER_BASIS, String(nr));

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
-import { BERATUNGSSTELLE_URL, PIN_BERATUNGSSTELLE, PIN_TAGESMUTTER, type Beratungsgebiet } from "@/types";
+import { BERATUNGSSTELLE_URL, PIN_BERATUNGSSTELLE, type Beratungsgebiet } from "@/types";
 import { BERATUNGSSTELLEN } from "./beratungsstellen";
 import { PreviewCard } from "./PreviewCard";
 
@@ -18,40 +18,34 @@ const DRESDEN_ZENTRUM: [number, number] = [51.0504, 13.7373];
 const DRESDEN_ZOOM_DESKTOP = 12;
 const DRESDEN_ZOOM_MOBILE = 11;
 
-function pinIcon(bild: string, ausgewaehlt: boolean): L.DivIcon {
-  const groesse = ausgewaehlt ? 78 : 60;
-  // DivIcon statt L.icon: Der Wrapper ist pointer-events:none, nur der
-  // Hotspot über dem runden Nadel-Körper (oben) ist anklickbar/hoverbar.
-  // So reagieren die durchsichtigen Ecken des Bildes NICHT mehr auf die Maus.
-  const hot = Math.round(groesse * 0.66); // Durchmesser des Trefferbereichs
-  const hotLeft = Math.round((groesse - hot) / 2);
-  return L.divIcon({
-    html: `<div style="position:relative;width:${groesse}px;height:${groesse}px;pointer-events:none">
-      <img src="${bild}" style="width:100%;height:100%;display:block;pointer-events:none" />
-      <span style="
-        position:absolute;left:${hotLeft}px;top:0;
-        width:${hot}px;height:${hot}px;
-        border-radius:50%;
-        pointer-events:auto;cursor:pointer;
-      "></span>
-    </div>`,
-    iconSize: [groesse, groesse],
-    iconAnchor: [groesse / 2, groesse], // Pin-Spitze unten
-    className: ausgewaehlt
-      ? "tm-pin tm-pin-aktiv tm-pin-hotspot"
-      : "tm-pin tm-pin-hotspot",
+// Eng zugeschnittenes Pin-Bild (transparenter Rand entfernt), damit das
+// Treffer-Rechteck dicht am sichtbaren Pin sitzt. Seitenverhältnis 455/676.
+const PIN_TM_TRIM = "/images/pins/tagesmutter-trim.png";
+const PIN_RATIO = 455 / 676;
+
+// Höhe → Breite passend zum Seitenverhältnis des zugeschnittenen Bildes.
+function pinMasse(ausgewaehlt: boolean): { w: number; h: number } {
+  const h = ausgewaehlt ? 56 : 42;
+  return { w: Math.round(h * PIN_RATIO), h };
+}
+
+function pinIcon(ausgewaehlt: boolean): L.Icon {
+  const { w, h } = pinMasse(ausgewaehlt);
+  return L.icon({
+    iconUrl: PIN_TM_TRIM,
+    iconSize: [w, h],
+    iconAnchor: [w / 2, h], // Pin-Spitze unten
+    className: ausgewaehlt ? "tm-pin tm-pin-aktiv" : "tm-pin",
   });
 }
 
 function stackIcon(anzahl: number, ausgewaehlt: boolean): L.DivIcon {
-  const groesse = ausgewaehlt ? 78 : 60;
-  const hot = Math.round(groesse * 0.66);
-  const hotLeft = Math.round((groesse - hot) / 2);
+  const { w, h } = pinMasse(ausgewaehlt);
   return L.divIcon({
-    html: `<div style="position:relative;width:${groesse}px;height:${groesse}px;pointer-events:none">
-      <img src="${PIN_TAGESMUTTER}" style="width:100%;height:100%;display:block;pointer-events:none" />
+    html: `<div style="position:relative;width:${w}px;height:${h}px">
+      <img src="${PIN_TM_TRIM}" style="width:100%;height:100%;display:block" />
       <span style="
-        position:absolute;top:3px;right:3px;
+        position:absolute;top:-2px;right:-6px;
         background:#c0392b;color:white;
         font-size:11px;font-weight:700;line-height:1;
         min-width:19px;height:19px;padding:0 4px;
@@ -61,20 +55,11 @@ function stackIcon(anzahl: number, ausgewaehlt: boolean): L.DivIcon {
         box-shadow:0 1px 4px rgba(0,0,0,0.4);
         font-family:system-ui,sans-serif;
         box-sizing:border-box;
-        pointer-events:none;
       ">${anzahl}</span>
-      <span style="
-        position:absolute;left:${hotLeft}px;top:0;
-        width:${hot}px;height:${hot}px;
-        border-radius:50%;
-        pointer-events:auto;cursor:pointer;
-      "></span>
     </div>`,
-    iconSize: [groesse, groesse],
-    iconAnchor: [groesse / 2, groesse],
-    className: ausgewaehlt
-      ? "tm-pin tm-pin-aktiv tm-pin-hotspot"
-      : "tm-pin tm-pin-hotspot",
+    iconSize: [w, h],
+    iconAnchor: [w / 2, h],
+    className: ausgewaehlt ? "tm-pin tm-pin-aktiv" : "tm-pin",
   });
 }
 
@@ -177,6 +162,7 @@ export function MapView({
     tm: TagesmutterDto;
     x: number;
     y: number;
+    nachUnten: boolean;
   } | null>(null);
 
   // Karten-Bereitschaft signalisieren, damit nachfolgende Effekte erst
@@ -332,13 +318,16 @@ export function MapView({
         // ── Einzelner Pin: bestehendes Verhalten ──────────────────────
         const tm = gruppe[0];
         const ausgewaehlt = tm.id === ausgewaehlteId;
-        const icon = pinIcon(PIN_TAGESMUTTER, ausgewaehlt);
+        const icon = pinIcon(ausgewaehlt);
         const marker = L.marker([lat, lng], { icon });
 
         marker.on("mouseover", (e) => {
           if (!window.matchMedia("(hover: none)").matches) {
             const point = map.latLngToContainerPoint(e.latlng);
-            setVorschau({ tm, x: point.x, y: point.y });
+            // Oberhalb des Pins braucht die Karte ca. 200 px. Ist dort kein
+            // Platz (Pin am oberen Rand), klappt sie nach unten auf.
+            const nachUnten = point.y < 200;
+            setVorschau({ tm, x: point.x, y: point.y, nachUnten });
           }
         });
         marker.on("mouseout", () => setVorschau(null));
@@ -446,6 +435,7 @@ export function MapView({
           tagesmutter={vorschau.tm}
           x={vorschau.x}
           y={vorschau.y}
+          nachUnten={vorschau.nachUnten}
           onClick={() => {
             onSelect(vorschau.tm);
             setVorschau(null);

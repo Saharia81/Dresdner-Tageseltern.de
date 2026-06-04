@@ -46,3 +46,7 @@ next-env.d.ts
 
 # Personenbezogene Daten (Import-Quelle, nicht ins Repo)
 mitglieder.xlsx
+
+# Windows-Systemdateien
+desktop.ini
+Thumbs.db
