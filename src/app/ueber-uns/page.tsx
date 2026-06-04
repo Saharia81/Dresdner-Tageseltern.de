@@ -61,6 +61,7 @@ export default function UeberUnsPage() {
       <HeroSection />
       <VorstandSection />
       <MaskottchenSection />
+      <CtaSection />
     </main>
   );
 }
@@ -172,8 +173,8 @@ function VorstandSection() {
 function MaskottchenSection() {
   return (
     <section style={{ backgroundColor: "#fdf7e3" }}>
-      <div className="mx-auto max-w-6xl px-4 pt-16 pb-16 md:pt-24 md:pb-20">
-        <div className="relative rounded-2xl bg-sonnengelb-hell shadow-sm p-6 md:py-4 md:px-10 md:pl-[480px]">
+      <div className="mx-auto max-w-6xl px-4 pt-40 pb-16 md:mt-0 md:pt-24 md:pb-20">
+        <div className="relative rounded-2xl bg-sonnengelb-hell shadow-sm py-0 px-2 md:py-6 md:px-10 md:pl-[480px] max-h-[560px] md:max-h-none flex items-start md:items-start">
           <div className="hidden md:block absolute -left-8 bottom-0 w-[432px] h-[518px] pointer-events-none">
             <Image
               src="/images/vorstand/Albert1.png"
@@ -183,7 +184,7 @@ function MaskottchenSection() {
             />
           </div>
           <div className="flex flex-col md:flex-row items-end gap-8 md:gap-12">
-            <div className="relative md:hidden w-[346px] h-[389px] flex-shrink-0 -mt-32 self-center">
+            <div className="relative md:hidden w-[346px] h-[389px] flex-shrink-0 -ml-12 -mt-56">
               <Image
                 src="/images/vorstand/Albert1.png"
                 alt="Maskottchen Albärt – ein Panda mit Albärt-Schal"
@@ -191,20 +192,31 @@ function MaskottchenSection() {
                 className="object-contain object-bottom"
               />
             </div>
-            <div className="flex-1 text-center md:text-left pb-2 md:pb-0">
-              <h2 className="text-3xl md:text-4xl font-extrabold leading-tight text-text mb-6">
-                Hallo ich bin Albärt
-              </h2>
-              <p className="text-text-soft text-lg leading-relaxed">
-                Ich bin das Maskottchen des Dresdner Tageseltern e.V. und bei
-                vielen unserer Aktionen mit dabei.
-              </p>
-              <p className="text-text-soft text-lg leading-relaxed mt-3">
-                Ob bei Festen, Veranstaltungen oder Infoständen, ich sorge
-                für gute Laune, zaubere Kindern ein Lächeln ins Gesicht und
-                unterstütze den Verein dabei, die Kindertagespflege in Dresden
-                noch bekannter zu machen.
-              </p>
+            <div className="flex-1 text-center md:text-left pb-2 md:pb-0 relative md:-ml-24">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-extrabold leading-tight text-text mb-6">
+                  Hallo ich bin Albärt
+                </h2>
+                <p className="text-text-soft text-lg leading-relaxed">
+                  Ich bin das Maskottchen des Dresdner Tageseltern e.V. und bei
+                  vielen unserer Aktionen mit dabei.
+                </p>
+                <p className="text-text-soft text-lg leading-relaxed mt-3">
+                  Ob bei Festen, Veranstaltungen oder Infoständen, ich sorge
+                  für gute Laune, zaubere Kindern ein Lächeln ins Gesicht und
+                  unterstütze den Verein dabei, die Kindertagespflege in Dresden
+                  noch bekannter zu machen.
+                </p>
+              </div>
+              <div className="hidden md:block absolute -right-16 top-0 w-48 h-48" style={{ transform: 'rotate(-85deg)' }}>
+                <Image
+                  src="/images/vorstand/stern.png"
+                  alt=""
+                  fill
+                  className="object-contain"
+                  aria-hidden
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -251,6 +263,56 @@ function VorstandKarte({ person }: { person: VorstandPerson }) {
         {person.text}
       </p>
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* CTA Section                                                         */
+/* ------------------------------------------------------------------ */
+
+function CtaSection() {
+  return (
+    <section className="bg-creme">
+      <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
+        <div className="relative rounded-3xl bg-white p-8 md:p-12 shadow-sm text-left overflow-hidden">
+          <div className="hidden md:block absolute bottom-0 right-0 w-1/2 h-40 opacity-20 pointer-events-none">
+            <Image
+              src="/images/vorstand/dresden-skyline.png"
+              alt=""
+              fill
+              className="object-cover object-bottom object-right"
+              aria-hidden
+            />
+          </div>
+          <div className="relative z-10 md:z-auto">
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
+              Schön, dass du da bist.
+            </h2>
+            <p className="text-text-soft text-lg mb-4">
+              Jede Familie ist einzigartig und genauso individuell ist die Kindertagespflege.
+            </p>
+            <p className="text-text-soft text-lg mb-8">
+              Lernen Sie Tagesmütter und Tagesväter in Ihrer Nähe kennen und finden Sie <br /> den passenden Betreuungsplatz für Ihr Kind.
+            </p>
+            <Link
+              href="/kindertagespflege-finden"
+              className="inline-block px-8 py-3 bg-korallenrot text-white font-bold rounded-full hover:bg-korallenrot/90 transition-colors"
+            >
+              Tageseltern finden
+            </Link>
+          </div>
+          <div className="md:hidden relative w-[calc(100%+4rem)] h-32 -mx-8 -mb-8 mt-6 opacity-20 rounded-b-3xl overflow-hidden">
+            <Image
+              src="/images/vorstand/dresden-skyline.png"
+              alt=""
+              fill
+              className="object-cover object-bottom object-center"
+              aria-hidden
+            />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
