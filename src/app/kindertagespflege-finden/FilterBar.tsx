@@ -1,0 +1,333 @@
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
+import { AdresseAutocomplete } from "@/components/ui/AdresseAutocomplete";
+import {
+  BERATUNGSGEBIET_LABEL,
+  BERATUNGSSTELLE_URL,
+  PIN_BERATUNGSSTELLE,
+  PIN_TAGESMUTTER,
+  type Beratungsgebiet,
+} from "@/types";
+
+export type FilterState = {
+  beratungsgebiet: "ALLE" | Beratungsgebiet;
+  adresseQuery: string;
+  adresseCoords: { lat: number; lng: number } | null;
+  radiusKm: number; // 0 = kein Umkreisfilter
+  abDatum: string; // ISO date (YYYY-MM-DD) oder ""
+  bisDatum: string; // optional, leer = offen nach oben
+  nurFreiePlaetze: boolean;
+};
+
+type Props = {
+  value: FilterState;
+  onChange: (next: FilterState) => void;
+  onBeratungsstelleHover?: (schluessel: Beratungsgebiet | null) => void;
+};
+
+const RADIUS_MAX_KM = 10;
+
+// Tagespflege-Plätze starten immer am 1. oder 15. eines Monats. Wir bilden
+// den Filter deshalb auf monatliche Fenster ab:
+//   abDatum  = 1. des gewählten Monats
+//   bisDatum = 15. desselben Monats ("Nein") bzw. 15. + 2 Monate später ("Ja")
+const FLEX_MONATE = 2;
+
+const MONATS_NAMEN = [
+  "Januar",
+  "Februar",
+  "März",
+  "April",
+  "Mai",
+  "Juni",
+  "Juli",
+  "August",
+  "September",
+  "Oktober",
+  "November",
+  "Dezember",
+];
+
+const AKTUELLES_JAHR = new Date().getFullYear();
+const JAHRE = [AKTUELLES_JAHR, AKTUELLES_JAHR + 1, AKTUELLES_JAHR + 2];
+
+function monatPlusFuenfzehnter(monat: string, offset: number): string {
+  if (!monat) return "";
+  const [yStr, mStr] = monat.split("-");
+  const y = Number(yStr);
+  const m = Number(mStr);
+  if (!y || !m) return "";
+  const total = y * 12 + (m - 1) + offset;
+  const ny = Math.floor(total / 12);
+  const nm = (total % 12) + 1;
+  return `${ny}-${String(nm).padStart(2, "0")}-15`;
+}
+
+export function FilterBar({ value, onChange, onBeratungsstelleHover }: Props) {
+  // „Ja, etwas später ist möglich" wird lokal gehalten, damit der User „Ja"
+  // auch wählen kann, bevor ein Monat ausgewählt ist.
+  const [spaeterMoeglich, setSpaeterMoeglich] = useState<boolean>(true);
+
+  // Monat und Jahr werden lokal gemerkt, damit die Auswahl des einen
+  // nicht verloren geht, wenn das andere noch nicht gesetzt ist.
+  const [localMonat, setLocalMonat] = useState<string>(
+    value.abDatum ? value.abDatum.slice(5, 7) : "",
+  );
+  const [localJahr, setLocalJahr] = useState<string>(
+    value.abDatum ? value.abDatum.slice(0, 4) : "",
+  );
+
+  function setzeMonatJahr(monat: string, jahr: string) {
+    const vollstaendig = monat && jahr ? `${jahr}-${monat}` : "";
+    const ab = vollstaendig ? `${vollstaendig}-01` : "";
+    const offset = spaeterMoeglich ? FLEX_MONATE : 0;
+    const bis = vollstaendig ? monatPlusFuenfzehnter(vollstaendig, offset) : "";
+    onChange({ ...value, abDatum: ab, bisDatum: bis });
+  }
+
+  function setzeMonat(monat: string) {
+    setLocalMonat(monat);
+    setzeMonatJahr(monat, localJahr);
+  }
+
+  function setzeJahr(jahr: string) {
+    setLocalJahr(jahr);
+    setzeMonatJahr(localMonat, jahr);
+  }
+
+  function setzeFlexibilitaet(neu: boolean) {
+    setSpaeterMoeglich(neu);
+    const aktuellesMonatJahr = localMonat && localJahr ? `${localJahr}-${localMonat}` : "";
+    if (!aktuellesMonatJahr) {
+      onChange({ ...value, bisDatum: "" });
+      return;
+    }
+    const offset = neu ? FLEX_MONATE : 0;
+    onChange({
+      ...value,
+      bisDatum: monatPlusFuenfzehnter(aktuellesMonatJahr, offset),
+    });
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      {/* Karte 1 – Umkreissuche */}
+      <div className="rounded-2xl bg-white p-5 shadow-sm border border-text-soft/10">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-bold">In meiner Nähe</h3>
+          {(value.adresseQuery !== "" || value.adresseCoords !== null || value.radiusKm !== 0) && (
+            <button
+              type="button"
+              onClick={() =>
+                onChange({ ...value, adresseQuery: "", adresseCoords: null, radiusKm: 0 })
+              }
+              className="text-xs text-text-soft hover:text-korallenrot transition-colors flex items-center gap-1"
+              aria-label="Umkreisfilter zurücksetzen"
+            >
+              <span>×</span> Zurücksetzen
+            </button>
+          )}
+        </div>
+        <label className="block mb-3">
+          <span className="block text-sm text-text-soft mb-1">
+            Adresse oder PLZ
+          </span>
+          <AdresseAutocomplete
+            value={value.adresseQuery}
+            initiallyValid={!!value.adresseCoords}
+            onChange={(query, treffer) =>
+              onChange({
+                ...value,
+                adresseQuery: query,
+                adresseCoords: treffer
+                  ? { lat: treffer.lat, lng: treffer.lng }
+                  : null,
+              })
+            }
+            placeholder="z.B. Alaunstraße 36 oder 01099"
+            className={`w-full rounded-xl border px-4 py-2.5 bg-white text-base focus:outline-none transition-colors ${
+              value.adresseCoords
+                ? "border-braun text-text"
+                : "border-text-soft/20 text-text-soft/50 focus:border-braun"
+            }`}
+          />
+        </label>
+        <label className="block">
+          <div className="flex items-baseline justify-between mb-1">
+            <span className="text-sm text-text-soft">Im Umkreis von</span>
+            <span className="text-sm font-semibold">
+              {value.radiusKm === 0 ? "beliebig" : `${value.radiusKm} km`}
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={RADIUS_MAX_KM}
+            step={1}
+            value={value.radiusKm}
+            onChange={(e) =>
+              onChange({ ...value, radiusKm: Number(e.target.value) })
+            }
+            className="w-full appearance-none cursor-pointer bg-transparent
+              [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-text-soft/20
+              [&::-moz-range-track]:h-2 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-text-soft/20
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-korallenrot [&::-webkit-slider-thumb]:-mt-1.5 [&::-webkit-slider-thumb]:shadow
+              [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-korallenrot [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow"
+          />
+          <div className="flex justify-between text-xs text-text-soft mt-1">
+            <span>beliebig</span>
+            <span>{RADIUS_MAX_KM} km</span>
+          </div>
+        </label>
+      </div>
+
+      {/* Karte 2 – Betreuungsbeginn (Zeitraum) */}
+      <div className="rounded-2xl bg-white p-5 shadow-sm border border-text-soft/10">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-bold">Betreuungsbeginn</h3>
+          {(localMonat !== "" || localJahr !== "") && (
+            <button
+              type="button"
+              onClick={() => {
+                setLocalMonat("");
+                setLocalJahr("");
+                onChange({ ...value, abDatum: "", bisDatum: "" });
+              }}
+              className="text-xs text-text-soft hover:text-korallenrot transition-colors flex items-center gap-1"
+              aria-label="Betreuungsbeginn-Filter zurücksetzen"
+            >
+              <span>×</span> Zurücksetzen
+            </button>
+          )}
+        </div>
+
+        <div className="block mb-4">
+          <span className="block text-sm text-text-soft mb-1.5">
+            Wann möchtest du frühestens mit der Betreuung beginnen?
+          </span>
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={localMonat}
+              onChange={(e) => setzeMonat(e.target.value)}
+              className={`w-full rounded-xl border px-3 py-2.5 bg-white text-base focus:outline-none transition-colors ${
+                localMonat
+                  ? "border-braun text-text"
+                  : "border-text-soft/20 text-text-soft/50 focus:border-braun"
+              }`}
+              aria-label="Monat"
+            >
+              <option value="">Monat</option>
+              {MONATS_NAMEN.map((name, i) => (
+                <option
+                  key={name}
+                  value={String(i + 1).padStart(2, "0")}
+                  className="text-text"
+                >
+                  {name}
+                </option>
+              ))}
+            </select>
+            <select
+              value={localJahr}
+              onChange={(e) => setzeJahr(e.target.value)}
+              className={`w-full rounded-xl border px-3 py-2.5 bg-white text-base focus:outline-none transition-colors ${
+                localJahr
+                  ? "border-braun text-text"
+                  : "border-text-soft/20 text-text-soft/50 focus:border-braun"
+              }`}
+              aria-label="Jahr"
+            >
+              <option value="">Jahr</option>
+              {JAHRE.map((j) => (
+                <option key={j} value={String(j)} className="text-text">
+                  {j}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend className="block text-sm text-text-soft mb-1.5">
+            Darf der Betreuungsstart auch etwas später sein?
+          </legend>
+          <div className="space-y-1.5">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="betreuungsbeginn-flexibel"
+                checked={spaeterMoeglich}
+                onChange={() => setzeFlexibilitaet(true)}
+                className="h-4 w-4 text-korallenrot focus:ring-korallenrot"
+              />
+              <span className="text-sm">Ja, etwas später ist auch möglich</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="betreuungsbeginn-flexibel"
+                checked={!spaeterMoeglich}
+                onChange={() => setzeFlexibilitaet(false)}
+                className="h-4 w-4 text-korallenrot focus:ring-korallenrot"
+              />
+              <span className="text-sm">Nein</span>
+            </label>
+          </div>
+        </fieldset>
+      </div>
+
+      {/* Karte 3 – Pin-Legende */}
+      <div className="rounded-2xl bg-white p-4 shadow-sm border border-text-soft/10">
+        <h3 className="text-base font-bold mb-3">Pin-Legende</h3>
+        <ul className="space-y-3">
+          {/* Haupteintrag – Tageseltern */}
+          <li className="flex items-center gap-3">
+            <Image
+              src={PIN_TAGESMUTTER}
+              alt=""
+              width={32}
+              height={32}
+              aria-hidden
+              className="h-9 w-9 object-contain shrink-0"
+            />
+            <span className="font-semibold text-sm">Tagesmütter / Tagesväter</span>
+          </li>
+
+          {/* Trennlinie */}
+          <li aria-hidden className="border-t border-text-soft/10" />
+
+          {/* Beratungsstellen – weniger prominent */}
+          <li>
+            <p className="text-xs text-text-soft mb-2">Beratung &amp; Vermittlung</p>
+            <ul className="space-y-2">
+              {(["MALWINA", "OUTLAW", "KINDERLAND"] as Beratungsgebiet[]).map((b) => (
+                <li key={b} className="flex items-center gap-2">
+                  <Image
+                    src={PIN_BERATUNGSSTELLE[b]}
+                    alt=""
+                    width={28}
+                    height={28}
+                    aria-hidden
+                    className="h-6 w-6 object-contain shrink-0 opacity-80"
+                  />
+                  <a
+                    href={BERATUNGSSTELLE_URL[b]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-text-soft underline hover:text-korallenrot transition-colors"
+                    onMouseEnter={() => onBeratungsstelleHover?.(b)}
+                    onMouseLeave={() => onBeratungsstelleHover?.(null)}
+                  >
+                    {BERATUNGSGEBIET_LABEL[b]}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+}

@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // ============================================================
@@ -14,37 +14,81 @@ datasource db {
 // ============================================================
 
 enum Beratungsgebiet {
-  MALVINA
-  OUTDOOR
-  KINDERLAND
+  MALWINA      // Malwina e.V.
+  OUTLAW       // Outlaw gGmbH
+  KINDERLAND   // KINDERLAND-Sachsen e.V.
+}
+
+enum Verpflegung {
+  SELBST_GEKOCHT   // "Ich koche selbst"
+  CATERING         // "Catering"
 }
 
 model Tagesmutter {
   id                    String   @id @default(cuid())
   slug                  String   @unique // URL: /fuer-eltern/tagesmutter-finden/[slug]
-  name                  String
-  einrichtungsname      String?  // optional, nicht alle haben einen
-  fotoUrl               String   // rundes Hauptfoto
-  einrichtungsfotoUrls  String   // JSON-Array von Strings (SQLite hat kein natives Array)
-  adresse               String
-  telefon               String
-  email                 String
-  oeffnungszeiten       String
-  ersatzbetreuung       String   // z.B. "Basis ETP"
-  verpflegung           String   // z.B. "Ich koche selbst"
-  websiteUrl            String?  // optional, Fallback auf Elternportal Stadt Dresden
-  beratungsgebiet       Beratungsgebiet
-  // Karten-Pin
-  latitude              Float
-  longitude             Float
-  // Sichtbarkeit
-  istAktiv              Boolean  @default(true)
-  reihenfolge           Int      @default(0) // für sortierte Anzeige
 
+  // Personen- & Einrichtungsdaten
+  vorname               String
+  nachname              String
+  einrichtungsname      String
+  fotoUrl               String   // rundes Hauptfoto
+  einrichtungsfotoUrls  String[]
+
+  // Adresse
+  strasse               String
+  plz                   String
+  stadtteil             String
+  latitude              Float?
+  longitude             Float?
+
+  // Kontakt
+  telefon               String
+  email                 String   @unique
+  websiteUrl            String?  // eigene Webseite, optional
+  anmeldungUrl          String?  // alternativer Anmelde-Link, wenn keine eigene Webseite
+
+  // Betreuung
+  oeffnungszeiten       String
+  ersatzbetreuung       String
+  verpflegung           Verpflegung
+  verpflegungHinweis    String?  // abweichender Wortlaut, überschreibt das Standard-Label
+  beratungsgebiet       Beratungsgebiet
+
+  // Schmetterling-Partnerschaft
+  schmetterling         Boolean  @default(false)
+  schmetterlingPartner  String?
+
+  // Mitgliedsdaten
+  mitgliedsnummer       String?
+  mitgliedSeit          DateTime?
+
+  // E-Mail-Bestätigungs-Flow (monatliche Plätze-Aktualisierung)
+  emailToken            String   @unique @default(cuid())
+  lastConfirmed         DateTime?
+
+  // Sichtbarkeit / Sortierung
+  istAktiv              Boolean  @default(true)
+  reihenfolge           Int      @default(0)
+
+  // Relationen
+  freiePlaetze          FreiePlaetze?
   buchungen             Buchung[]
 
   erstelltAm            DateTime @default(now())
   aktualisiertAm        DateTime @updatedAt
+}
+
+model FreiePlaetze {
+  id              String      @id @default(cuid())
+  tagesmutter     Tagesmutter @relation(fields: [tagesmutterId], references: [id], onDelete: Cascade)
+  tagesmutterId   String      @unique
+  platz1Ab        DateTime?
+  platz2Ab        DateTime?
+  platz3Ab        DateTime?
+  platz4Ab        DateTime?
+  platz5Ab        DateTime?
+  aktualisiertAm  DateTime    @updatedAt
 }
 
 // ============================================================
@@ -52,15 +96,15 @@ model Tagesmutter {
 // ============================================================
 
 model BlogPost {
-  id            String   @id @default(cuid())
-  slug          String   @unique
-  titel         String
-  kurztext      String   // Vorschau-Text in der Übersicht
-  inhaltMd      String   // Markdown-Inhalt
-  titelbildUrl  String?
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  titel             String
+  kurztext          String   // Vorschau-Text in der Übersicht
+  inhaltMd          String   // Markdown-Inhalt
+  titelbildUrl      String?
   veroeffentlichtAm DateTime @default(now())
-  istEntwurf    Boolean  @default(false)
-  aktualisiertAm DateTime @updatedAt
+  istEntwurf        Boolean  @default(false)
+  aktualisiertAm    DateTime @updatedAt
 }
 
 // ============================================================

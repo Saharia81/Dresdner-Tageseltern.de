@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LinkButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
+import { SuchForm } from "./SuchForm";
 
 export default function Home() {
   return (
@@ -30,13 +31,7 @@ export default function Home() {
 
             <div className="md:order-2">
               <div
-                className="relative aspect-[8/9] rounded-3xl overflow-hidden"
-                style={{
-                  maskImage:
-                    "linear-gradient(to right, transparent 0%, black 25%)",
-                  WebkitMaskImage:
-                    "linear-gradient(to right, transparent 0%, black 25%)",
-                }}
+                className="relative aspect-[8/9] rounded-3xl overflow-hidden [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0%,black_25%)] md:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_25%)]"
               >
                 <Image
                   src="/images/hero/hero-tagesmutter.png"
@@ -67,9 +62,8 @@ export default function Home() {
                 />
               </div>
               <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-                Kleine Gruppen.
-                <br />
-                Große Geborgenheit.
+                <span className="block whitespace-nowrap">Kleine Gruppen.</span>
+                <span className="block whitespace-nowrap">Große Geborgenheit.</span>
               </h1>
               <p className="text-lg text-text-soft mb-8 max-w-lg">
                 Kindertagespflege in Dresden mit festen Bezugspersonen,
@@ -77,10 +71,10 @@ export default function Home() {
                 Atmosphäre.
               </p>
               <div className="flex justify-center md:justify-start">
-                <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
+                <div className="flex flex-col items-stretch gap-4 md:flex-row md:items-center w-full md:w-auto">
                   <LinkButton
                     variant="primary"
-                    href="/fuer-eltern/tagesmutter-finden"
+                    href="/kindertagespflege-finden"
                   >
                     Tageseltern finden
                   </LinkButton>
@@ -227,58 +221,24 @@ export default function Home() {
                   Finde liebevolle Tageseltern in deiner Nähe und entdecke
                   freie Plätze für dein Kind.
                 </p>
-                <form className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="plz-stadtteil"
-                      className="block text-sm text-text-soft mb-1"
-                    >
-                      Postleitzahl / Stadtteil
-                    </label>
-                    <input
-                      id="plz-stadtteil"
-                      type="text"
-                      placeholder="z. B. 01067 oder Neustadt"
-                      className="w-full rounded-xl border border-text-soft/20 px-4 py-3 text-base focus:outline-none focus:border-korallenrot"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="betreuungsbeginn"
-                      className="block text-sm text-text-soft mb-1"
-                    >
-                      Gewünschter Betreuungsbeginn
-                    </label>
-                    <input
-                      id="betreuungsbeginn"
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="tt.mm.jjjj"
-                      pattern="\d{2}\.\d{2}\.\d{4}"
-                      className="w-full rounded-xl border border-text-soft/20 px-4 py-3 text-base bg-white focus:outline-none focus:border-korallenrot placeholder:text-text-soft/60"
-                    />
-                  </div>
-                  <LinkButton
-                    variant="primary"
-                    href="/fuer-eltern/tagesmutter-finden"
-                    className="w-full"
-                  >
-                    Jetzt finden
-                  </LinkButton>
-                </form>
+                <SuchForm />
               </div>
 
               <div>
                 <div className="relative">
-                  <div className="relative aspect-[8/5] rounded-2xl overflow-hidden">
+                  <Link
+                    href="/kindertagespflege-finden"
+                    aria-label="Zur Tageseltern-Karte"
+                    className="relative block aspect-[8/5] rounded-2xl overflow-hidden group"
+                  >
                     <Image
                       src="/images/hero/karte-dresden-v3.png"
                       alt="Karte von Dresden mit gelben Pins und Stadtansicht der Frauenkirche"
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                     />
-                  </div>
+                  </Link>
                   <div className="absolute -bottom-6 -right-4 md:-bottom-10 md:-right-8 w-24 h-24 md:w-40 md:h-40 rounded-full bg-sonnengelb flex flex-col items-center justify-start text-center italic text-text-soft leading-tight text-xs md:text-lg pt-4 md:pt-8 px-2 md:px-3 shadow-md">
                     <p>
                       Mit Herz
@@ -299,7 +259,7 @@ export default function Home() {
                 </div>
                 <div className="mt-8 text-center">
                   <Link
-                    href="/fuer-eltern/tagesmutter-finden"
+                    href="/kindertagespflege-finden"
                     className="text-text-soft underline hover:text-korallenrot transition-colors"
                   >
                     Zur interaktiven Karte
@@ -314,7 +274,7 @@ export default function Home() {
       {/* 4 — Feature-Grid */}
       <section style={{ backgroundColor: "#fdf7e3" }}>
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-4">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-left md:text-center mb-4">
             Warum sich Familien für Kindertagespflege entscheiden
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
@@ -322,25 +282,21 @@ export default function Home() {
               image="/images/allgemein/basteln.png"
               title="Kleine Gruppen"
               text="Maximal 5 Kinder werden individuell betreut und begleitet."
-              href="/fuer-eltern/vorteile"
             />
             <FeatureCard
               image="/images/allgemein/feste-bezugsperson-v2.png"
               title="Feste Bezugsperson"
               text="Ein vertrautes Gesicht jeden Tag für Sicherheit und Vertrauen."
-              href="/fuer-eltern/vorteile"
             />
             <FeatureCard
               image="/images/allgemein/ruhige-atmosphaere.png"
               title="Ruhige Atmosphäre"
               text="Weniger Reize, mehr Zeit zum Ankommen und Wohlfühlen."
-              href="/fuer-eltern/vorteile"
             />
             <FeatureCard
               image="/images/allgemein/sparschwein.png"
               title="Gleiche Kosten"
               text="Die Elternbeiträge sind identisch mit denen in Krippe und Kita."
-              href="/fuer-eltern/faq"
             />
           </div>
         </div>
@@ -360,7 +316,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Mobile-only: Überschrift über dem Foto */}
             <h2 className="md:hidden text-3xl font-extrabold">
-              Eingewöhnung mit Herz und Zeit
+              Eingewöhnung<br className="md:hidden" /> mit Herz<br className="hidden md:block" /> und Zeit
             </h2>
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden md:mt-8">
               <Image
@@ -373,14 +329,14 @@ export default function Home() {
             </div>
             <div>
               <h2 className="hidden md:block text-3xl md:text-4xl font-extrabold mb-6">
-                Eingewöhnung mit Herz und Zeit
+                Eingewöhnung<br className="md:hidden" /> mit Herz<br className="hidden md:block" /> und Zeit
               </h2>
-              <p className="text-text-soft text-lg mb-8 leading-relaxed">
+              <p className="text-text-soft text-lg leading-relaxed mb-6">
                 Jedes Kind ist einzigartig und so ist auch jede
                 Eingewöhnung. Wir nehmen uns Zeit, geben Sicherheit und
                 begleiten Familien Schritt für Schritt, Hand in Hand.
               </p>
-              <LinkButton variant="primary" href="/fuer-eltern/faq">
+              <LinkButton variant="primary" href="/fuer-eltern/eingewoehnung-und-ersatzbetreuung" className="w-full sm:w-auto">
                 Mehr zur Eingewöhnung
               </LinkButton>
             </div>
@@ -388,8 +344,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6 — Testimonials */}
+      {/* 6 — Verein-Intro */}
       <section style={{ backgroundColor: "#fdf7e3" }}>
+        <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16">
+            <div className="text-left max-w-lg">
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
+                Wir sind der Dresdner Tageseltern e.V.
+              </h2>
+              <p className="text-text-soft text-lg leading-relaxed mb-4">
+                Ein Zusammenschluss von über 50 Tageseltern in Dresden.
+              </p>
+              <p className="italic text-text-soft text-lg mb-10">
+                Ihr wollt mehr über uns erfahren?
+              </p>
+              <LinkButton variant="primary" href="/ueber-uns" className="w-full">
+                Lernt uns kennen
+              </LinkButton>
+            </div>
+            <div className="hidden md:block w-72 h-72 relative flex-shrink-0">
+              <Image
+                src="/images/logo-icon.png"
+                alt="Logo Dresdner Tageseltern e.V."
+                fill
+                className="object-cover rounded-2xl shadow-md"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 7 — Testimonials */}
+      <section className="bg-creme">
         <div className="mx-auto max-w-6xl px-4 py-20 md:py-24 lg:py-28">
           <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
             Das sagen Eltern
@@ -450,12 +436,10 @@ function FeatureCard({
   image,
   title,
   text,
-  href,
 }: {
   image?: string;
   title: string;
   text: string;
-  href: string;
 }) {
   return (
     <Card className="flex flex-col gap-4 h-full overflow-hidden">
@@ -473,12 +457,6 @@ function FeatureCard({
       )}
       <h3 className="font-bold text-lg hyphens-none">{title}</h3>
       <p className="text-text-soft text-sm flex-1">{text}</p>
-      <Link
-        href={href}
-        className="text-korallenrot font-semibold hover:text-korallenrot-dunkel transition-colors"
-      >
-        Mehr erfahren →
-      </Link>
     </Card>
   );
 }

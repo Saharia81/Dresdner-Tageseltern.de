@@ -1,12 +1,14 @@
+import React from "react";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { LinkButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
 export const metadata = {
-  title: "Was ist Kindertagespflege? – Dresdner Tages Eltern e.V.",
+  title: "Was ist Kindertagespflege? | Dresdner Tages Eltern e.V.",
   description:
-    "Kindertagespflege erklärt: Alltag, Eingewöhnung, Ersatzbetreuung, Kosten und Unterschiede zur Kita – warm, persönlich und in kleinen Gruppen begleitet.",
+    "Kindertagespflege erklärt: Alltag, Eingewöhnung, Ersatzbetreuung, Kosten und Unterschiede zur Kita. Warm, persönlich und in kleinen Gruppen begleitet.",
 };
 
 /**
@@ -21,7 +23,6 @@ const IMAGES = {
   alltagSchlaf: "/images/kindertagespflege/schlafen.png",
   alltagBegleitung: "/images/kindertagespflege/lesen.png",
   ersatzbetreuung: "/images/kindertagespflege/ersatzbetreuung.png",
-  ersatzbetreuungIcon: "/images/kindertagespflege/kalender.png",
   herzAccent: "/images/hero/herzapricot.png",
 };
 
@@ -51,19 +52,14 @@ function HeroSection() {
           {/* Bild – oben bündig mit der Menüleiste (keine pt) */}
           <div className="md:order-2 -mx-4 md:mx-0">
             <div
-              className="relative aspect-[3/4] md:aspect-[5/6] overflow-hidden md:rounded-b-3xl"
-              style={{
-                maskImage:
-                  "linear-gradient(to right, transparent 0%, black 20%)",
-                WebkitMaskImage:
-                  "linear-gradient(to right, transparent 0%, black 20%)",
-              }}
+              className="relative aspect-[3/4] md:aspect-[5/6] overflow-hidden md:rounded-b-3xl [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0%,black_20%)] md:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_20%)]"
             >
               <Image
                 src={IMAGES.hero}
-                alt="Tagesmutter mit drei Kleinkindern in einem gelben Krippenwagen unter blühenden Kirschbäumen in Dresden"
+                alt="Frau schiebt einen gelben Bollerwagen mit zwei Kleinkindern durch eine Dresdner Straße – Dresdner Tageseltern e.V."
                 fill
                 priority
+                quality={85}
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover object-center"
               />
@@ -79,7 +75,7 @@ function HeroSection() {
               Kindertagespflege?
             </h1>
             <p className="text-lg text-text-soft mb-6 max-w-xl leading-relaxed">
-              Kindertagespflege ist eine liebevolle und flexible
+              Kindertagespflege ist eine liebevolle und individuelle
               Betreuungsform für Kinder von 0 bis 3 Jahren, meist im
               Haushalt der Tagespflegeperson oder in geeigneten Räumen. In
               kleinen Gruppen werden Kinder individuell begleitet,
@@ -152,7 +148,7 @@ function AlltagSection() {
   return (
     <section style={{ backgroundColor: "#fdf7e3" }}>
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-left md:text-center mb-12">
           Ein Tag in der Kindertagespflege
         </h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -198,34 +194,22 @@ function AlltagKarte({
 
 function ErsatzbetreuungSection() {
   return (
-    <section className="bg-creme">
+    <section id="ersatzbetreuung" className="bg-creme">
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
         <div className="rounded-3xl bg-white shadow-sm overflow-hidden">
           <div className="grid gap-8 md:grid-cols-[minmax(0,24rem)_1fr] items-center md:items-stretch p-6 md:p-10">
-            <div className="md:self-center flex items-start gap-4 md:gap-6">
-              <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
-                <Image
-                  src={IMAGES.ersatzbetreuungIcon}
-                  alt=""
-                  fill
-                  sizes="80px"
-                  className="object-contain"
-                  aria-hidden
-                />
-              </div>
-              <div>
-                <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
-                  Was passiert bei Urlaub oder Krankheit?
-                </h2>
-                <p className="text-text-soft text-lg leading-relaxed mb-6">
-                  Kinder lernen ihre Ersatzbetreuung bereits vorab kennen und
-                  werden auch im Vertretungsfall in vertrauter Atmosphäre
-                  begleitet. So bleibt die Betreuung verlässlich und sicher.
-                </p>
-                <LinkButton variant="primary" href="/fuer-eltern/faq">
-                  Mehr zur Ersatzbetreuung
-                </LinkButton>
-              </div>
+            <div className="md:self-center">
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+                Was passiert bei Urlaub oder Krankheit?
+              </h2>
+              <p className="text-text-soft text-lg leading-relaxed mb-6">
+                Kinder lernen ihre Ersatzbetreuung bereits vorab kennen und
+                werden auch im Vertretungsfall in vertrauter Atmosphäre
+                begleitet. So bleibt die Betreuung verlässlich und sicher.
+              </p>
+              <LinkButton variant="primary" href="/fuer-eltern/eingewoehnung-und-ersatzbetreuung#ersatzbetreuung" className="w-full sm:w-auto">
+                Mehr zur Ersatzbetreuung
+              </LinkButton>
             </div>
 
             <div
@@ -266,14 +250,37 @@ function InfoCardsSection() {
               Wo findet Kindertagespflege statt?
             </h3>
             <p className="text-text-soft leading-relaxed">
-              Im Haushalt der Tagespflegeperson, im Haushalt der Eltern oder
-              in anderen geeigneten Räumen – immer in einer Umgebung, in
-              der sich Kinder wohl und sicher fühlen.
+              In liebevoll gestalteten Räumen mit Geborgenheit, Sicherheit
+              und familiärer Atmosphäre, damit sich Kinder jeden Tag wohl
+              und willkommen fühlen.
             </p>
-            <ul className="mt-2 grid grid-cols-3 gap-3 text-center">
-              <OrtItem icon={<HomeIcon />} label="Im Haushalt der Tagespflegeperson" />
-              <OrtItem icon={<FamilyHomeIcon />} label="Im Haushalt der Eltern" />
-              <OrtItem icon={<RoomIcon />} label="In anderen geeigneten Räumlichkeiten" />
+            <ul className="mt-2 grid grid-cols-2 gap-3 text-center">
+              <OrtItem
+                icon={
+                  <Image
+                    src="/images/icons/wohnraum-tagespflegeperson.png"
+                    alt=""
+                    width={480}
+                    height={320}
+                    aria-hidden
+                    className="h-12 w-auto object-contain"
+                  />
+                }
+                label="Im Haushalt der Tagespflegeperson"
+              />
+              <OrtItem
+                icon={
+                  <Image
+                    src="/images/icons/wohnraum-andere-raeume.png"
+                    alt=""
+                    width={480}
+                    height={320}
+                    aria-hidden
+                    className="h-12 w-auto object-contain"
+                  />
+                }
+                label={<>In separat<br />angemieteten Räumen</>}
+              />
             </ul>
           </Card>
 
@@ -284,10 +291,10 @@ function InfoCardsSection() {
             <p className="text-text-soft leading-relaxed flex-1">
               Jedes Kind bekommt die Zeit, die es braucht. Gemeinsam mit
               den Eltern gestalten wir die Eingewöhnung behutsam und
-              individuell – für einen guten Start voller Vertrauen.
+              individuell, für einen guten Start voller Vertrauen.
             </p>
             <div>
-              <LinkButton variant="primary" href="/fuer-eltern/faq">
+              <LinkButton variant="primary" href="/fuer-eltern/eingewoehnung-und-ersatzbetreuung" className="w-full">
                 Mehr zur Eingewöhnung
               </LinkButton>
             </div>
@@ -303,7 +310,13 @@ function InfoCardsSection() {
               durch die Landeshauptstadt Dresden bezuschusst.
             </p>
             <div>
-              <LinkButton variant="primary" href="/fuer-eltern/faq">
+              <LinkButton
+                variant="primary"
+                href="https://www.dresden.de/de/leben/kinder/tagesbetreuung/anmeldung/elternbeitraege.php?pk_kwd=elternbeitraege"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full"
+              >
                 Mehr zu Kosten &amp; Beiträgen
               </LinkButton>
             </div>
@@ -314,12 +327,10 @@ function InfoCardsSection() {
   );
 }
 
-function OrtItem({ icon, label }: { icon: React.ReactNode; label: string }) {
+function OrtItem({ icon, label }: { icon: ReactNode; label: ReactNode }) {
   return (
     <li className="flex flex-col items-center gap-2">
-      <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-sonnengelb text-text">
-        {icon}
-      </span>
+      {icon}
       <span className="text-xs text-text-soft leading-tight">{label}</span>
     </li>
   );
@@ -329,117 +340,287 @@ function OrtItem({ icon, label }: { icon: React.ReactNode; label: string }) {
 /* 5 — Vergleich Kindertagespflege / Kita                              */
 /* ------------------------------------------------------------------ */
 
-const VERGLEICH_ROWS = [
-  {
-    merkmal: "Gruppengröße",
-    icon: <UsersIcon />,
-    tagespflege: "Maximal 5 Kinder",
-    kita: "Größere Gruppen",
-  },
-  {
-    merkmal: "Bezugsperson",
-    icon: <PersonIcon />,
-    tagespflege: "Feste Bezugsperson",
-    kita: "Wechselndes Personal",
-  },
-  {
-    merkmal: "Atmosphäre",
-    icon: <HeartIcon />,
-    tagespflege: "Familiär und individuell",
-    kita: "Mehr Kinder, mehr Reize",
-  },
-  {
-    merkmal: "Flexibilität",
-    icon: <ClockIcon />,
-    tagespflege: "Individuelle Betreuungszeiten möglich",
-    kita: "Feste Strukturen und Zeiten",
-  },
-  {
-    merkmal: "Betreuungsort",
-    icon: <HouseIcon />,
-    tagespflege: "Häusliche Umgebung oder kleine Räume",
-    kita: "Kita-Gebäude",
-  },
-  {
-    merkmal: "Kosten für Eltern",
-    icon: <CoinIcon />,
-    tagespflege: "Gleiche Elternbeiträge wie in der Kita",
-    kita: "Gleiche Elternbeiträge",
-  },
-];
+/* Vergleich-Icons --------------------------------------------------- */
+
+function VgHouseHeartIcon() {
+  return (
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M3 11L12 3l9 8v10H3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
+      <path
+        d="M12 19s-4-2.5-4-5.5a2.2 2.2 0 0 1 4-1.3 2.2 2.2 0 0 1 4 1.3c0 3-4 5.5-4 5.5z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function VgBuildingIcon() {
+  return (
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="2" y="7" width="20" height="14" rx="1" stroke="currentColor" strokeWidth="1.6"/>
+      <path d="M2 11h20" stroke="currentColor" strokeWidth="1.4"/>
+      <rect x="6" y="14" width="3" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.2"/>
+      <rect x="15" y="14" width="3" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.2"/>
+      <path d="M10 21v-4h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+      <path d="M8 7V5a4 4 0 0 1 8 0v2" stroke="currentColor" strokeWidth="1.4"/>
+    </svg>
+  );
+}
+
+function VgUsersIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.7"/>
+      <circle cx="17" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.7"/>
+      <path d="M2 19c1-3 4-4.5 6-4.5s5 1.5 6 4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+      <path d="M15 19c.8-2.4 3-3.5 4.5-3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function VgPersonIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="7" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
+      <path d="M5 20c1.5-4 5-5.5 7-5.5s5.5 1.5 7 5.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function VgHeartIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"
+        stroke="currentColor" strokeWidth="1.7"
+      />
+    </svg>
+  );
+}
+
+function VgHouseIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 11L12 4l8 7v9H4z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+      <path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function VgEuroIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M17 6.5A7 7 0 1 0 17 17.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+      <path d="M5 10h9M5 14h9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function VgFamilyIcon() {
+  return (
+    <svg width="72" height="56" viewBox="0 0 90 60" fill="none" aria-hidden>
+      <circle cx="20" cy="10" r="5" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M13 30c0-5 3-9 7-9s7 4 7 9v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M13 38h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="52" cy="10" r="5" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M45 30c0-5 3-9 7-9s7 4 7 9v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M45 38h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="36" cy="20" r="4" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M30 40c0-4 2.5-8 6-8s6 4 6 8v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M30 46h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+/* Zeilen-Konfiguration (Farben + Icons, kein JSX im module-scope) --- */
+
+function buildRows() {
+  return [
+    {
+      merkmal: "Gruppengröße",
+      iconBg: "bg-korallenrot/15",
+      iconColor: "text-korallenrot",
+      IconComponent: VgUsersIcon,
+      ktpContent: <>Maximal 5 Kinder</>,
+      kitaContent: <>Bis zu 15 Kinder pro Gruppe</>,
+    },
+    {
+      merkmal: "Bezugsperson",
+      iconBg: "bg-sonnengelb/60",
+      iconColor: "text-[#9a6a00]",
+      IconComponent: VgPersonIcon,
+      ktpContent: <>Eine feste Bezugsperson</>,
+      kitaContent: <>Wechselndes Personal</>,
+    },
+    {
+      merkmal: "Atmosphäre",
+      iconBg: "bg-green-100",
+      iconColor: "text-green-600",
+      IconComponent: VgHeartIcon,
+      ktpContent: <>Familiär und individuell</>,
+      kitaContent: <>Mehr Reize, unpersönlicher</>,
+    },
+    {
+      merkmal: "Betreuungsort",
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-500",
+      IconComponent: VgHouseIcon,
+      ktpContent: <>Häusliche Umgebung oder gemütliche Räume</>,
+      kitaContent: <>Kita-Gebäude</>,
+    },
+    {
+      merkmal: "Kosten für Eltern",
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-500",
+      IconComponent: VgEuroIcon,
+      ktpContent: <>Gleiche Elternbeiträge wie in der Kita/Krippe</>,
+      kitaContent: <>Gleiche Elternbeiträge</>,
+    },
+  ];
+}
 
 function VergleichSection() {
+  const rows = buildRows();
   return (
-    <section className="bg-sonnengelb-hell">
+    <section style={{ backgroundColor: "#fdf7e3" }}>
       <div className="mx-auto max-w-6xl px-4 py-20 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
-          Kindertagespflege und Kita im Vergleich
-        </h2>
+
+        {/* Kopf */}
+        <div className="flex flex-col items-start md:items-center text-left md:text-center mb-12">
+          <Image
+            src={IMAGES.herzAccent}
+            alt=""
+            width={1536}
+            height={1024}
+            aria-hidden
+            className="w-28 h-auto select-none mb-2"
+          />
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-3">
+            Kindertagespflege und Kita im Vergleich
+          </h2>
+          <p className="text-text-soft max-w-xl leading-relaxed">
+            Zwei wertvolle Betreuungsformen mit unterschiedlichen Stärken.<br />
+            Findet das Beste für euer Kind und eure Familie.
+          </p>
+        </div>
 
         {/* Desktop: Tabelle */}
-        <div className="hidden md:block rounded-3xl bg-white shadow-sm overflow-hidden">
-          <table className="w-full text-left">
+        <div className="hidden md:block rounded-3xl bg-white shadow-sm overflow-hidden mb-5">
+          <table className="w-full">
             <thead>
-              <tr className="bg-sonnengelb">
-                <th className="px-6 py-4 font-extrabold">&nbsp;</th>
-                <th className="px-6 py-4 font-extrabold">Kindertagespflege</th>
-                <th className="px-6 py-4 font-extrabold">Kita</th>
+              <tr>
+                <th className="px-6 py-5 text-left font-extrabold bg-korallenrot text-white w-[28%]">
+                  Kriterium
+                </th>
+                <th className="px-6 py-5 text-center font-extrabold bg-korallenrot text-white w-[36%]">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <VgHouseHeartIcon />
+                    Kindertagespflege
+                  </div>
+                </th>
+                <th className="px-6 py-5 text-center font-extrabold bg-korallenrot text-white w-[36%]">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <VgBuildingIcon />
+                    Kita
+                  </div>
+                </th>
               </tr>
             </thead>
-            <tbody>
-              {VERGLEICH_ROWS.map((row, i) => (
-                <tr
-                  key={row.merkmal}
-                  className={i % 2 === 0 ? "bg-white" : "bg-creme/40"}
-                >
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-semibold text-text whitespace-nowrap"
-                  >
+            <tbody className="divide-y divide-text/15">
+              {rows.map((row) => (
+                <tr key={row.merkmal} className="bg-white">
+                  <th scope="row" className="px-6 py-5 font-semibold text-text text-left">
                     <span className="inline-flex items-center gap-3">
-                      <span className="inline-flex w-8 h-8 items-center justify-center rounded-full bg-sonnengelb text-text">
-                        {row.icon}
+                      <span
+                        className={`inline-flex w-9 h-9 shrink-0 items-center justify-center rounded-full ${row.iconBg} ${row.iconColor}`}
+                      >
+                        <row.IconComponent />
                       </span>
                       {row.merkmal}
                     </span>
                   </th>
-                  <td className="px-6 py-4 text-text-soft">
-                    {row.tagespflege}
+                  <td className="px-6 py-5 text-center text-sm leading-relaxed">
+                    {row.ktpContent}
                   </td>
-                  <td className="px-6 py-4 text-text-soft">{row.kita}</td>
+                  <td className="px-6 py-5 text-center text-sm leading-relaxed text-text-soft">
+                    {row.kitaContent}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Mobile: Karten-Layout pro Merkmal */}
-        <div className="md:hidden grid gap-4">
-          {VERGLEICH_ROWS.map((row) => (
-            <Card key={row.merkmal} className="flex flex-col gap-3">
-              <p className="flex items-center gap-3 font-extrabold">
-                <span className="inline-flex w-8 h-8 items-center justify-center rounded-full bg-sonnengelb text-text">
-                  {row.icon}
-                </span>
-                {row.merkmal}
-              </p>
-              <div className="grid gap-2">
-                <div className="rounded-xl bg-creme/60 p-3">
-                  <p className="text-xs uppercase tracking-wide text-text-soft mb-1">
-                    Kindertagespflege
-                  </p>
-                  <p className="text-sm">{row.tagespflege}</p>
+        {/* Footer-Box */}
+        <div className="hidden md:flex items-center gap-5 rounded-2xl bg-white border border-text/5 shadow-sm px-6 py-5 mb-0">
+          <span className="inline-flex w-12 h-12 shrink-0 items-center justify-center rounded-full bg-korallenrot/15 text-korallenrot">
+            <VgHeartIcon />
+          </span>
+          <div className="flex-1">
+            <p className="font-extrabold text-korallenrot">
+              Beide Betreuungsformen haben ihre Stärken.
+            </p>
+            <p className="text-text-soft text-sm mt-0.5">
+              Was zählt, ist das, was am besten zu euch und eurem Kind passt.
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile: Tab-Header + Karten */}
+        <div className="md:hidden">
+
+          {/* Tab-Header */}
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="flex flex-col items-center gap-1.5 bg-korallenrot text-white rounded-2xl py-4 px-3">
+              <VgHouseHeartIcon />
+              <span className="font-extrabold text-sm">Kindertagespflege</span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5 bg-korallenrot text-white rounded-2xl py-4 px-3">
+              <VgBuildingIcon />
+              <span className="font-extrabold text-sm">Kita</span>
+            </div>
+          </div>
+
+          {/* Karten */}
+          <div className="grid gap-4">
+            {rows.map((row) => (
+              <div key={row.merkmal} className="bg-white rounded-2xl border border-text/5 shadow-sm overflow-hidden">
+                {/* Merkmal-Kopf */}
+                <div className="flex justify-center items-center gap-3 px-4 py-3 border-b border-text/20">
+                  <span className={`inline-flex w-9 h-9 shrink-0 items-center justify-center rounded-full ${row.iconBg} ${row.iconColor}`}>
+                    <row.IconComponent />
+                  </span>
+                  <span className="font-extrabold text-sm">{row.merkmal}</span>
                 </div>
-                <div className="rounded-xl bg-white border border-text/5 p-3">
-                  <p className="text-xs uppercase tracking-wide text-text-soft mb-1">
-                    Kita
-                  </p>
-                  <p className="text-sm">{row.kita}</p>
+                {/* Zweispaltig */}
+                <div className="grid grid-cols-2 divide-x divide-text/20">
+                  <div className="px-4 py-3">
+                    <p className="text-sm text-text-soft leading-relaxed">{row.ktpContent}</p>
+                  </div>
+                  <div className="px-4 py-3">
+                    <p className="text-sm text-text-soft leading-relaxed">{row.kitaContent}</p>
+                  </div>
                 </div>
               </div>
-            </Card>
-          ))}
+            ))}
+
+            {/* Footer-Box */}
+            <div className="flex items-start gap-4 rounded-2xl bg-white border border-text/5 shadow-sm p-4 overflow-hidden relative">
+              <span className="inline-flex w-11 h-11 shrink-0 items-center justify-center rounded-full bg-korallenrot/15 text-korallenrot">
+                <VgHeartIcon />
+              </span>
+              <div className="flex-1">
+                <p className="font-extrabold text-korallenrot text-sm leading-snug">
+                  Beide Betreuungsformen haben ihre Stärken.
+                </p>
+                <p className="text-text-soft text-xs mt-1 leading-relaxed">
+                  Was zählt, ist das, was am besten zu euch und eurem Kind passt.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
     </section>
   );
@@ -449,69 +630,148 @@ function VergleichSection() {
 /* 6 — FAQ                                                             */
 /* ------------------------------------------------------------------ */
 
-const FAQS = [
-  {
-    q: "Für welches Alter ist Kindertagespflege?",
-    a: "Bei uns werden Kinder im Alter von 0 bis 3 Jahren betreut – also genau in der Zeit, in der eine familiäre, ruhige Umgebung besonders wichtig ist.",
-  },
-  {
-    q: "Wie viele Kinder werden betreut?",
-    a: "Eine Tagespflegeperson betreut maximal 5 Kinder gleichzeitig. So bleibt genug Zeit für jedes einzelne Kind und es entstehen echte, vertrauensvolle Beziehungen.",
-  },
-  {
-    q: "Welche Qualifikationen haben Tagespflegepersonen?",
-    a: "Alle Tagespflegepersonen verfügen über eine pädagogische Qualifizierung nach dem bundesweit anerkannten Curriculum und besitzen eine Pflegeerlaubnis des Jugendamtes. Regelmäßige Fortbildungen sind verpflichtend.",
-  },
-  {
-    q: "Wie sind die Betreuungszeiten?",
-    a: "Die Betreuungszeiten werden individuell zwischen Eltern und Tagespflegeperson abgestimmt. Dadurch lassen sich auch ungewöhnliche Arbeitszeiten oft gut abdecken.",
-  },
-  {
-    q: "Was kostet Kindertagespflege?",
-    a: "Die Elternbeiträge sind identisch mit denen einer Krippe oder Kita. Sie sind einkommensabhängig gestaffelt und werden durch die Landeshauptstadt Dresden bezuschusst – für Eltern entstehen also keine zusätzlichen Kosten.",
-  },
-  {
-    q: "Wie finde ich eine passende Tagesmutter oder einen passenden Tagesvater?",
-    a: "Über unsere Suche kannst du Tageseltern in deiner Nähe entdecken und siehst direkt, wer freie Plätze hat. Gerne unterstützen wir dich auch persönlich bei der Auswahl.",
-  },
-];
+function buildFaqItems() {
+  return [
+    {
+      iconBg: "bg-korallenrot/15",
+      iconColor: "text-korallenrot",
+      IconComponent: FaqCalendarIcon,
+      q: "Für welches Alter ist Kindertagespflege?",
+      a: "Bei uns werden Kinder im Alter von 0 bis 3 Jahren betreut, also genau in der Zeit, in der eine familiäre, ruhige Umgebung besonders wichtig ist.",
+    },
+    {
+      iconBg: "bg-sonnengelb/60",
+      iconColor: "text-[#9a6a00]",
+      IconComponent: FaqPeopleIcon,
+      q: "Wie viele Kinder werden betreut?",
+      a: "Eine Tagespflegeperson betreut maximal 5 Kinder gleichzeitig. So bleibt genug Zeit für jedes einzelne Kind und es entstehen echte, vertrauensvolle Beziehungen.",
+    },
+    {
+      iconBg: "bg-green-100",
+      iconColor: "text-green-600",
+      IconComponent: FaqCertIcon,
+      q: "Welche Qualifikationen haben Tagespflegepersonen?",
+      a: "Alle Tagespflegepersonen verfügen über eine pädagogische Qualifizierung nach dem bundesweit anerkannten Curriculum und besitzen eine Pflegeerlaubnis des Amtes für Kindertagesbetreuung. Regelmäßige Fortbildungen sind verpflichtend.",
+    },
+    {
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-500",
+      IconComponent: FaqEuroIcon,
+      q: "Was kostet Kindertagespflege?",
+      a: <>Die Elternbeiträge sind identisch mit denen einer Kita. Unter bestimmten Voraussetzungen kann der Beitrag reduziert werden.{" "}<a href="https://www.dresden.de/de/leben/kinder/tagesbetreuung/anmeldung/elternbeitraege.php?pk_campaign=Shortcut&pk_kwd=elternbeitraege" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-korallenrot transition-colors">Hier mehr erfahren.</a></>,
+    },
+    {
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-500",
+      IconComponent: FaqSearchIcon,
+      q: "Wie finde ich eine passende Tagesmutter oder einen passenden Tagesvater?",
+      a: "Über unsere Suche kannst du Tageseltern in deiner Nähe entdecken und siehst direkt, wer freie Plätze hat.",
+    },
+  ];
+}
 
 function FaqSection() {
+  const items = buildFaqItems();
   return (
     <section className="bg-creme">
-      <div className="mx-auto max-w-3xl px-4 py-20 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12">
-          Häufige Fragen
-        </h2>
-        <div className="rounded-3xl bg-white shadow-sm divide-y divide-text/10 overflow-hidden">
-          {FAQS.map((item) => (
-            <FaqItem key={item.q} q={item.q} a={item.a} />
+      <div className="mx-auto max-w-2xl px-4 py-20 md:py-24">
+
+        {/* Kopf */}
+        <div className="flex flex-col items-start md:items-center text-left md:text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold">
+            Häufige Fragen
+          </h2>
+          <p className="text-text-soft max-w-sm leading-relaxed mt-3">
+            Antworten auf die wichtigsten Fragen rund um die Kindertagespflege.
+          </p>
+        </div>
+
+        {/* Akkordeon-Karten */}
+        <div className="space-y-4">
+          {items.map((item) => (
+            <FaqCard key={item.q} {...item} />
           ))}
         </div>
+
+        {/* Noch Fragen? */}
+        <div className="mt-6">
+          <NochFragenCard />
+        </div>
+
       </div>
     </section>
   );
 }
 
 /**
- * Natives <details>-Element: zugänglich (Keyboard + Screenreader),
- * funktioniert ohne JavaScript, eignet sich daher gut für eine spätere
- * Übernahme nach WordPress / Elementor.
+ * Natives <details>-Element mit farbigem Icon-Kreis.
+ * Zugänglich (Keyboard + Screenreader), kein JavaScript nötig.
  */
-function FaqItem({ q, a }: { q: string; a: string }) {
+function FaqCard({
+  iconBg,
+  iconColor,
+  IconComponent,
+  q,
+  a,
+}: {
+  iconBg: string;
+  iconColor: string;
+  IconComponent: () => React.ReactElement;
+  q: string;
+  a: React.ReactNode;
+}) {
   return (
-    <details className="group">
-      <summary className="flex items-center justify-between gap-4 cursor-pointer list-none px-6 py-5 hover:bg-creme/60 transition-colors">
-        <span className="font-semibold text-base md:text-lg">{q}</span>
+    <details className="group bg-white rounded-2xl shadow-sm overflow-hidden">
+      <summary className="flex items-center gap-4 cursor-pointer list-none px-5 py-5 hover:bg-creme/60 transition-colors">
+        {/* Icon-Kreis */}
+        <span
+          className={`inline-flex w-12 h-12 shrink-0 items-center justify-center rounded-full ${iconBg} ${iconColor}`}
+        >
+          <IconComponent />
+        </span>
+        {/* Frage */}
+        <span className="flex-1 font-bold text-base md:text-lg text-text leading-snug">{q}</span>
+        {/* + dreht sich zu × */}
         <span
           aria-hidden
-          className="inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full bg-sonnengelb text-text transition-transform group-open:rotate-45"
+          className="inline-flex w-9 h-9 shrink-0 items-center justify-center rounded-full border-2 border-korallenrot text-korallenrot transition-transform duration-200 group-open:rotate-45"
         >
           <PlusIcon />
         </span>
       </summary>
-      <div className="px-6 pb-6 text-text-soft leading-relaxed">{a}</div>
+      {/* Antwort – eingerückt bündig mit dem Fragetext */}
+      <div className="px-5 pb-6 pt-1 text-text-soft leading-relaxed text-[0.95rem]">
+        <div className="pl-16">{a}</div>
+      </div>
     </details>
+  );
+}
+
+function NochFragenCard() {
+  return (
+    <div
+      className="flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl shadow-sm p-5 bg-white"
+    >
+      <span
+        className="inline-flex w-12 h-12 shrink-0 items-center justify-center rounded-full"
+        style={{ backgroundColor: "#f5a623" }}
+      >
+        <FaqLightbulbIcon />
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="font-bold text-text text-lg leading-tight">Noch Fragen?</p>
+        <p className="text-text-soft text-sm mt-0.5">
+          Wir sind gerne für euch da und helfen euch weiter.
+        </p>
+      </div>
+      <a
+        href="mailto:info@dresdner-tageseltern.de"
+        className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors bg-korallenrot text-white hover:bg-korallenrot-dunkel w-full sm:w-auto"
+      >
+        <FaqChatIcon />
+        E-Mail schreiben
+      </a>
+    </div>
   );
 }
 
@@ -523,36 +783,41 @@ function FinalCtaSection() {
   return (
     <section className="bg-creme">
       <div className="mx-auto max-w-6xl px-4 pb-20 md:pb-24">
-        <div className="rounded-3xl bg-white p-8 md:p-12 shadow-sm relative overflow-hidden">
-          <div className="grid gap-8 md:grid-cols-[auto_1fr] items-center">
-            <DresdenIllustration />
-
-            <div>
-              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
-                Bereit, die passende Betreuung für dein Kind zu finden?
-              </h2>
-              <p className="text-text-soft mb-6">
-                Wir sind gerne für dich da und unterstützen dich bei allen
-                Fragen.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <CtaButton
-                  href="/fuer-eltern/tagesmutter-finden"
-                  label="Tageseltern finden"
-                  hint="Freie Plätze entdecken"
-                  variant="primary"
-                />
-                <CtaButton
-                  href="/fuer-eltern"
-                  label="Beratung für Eltern"
-                  hint="Wir sind für dich da"
-                  variant="secondary"
-                />
-              </div>
+        <div className="relative overflow-hidden rounded-3xl bg-white p-8 md:p-12 shadow-sm">
+          <Image
+            src="/images/allgemein/frauenkirche.png"
+            alt=""
+            aria-hidden
+            fill
+            sizes="(min-width: 768px) 38vw, 0px"
+            className="!left-auto !w-full md:!w-[38%] object-cover object-top md:object-left pointer-events-none select-none opacity-20 md:opacity-100 [mask-image:linear-gradient(to_right,transparent_0%,black_45%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_45%)]"
+          />
+          <div className="relative md:max-w-[62%]">
+            <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+              Bereit, die passende Betreuung für dein Kind in Dresden zu finden?
+            </h2>
+            <p className="text-text-soft mb-6">
+              Weil die ersten Jahre besondere Begleitung verdienen
+            </p>
+            <div className="flex items-center gap-6">
+              <CtaButton
+                href="/kindertagespflege-finden"
+                label="Tageseltern finden"
+                hint="Freie Plätze entdecken"
+                variant="primary"
+                className="w-full sm:w-auto sm:px-16"
+              />
+              {/* Herz – Desktop neben dem Button */}
+              <Image
+                src="/images/hero/herzapricot-transparent.png"
+                alt=""
+                width={400}
+                height={280}
+                aria-hidden
+                className="hidden md:block pointer-events-none select-none w-28 h-auto"
+              />
             </div>
           </div>
-
-          <SkylineDecoration />
         </div>
       </div>
     </section>
@@ -564,20 +829,22 @@ function CtaButton({
   label,
   hint,
   variant,
+  className = "",
 }: {
   href: string;
   label: string;
   hint: string;
   variant: "primary" | "secondary";
+  className?: string;
 }) {
   const base =
-    "flex flex-col items-start rounded-2xl px-5 py-3 transition-colors";
+    "flex flex-col items-start rounded-3xl px-10 py-3 transition-colors";
   const styles =
     variant === "primary"
       ? "bg-korallenrot text-white hover:bg-korallenrot-dunkel"
       : "bg-sonnengelb text-text hover:bg-sonnengelb/80";
   return (
-    <Link href={href} className={`${base} ${styles}`}>
+    <Link href={href} className={`${base} ${styles} ${className}`}>
       <span className="font-semibold leading-tight">{label}</span>
       <span
         className={`text-xs leading-tight ${
@@ -587,75 +854,6 @@ function CtaButton({
         {hint}
       </span>
     </Link>
-  );
-}
-
-/**
- * Kleine Dresden-„Karten"-Illustration links im CTA: stilisierter
- * Elbbogen mit Pins. Reines SVG → keine Bildabhängigkeit.
- */
-function DresdenIllustration() {
-  return (
-    <svg
-      width="220"
-      height="160"
-      viewBox="0 0 220 160"
-      fill="none"
-      aria-hidden
-      className="hidden md:block text-korallenrot"
-    >
-      <rect
-        x="6"
-        y="6"
-        width="208"
-        height="148"
-        rx="20"
-        fill="var(--color-sonnengelb-hell)"
-      />
-      <path
-        d="M10 110 C 40 60, 90 120, 130 80 S 200 70, 215 95"
-        stroke="var(--color-sonnengelb)"
-        strokeWidth="6"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <g fill="currentColor">
-        <circle cx="55" cy="75" r="6" />
-        <circle cx="105" cy="60" r="6" />
-        <circle cx="150" cy="85" r="6" />
-        <circle cx="180" cy="100" r="6" />
-      </g>
-      <path
-        d="M55 75 v 12 M105 60 v 12 M150 85 v 12 M180 100 v 12"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-    </svg>
-  );
-}
-
-function SkylineDecoration() {
-  return (
-    <svg
-      className="hidden lg:block absolute right-4 bottom-4 text-korallenrot opacity-70"
-      width="260"
-      height="60"
-      viewBox="0 0 260 60"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M0 50 L20 40 L30 45 L45 25 L55 30 L70 15 L82 30 L95 20 L110 40 L125 30 L140 35 L160 20 L175 30 L195 40 L215 30 L235 40 L260 35"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M232 14 c -3 -4, -10 -4, -10 2 c 0 6, 10 10, 10 10 c 0 0, 10 -4, 10 -10 c 0 -6, -7 -6, -10 -2 z"
-        fill="currentColor"
-      />
-    </svg>
   );
 }
 
@@ -684,125 +882,49 @@ function CalendarHeartIcon() {
   );
 }
 
-function HomeIcon() {
+
+function VergleichUsersIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4 11 L 12 4 L 20 11 V 20 H 14 V 14 H 10 V 20 H 4 Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="8" cy="9" r="3" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="17" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M2 19c1-3 4-4.5 6-4.5s5 1.5 6 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M15 19c.8-2.4 3-3.5 4.5-3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 
-function FamilyHomeIcon() {
+function VergleichPersonIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4 11 L 12 4 L 20 11 V 20 H 4 Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <circle cx="9" cy="14" r="1.4" fill="currentColor" />
-      <circle cx="15" cy="14" r="1.4" fill="currentColor" />
-      <path d="M9 18 q 3 -2 6 0" stroke="currentColor" strokeWidth="1.6" />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5 20c1.5-4 5-5.5 7-5.5s5.5 1.5 7 5.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 
-function RoomIcon() {
+function VergleichHeartIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect
-        x="3"
-        y="6"
-        width="18"
-        height="13"
-        rx="1.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path d="M3 10 H 21" stroke="currentColor" strokeWidth="1.8" />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" fill="currentColor" />
     </svg>
   );
 }
 
-function UsersIcon() {
+function VergleichHouseIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="8" cy="9" r="3" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="17" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.8" />
-      <path
-        d="M2 19 c 1 -3 4 -4.5 6 -4.5 s 5 1.5 6 4.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M15 19 c .8 -2.4 3 -3.5 4.5 -3.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 11L12 4l8 7v9H4z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M9 21v-6h6v6" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function PersonIcon() {
+function VergleichCoinIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.8" />
-      <path
-        d="M5 20 c 1.5 -4 5 -5.5 7 -5.5 s 5.5 1.5 7 5.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function HeartIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M12 20 s -7 -4.5 -7 -10 a 4 4 0 0 1 7 -2.6 a 4 4 0 0 1 7 2.6 c 0 5.5 -7 10 -7 10 z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 7 V 12 L 16 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function HouseIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4 11 L 12 4 L 20 11 V 20 H 4 Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CoinIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M9 10 h 5 a 2 2 0 0 1 0 4 h -4 a 2 2 0 0 0 0 4 h 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 10h5a2 2 0 0 1 0 4h-4a2 2 0 0 0 0 4h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
@@ -811,6 +933,96 @@ function PlusIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path d="M12 5 V 19 M5 12 H 19" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* FAQ-Icons                                                            */
+/* ------------------------------------------------------------------ */
+
+/** Kalender mit Punkten */
+function FaqCalendarIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8 3v4M16 3v4M3 10h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="8" cy="15" r="1" fill="currentColor" />
+      <circle cx="12" cy="15" r="1" fill="currentColor" />
+      <circle cx="16" cy="15" r="1" fill="currentColor" />
+      <circle cx="8" cy="19" r="1" fill="currentColor" />
+      <circle cx="12" cy="19" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Gruppe von Personen */
+function FaqPeopleIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="9" cy="8" r="3" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="17" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M3 19c1-3.5 4-5 6-5s5 1.5 6 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M16 19c.8-2.8 3-4 4.5-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Zertifikat / Abzeichen */
+function FaqCertIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="3" width="13" height="17" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M7 8h6M7 12h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="18" cy="17" r="3.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M16 22l2-2.5 2 2.5" stroke="currentColor" strokeWidth="1.5"
+        strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Euro-Zeichen */
+function FaqEuroIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M17 6.5A7 7 0 1 0 17 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M5 10h9M5 14h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Lupe mit Herz */
+function FaqSearchIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M16 16l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M11 14.5s-3-1.8-3-4.2a2.1 2.1 0 0 1 3-1.9 2.1 2.1 0 0 1 3 1.9c0 2.4-3 4.2-3 4.2z"
+        fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Glühbirne (weiß auf orangem Hintergrund) */
+function FaqLightbulbIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M9 21h6M12 3a6 6 0 0 1 4.6 9.9C15.4 14.3 15 15 15 16v1H9v-1c0-1-.4-1.7-1.6-3.1A6 6 0 0 1 12 3z"
+        stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Sprechblase für den Kontakt-Button */
+function FaqChatIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+      />
     </svg>
   );
 }

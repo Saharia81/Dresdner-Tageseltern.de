@@ -15,9 +15,10 @@ export default function FuerElternPage() {
       </p>
       <ul className="space-y-3 list-disc pl-6">
         <li><Link className="underline" href="/fuer-eltern/kindertagespflege">Was ist Kindertagespflege?</Link></li>
+        <li><Link className="underline" href="/fuer-eltern/eingewoehnung-und-ersatzbetreuung">Eingewöhnung &amp; Ersatzbetreuung</Link></li>
         <li><Link className="underline" href="/fuer-eltern/vorteile">Vorteile gegenüber der Kita</Link></li>
         <li><Link className="underline" href="/fuer-eltern/faq">Häufige Fragen</Link></li>
-        <li><Link className="underline" href="/fuer-eltern/tagesmutter-finden">Tagesmutter finden</Link></li>
+        <li><Link className="underline" href="/kindertagespflege-finden">Tagesmutter finden</Link></li>
         <li><Link className="underline" href="/fuer-eltern/aktionswoche">Aktionswoche</Link></li>
       </ul>
     </main>

@@ -9,7 +9,7 @@ export function Footer() {
       </div>
       <div className="mx-auto max-w-6xl px-4 py-10 grid gap-6 md:grid-cols-3 text-sm">
         <div>
-          <p className="font-bold mb-2">Dresdner Tages Eltern e.&#8239;V.</p>
+          <p className="font-bold mb-2">Dresdner Tages Eltern e.V.</p>
           <p className="text-text-soft">
             Gemeinsam stark für die Kleinsten unserer Stadt.
           </p>

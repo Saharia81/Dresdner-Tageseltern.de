@@ -3,9 +3,9 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-24 text-center">
-      <h1 className="text-4xl font-bold mb-4">Seite nicht gefunden</h1>
+      <h1 className="text-4xl font-bold mb-4">Ups, hier gibt es noch keinen Inhalt.</h1>
       <p className="text-text-soft mb-8">
-        Die angeforderte Seite existiert nicht (mehr).
+        Wir arbeiten daran – kommt später gerne noch einmal vorbei!
       </p>
       <Link
         href="/"

@@ -34,9 +34,7 @@ yarn-error.log*
 .env*
 !.env.example
 
-# prisma local db
-/prisma/*.db
-/prisma/*.db-journal
+
 
 # vercel
 .vercel
@@ -45,3 +43,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+
+# Personenbezogene Daten (Import-Quelle, nicht ins Repo)
+mitglieder.xlsx
+
+# Windows-Systemdateien
+desktop.ini
+Thumbs.db

@@ -60,18 +60,18 @@ export function TestimonialCarousel({
 
   return (
     <div>
-      <div className="flex items-center gap-2 md:gap-4">
+      <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={() => setIndex((i) => i - 1)}
           aria-label="Vorherige Stimme"
-          className="relative z-10 shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors"
+          className="relative z-10 shrink-0 w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors touch-manipulation [&>*]:pointer-events-none"
         >
           <ChevronLeft />
         </button>
 
         <div
-          className="overflow-hidden flex-1 min-w-0 -mx-3 touch-pan-y"
+          className="overflow-hidden flex-1 min-w-0 touch-pan-y"
           onTouchStart={(e) => {
             const t = e.touches[0];
             touchStartX.current = t.clientX;
@@ -139,7 +139,7 @@ export function TestimonialCarousel({
           type="button"
           onClick={() => setIndex((i) => i + 1)}
           aria-label="Nächste Stimme"
-          className="relative z-10 shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors"
+          className="relative z-10 shrink-0 w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-text-soft hover:text-korallenrot transition-colors touch-manipulation [&>*]:pointer-events-none"
         >
           <ChevronRight />
         </button>
