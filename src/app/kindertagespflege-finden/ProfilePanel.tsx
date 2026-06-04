@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
 import { BERATUNGSGEBIET_LABEL, VERPFLEGUNG_LABEL } from "@/types";
 
@@ -228,18 +228,34 @@ function FotoKarussel({ fotos }: { fotos: string[] }) {
   const [aktiv, setAktiv] = useState(N); // Start: erstes Bild im mittleren Drittel
   const [mitAnimation, setMitAnimation] = useState(true);
 
-  // Auto-Advance alle 3 s
+  // Auto-Advance alle 3 s (nur wenn mehr Bilder als sichtbar)
   useEffect(() => {
+    if (N <= 3) return;
     const id = setInterval(() => {
       setMitAnimation(true);
       setAktiv((a) => a + 1);
     }, 3000);
     return () => clearInterval(id);
-  }, []);
+  }, [N]);
 
   const navigate = (delta: number) => {
     setMitAnimation(true);
     setAktiv((a) => a + delta);
+  };
+
+  // Wischen auf Mobilgeräten
+  const touchStartX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < 40) return; // zu kurz → kein Wisch
+    navigate(dx < 0 ? 1 : -1);
   };
 
   // Nach Transition: unsichtbar zurück ins mittlere Drittel springen
@@ -256,9 +272,36 @@ function FotoKarussel({ fotos }: { fotos: string[] }) {
 
   const translatePct = (aktiv * 100) / T;
 
+  // 3 oder weniger Bilder: alle nebeneinander, kein Scrollen/Wischen/Pfeile
+  if (N <= 3) {
+    return (
+      <div className="grid grid-cols-3 gap-1">
+        {fotos.map((url, i) => (
+          <div
+            key={i}
+            className="relative aspect-square bg-text-soft/10 overflow-hidden rounded-xl"
+          >
+            <Image
+              src={url}
+              alt=""
+              fill
+              sizes="150px"
+              className="object-cover"
+              priority={i === 0}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
-      <div className="overflow-hidden rounded-2xl">
+      <div
+        className="overflow-hidden rounded-2xl touch-pan-y"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div
           className={`flex${mitAnimation ? " transition-transform duration-500 ease-in-out" : ""}`}
           style={{
@@ -288,7 +331,7 @@ function FotoKarussel({ fotos }: { fotos: string[] }) {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center hover:bg-white transition-colors"
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-md hidden sm:flex items-center justify-center hover:bg-white transition-colors"
         aria-label="Vorheriges Bild"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -298,7 +341,7 @@ function FotoKarussel({ fotos }: { fotos: string[] }) {
       <button
         type="button"
         onClick={() => navigate(1)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center hover:bg-white transition-colors"
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-md hidden sm:flex items-center justify-center hover:bg-white transition-colors"
         aria-label="Nächstes Bild"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
