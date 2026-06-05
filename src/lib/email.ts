@@ -250,6 +250,69 @@ Dresdner Tageseltern e.V.`;
 }
 
 // ----------------------------------------------------------------
+// Erstmail – einmalige Einführung (Roll-out)
+// ----------------------------------------------------------------
+
+export function buildIntroEmail(args: {
+  vorname: string;
+  emailToken: string;
+}): { betreff: string; html: string; text: string } {
+  const { vorname, emailToken } = args;
+  const editUrl = `${APP_URL}/plaetze-bestaetigen?token=${emailToken}&action=edit`;
+
+  const inhalt = `
+    <p>Liebe ${escape(vorname)},</p>
+    <p>
+      ab sofort kannst du deine <strong>freien Betreuungsplätze</strong> direkt
+      auf unserer Website anzeigen lassen – so finden dich suchende Eltern noch
+      leichter und sehen sofort, ab wann bei dir ein Platz frei wird.
+    </p>
+    <p>
+      Bitte trage einmal kurz ein, <strong>ab welchem Monat</strong> bei dir
+      Plätze frei werden:
+    </p>
+    <p>
+      ${button(editUrl, "Freie Plätze eintragen", "#f8796c")}
+    </p>
+    <p>
+      Hast du aktuell <strong>keine</strong> freien Plätze? Dann lass die Felder
+      einfach leer – fertig.
+    </p>
+    <p style="margin-top:24px;color:#5a534c;font-size:14px;">
+      Ab jetzt melden wir uns einmal im Monat kurz bei dir, damit deine Angaben
+      aktuell bleiben. Du kannst sie aber jederzeit über diesen Link anpassen.
+    </p>
+    <p style="margin-top:24px;">Vielen Dank und liebe Grüße,<br>Dresdner Tageseltern e.V.</p>
+  `;
+
+  const text = `Liebe ${vorname},
+
+ab sofort kannst du deine freien Betreuungsplätze direkt auf unserer Website
+anzeigen lassen – so finden dich suchende Eltern noch leichter und sehen sofort,
+ab wann bei dir ein Platz frei wird.
+
+Bitte trage einmal kurz ein, ab welchem Monat bei dir Plätze frei werden:
+${editUrl}
+
+Hast du aktuell keine freien Plätze? Dann lass die Felder einfach leer – fertig.
+
+Ab jetzt melden wir uns einmal im Monat kurz bei dir, damit deine Angaben aktuell
+bleiben. Du kannst sie aber jederzeit über diesen Link anpassen.
+
+Vielen Dank und liebe Grüße,
+Dresdner Tageseltern e.V.`;
+
+  return {
+    betreff: "Neu: Zeig deine freien Plätze auf unserer Website",
+    html: layout(
+      inhalt,
+      "Neu: Trage ein, ab wann bei dir ein Betreuungsplatz frei wird.",
+    ),
+    text,
+  };
+}
+
+// ----------------------------------------------------------------
 // Mail 2 – Erinnerung (Tag 6)
 // ----------------------------------------------------------------
 

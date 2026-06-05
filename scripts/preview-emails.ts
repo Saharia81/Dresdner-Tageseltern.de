@@ -5,6 +5,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  buildIntroEmail,
   buildMonthlyEmail,
   buildReminderEmail,
   buildAdminSummaryEmail,
@@ -40,6 +41,11 @@ const reminder = buildReminderEmail({
   heute,
 });
 
+const intro = buildIntroEmail({
+  vorname: "Sandy",
+  emailToken: "demo-token",
+});
+
 const admin = buildAdminSummaryEmail({
   heute,
   bestaetigt: 31,
@@ -63,6 +69,7 @@ function mitLokalemLogo(html: string): string {
 }
 
 for (const [name, mail] of [
+  ["0-erstmail", intro],
   ["1-monatsaufforderung", monthly],
   ["2-erinnerung", reminder],
   ["3-admin-zusammenfassung", admin],
