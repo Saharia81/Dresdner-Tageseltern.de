@@ -73,7 +73,7 @@ function erstelleAuswahlPopup(
     closeButton: true,
     offset: [0, -10] as [number, number],
     autoPan: true,
-    maxWidth: 250,
+    maxWidth: 280,
   });
 
   const html = `
@@ -85,13 +85,41 @@ function erstelleAuswahlPopup(
         .map(
           (tm, i) => `
         <button data-idx="${i}" style="
-          display:block;width:100%;text-align:left;
-          padding:8px 10px;margin:3px 0;
+          display:flex;align-items:center;gap:10px;
+          width:100%;text-align:left;
+          padding:8px 10px;margin:4px 0;
           border:1px solid #e8dfc8;background:#fdf7e3;
-          border-radius:8px;cursor:pointer;
-          font-size:13px;font-weight:600;color:#333;
+          border-radius:10px;cursor:pointer;
           font-family:system-ui,sans-serif;
-        ">${tm.vorname} ${tm.nachname}</button>
+        ">
+          <img src="${tm.fotoUrl}" alt="" style="
+            width:44px;height:44px;border-radius:50%;
+            object-fit:cover;flex-shrink:0;background:#e8dfc8;
+          " />
+          <span style="min-width:0;flex:1">
+            <span style="display:block;font-weight:600;font-size:13px;color:#333;
+              overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              ${tm.vorname} ${tm.nachname}
+            </span>
+            <span style="display:block;font-size:12px;color:#666;
+              overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              ${tm.einrichtungsname}
+            </span>
+            <span style="display:block;font-size:11px;color:#888;margin-top:2px;
+              overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              ${tm.oeffnungszeiten}
+            </span>
+            ${
+              tm.hatFreienPlatz
+                ? `<span style="display:inline-flex;align-items:center;gap:4px;
+                    font-size:11px;font-weight:600;color:#15803d;margin-top:2px">
+                    <span style="width:7px;height:7px;border-radius:50%;
+                      background:#22c55e;display:inline-block"></span>Freie Plätze
+                  </span>`
+                : ""
+            }
+          </span>
+        </button>
       `,
         )
         .join("")}
@@ -105,13 +133,11 @@ function erstelleAuswahlPopup(
     if (!el) return;
     el.querySelectorAll<HTMLButtonElement>("button[data-idx]").forEach((btn) => {
       btn.addEventListener("mouseover", () => {
-        btn.style.background = "#f8796c";
-        btn.style.color = "white";
+        btn.style.background = "#fff";
         btn.style.borderColor = "#f8796c";
       });
       btn.addEventListener("mouseout", () => {
         btn.style.background = "#fdf7e3";
-        btn.style.color = "#333";
         btn.style.borderColor = "#e8dfc8";
       });
       btn.addEventListener("click", () => {
@@ -314,12 +340,22 @@ export function MapView({
         const icon = stackIcon(gruppe.length, enthaeltAusgewaehlt);
         const marker = L.marker([lat, lng], { icon });
 
+        const popup = erstelleAuswahlPopup(gruppe, (tm) => {
+          onSelect(tm);
+        });
+        marker.bindPopup(popup);
+
+        // Desktop (Maus): Auswahl schon beim Hovern öffnen.
+        marker.on("mouseover", () => {
+          if (!window.matchMedia("(hover: none)").matches) {
+            setVorschau(null);
+            marker.openPopup();
+          }
+        });
+        // Touch / Fallback: per Klick/Tap öffnen.
         marker.on("click", () => {
           setVorschau(null);
-          const popup = erstelleAuswahlPopup(gruppe, (tm) => {
-            onSelect(tm);
-          });
-          marker.bindPopup(popup).openPopup();
+          marker.openPopup();
         });
 
         marker.addTo(map);
