@@ -6,6 +6,11 @@ import { prisma } from "@/lib/db";
 import { buildReminderEmail, sendeMail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
+function warte(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function pruefeCronAuth(request: Request): NextResponse | null {
   const secret = process.env.CRON_SECRET;
@@ -60,6 +65,7 @@ export async function GET(request: Request) {
       });
       await sendeMail({ an: tm.email, ...mail });
       versandt++;
+      await warte(400);
     } catch (err) {
       fehlgeschlagen++;
       const msg = err instanceof Error ? err.message : String(err);
