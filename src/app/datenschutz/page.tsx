@@ -156,6 +156,33 @@ export default function DatenschutzPage() {
             werden. Wenden Sie sich dazu an die oben genannten Kontaktdaten;
             das betreffende Profil wird dann von der Website entfernt.
           </p>
+          <h3 className="text-lg font-bold mt-6 mb-2">
+            Monatliche Aktualisierung der freien Plätze
+          </h3>
+          <p>
+            Damit die angezeigten freien Betreuungsplätze aktuell bleiben,
+            senden wir den Tagespflegepersonen einmal im Monat eine E-Mail mit
+            der Bitte, ihre freien Plätze zu bestätigen oder anzupassen. Hierfür
+            verarbeiten wir die E-Mail-Adresse der Tagespflegeperson, einen
+            zufällig erzeugten Zugangs-Token (über den der persönliche
+            Bestätigungslink ohne Passwort funktioniert), den Zeitpunkt der
+            letzten Bestätigung sowie die von der Person angegebenen
+            Monatsangaben zu freien Plätzen.
+          </p>
+          <p className="mt-3">
+            Rechtsgrundlage ist die Durchführung des
+            Mitgliedschaftsverhältnisses (Art. 6 Abs. 1 lit. b DSGVO) sowie
+            unser berechtigtes Interesse an aktuellen Angaben auf der Website
+            (Art. 6 Abs. 1 lit. f DSGVO). Reagiert eine Person nicht, werden
+            lediglich ihre freien Plätze vorübergehend ausgeblendet; das Profil
+            bleibt bestehen.
+          </p>
+          <p className="mt-3">
+            Der Versand dieser E-Mails erfolgt über unseren Mail-Provider
+            ALL-INKL.COM – Neue Medien Münnich, Hauptstraße 68, 02742
+            Friedersdorf, mit dem ein Vertrag zur Auftragsverarbeitung (Art. 28
+            DSGVO) besteht.
+          </p>
         </section>
 
         <section>

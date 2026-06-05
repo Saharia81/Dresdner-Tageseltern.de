@@ -8,8 +8,10 @@ import nodemailer, { type Transporter } from "nodemailer";
 
 const APP_URL = process.env.APP_URL ?? "https://dresdner-tageseltern.de";
 const ABSENDER_NAME = "Dresdner Tageseltern e.V.";
+// Absender getrennt vom SMTP-Login: bei manchen Hostern (z.B. All-Inkl) ist
+// der SMTP-Benutzername ein interner Login (mXXXXXXX), nicht die Adresse.
 const ABSENDER_EMAIL =
-  process.env.SMTP_USER ?? "plaetze@dresdner-tageseltern.de";
+  process.env.SMTP_FROM ?? "plaetze@dresdner-tageseltern.de";
 
 const DATUM_FORMAT = new Intl.DateTimeFormat("de-DE", {
   day: "2-digit",
@@ -79,6 +81,12 @@ function monatJahr(d: Date): string {
   return MONAT_JAHR_FORMAT.format(d);
 }
 
+// Plätze werden nur noch monatsgenau erfasst → "August 2026".
+function formatMonat(d: Date | null | undefined): string | null {
+  if (!d) return null;
+  return MONAT_JAHR_FORMAT.format(d);
+}
+
 function plusTage(d: Date, tage: number): Date {
   const n = new Date(d);
   n.setDate(n.getDate() + tage);
@@ -97,21 +105,33 @@ function escape(text: string): string {
 // Layout für alle Mails (einheitlicher Stil)
 // ----------------------------------------------------------------
 
-function layout(inhalt: string): string {
+function layout(inhalt: string, preheader = ""): string {
+  const domain = APP_URL.replace(/^https?:\/\//, "");
   return `<!doctype html>
-<html lang="de"><head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#fef2c2;font-family:Nunito,Arial,sans-serif;color:#2f2a26;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 16px;">
+<html lang="de" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="x-apple-disable-message-reformatting">
+  <!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+  <title>Dresdner Tageseltern e.V.</title>
+</head>
+<body style="margin:0;padding:0;background:#fef2c2;font-family:Nunito,'Segoe UI',Arial,sans-serif;color:#2f2a26;-webkit-font-smoothing:antialiased;">
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#fef2c2;opacity:0;">${escape(preheader)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fef2c2;padding:24px 16px;">
     <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;">
-        <tr><td style="padding:32px 32px 8px;">
-          <p style="margin:0;font-size:14px;color:#5a534c;font-weight:600;">Dresdner Tageseltern e.V.</p>
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 2px 8px rgba(47,42,38,0.08);">
+        <tr><td style="background:#ffde59;padding:20px 32px;text-align:center;">
+          <img src="${APP_URL}/images/logo-tageseltern.png" width="260" alt="Dresdner Tageseltern e.V." style="display:inline-block;width:100%;max-width:260px;height:auto;border:0;">
         </td></tr>
-        <tr><td style="padding:16px 32px 32px;font-size:16px;line-height:1.6;">
+        <tr><td style="padding:32px 32px 28px;font-size:16px;line-height:1.65;color:#2f2a26;">
           ${inhalt}
         </td></tr>
-        <tr><td style="padding:16px 32px 24px;background:#fef2c2;font-size:12px;color:#5a534c;text-align:center;">
-          Dresdner Tageseltern e.V. &middot; <a href="${APP_URL}" style="color:#5a534c;">${APP_URL.replace(/^https?:\/\//, "")}</a>
+        <tr><td style="padding:20px 32px 24px;background:#fef2c2;font-size:12px;line-height:1.6;color:#5a534c;text-align:center;">
+          <strong style="color:#2f2a26;">Dresdner Tageseltern e.V.</strong><br>
+          <a href="${APP_URL}" style="color:#5a534c;text-decoration:none;">${domain}</a>
+          &nbsp;&middot;&nbsp;
+          <a href="mailto:info@dresdner-tageseltern.de" style="color:#5a534c;text-decoration:none;">info@dresdner-tageseltern.de</a>
         </td></tr>
       </table>
     </td></tr>
@@ -119,15 +139,50 @@ function layout(inhalt: string): string {
 </body></html>`;
 }
 
+// Outlook-fester ("bulletproof") Button mit VML-Fallback.
 function button(href: string, text: string, farbe: string): string {
-  return `<a href="${href}" style="display:inline-block;background:${farbe};color:#ffffff;text-decoration:none;font-weight:700;padding:14px 24px;border-radius:999px;margin:4px 0;">${escape(text)}</a>`;
+  const label = escape(text);
+  return `<!--[if mso]>
+  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${href}" style="height:48px;v-text-anchor:middle;width:340px;" arcsize="50%" stroke="f" fillcolor="${farbe}">
+    <w:anchorlock/><center style="color:#ffffff;font-family:'Segoe UI',Arial,sans-serif;font-size:16px;font-weight:bold;">${label}</center>
+  </v:roundrect>
+  <![endif]-->
+  <!--[if !mso]><!-- -->
+  <a href="${href}" style="display:inline-block;background:${farbe};color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;line-height:48px;padding:0 32px;border-radius:999px;">${label}</a>
+  <!--<![endif]-->`;
+}
+
+// ----------------------------------------------------------------
+// Plätze-Übersicht (gemeinsamer Block für Aufforderung + Erinnerung)
+// ----------------------------------------------------------------
+
+export type PlatzInfo = { nr: number; ab: Date | null };
+
+function plaetzeBlockHtml(plaetze: PlatzInfo[]): string {
+  const zeilen = plaetze
+    .filter((p) => p.ab !== null)
+    .map(
+      (p) =>
+        `<p style="margin:4px 0;"><strong>Platz ${p.nr}:</strong> ab ${formatMonat(p.ab)}</p>`,
+    )
+    .join("");
+  return `<div style="background:#fef2c2;border-radius:12px;padding:16px 20px;margin:16px 0;">
+      ${zeilen || `<p style="margin:0;color:#5a534c;">Aktuell sind keine freien Plätze eingetragen.</p>`}
+    </div>`;
+}
+
+function plaetzeBlockText(plaetze: PlatzInfo[]): string {
+  return (
+    plaetze
+      .filter((p) => p.ab !== null)
+      .map((p) => `Platz ${p.nr}: ab ${formatMonat(p.ab)}`)
+      .join("\n") || "(aktuell keine freien Plätze eingetragen)"
+  );
 }
 
 // ----------------------------------------------------------------
 // Mail 1 – Monats-Aufforderung (Tag 1)
 // ----------------------------------------------------------------
-
-export type PlatzInfo = { nr: number; ab: Date | null };
 
 export function buildMonthlyEmail(args: {
   vorname: string;
@@ -137,52 +192,38 @@ export function buildMonthlyEmail(args: {
 }): { betreff: string; html: string; text: string } {
   const { vorname, emailToken, plaetze, heute } = args;
   const monat = monatJahr(heute);
-  const erinnerungAm = formatDatum(plusTage(heute, 7))!;
+  const erinnerungAm = formatDatum(plusTage(heute, 5))!;
   const cleanupAm = formatDatum(plusTage(heute, 10))!;
 
   const confirmUrl = `${APP_URL}/plaetze-bestaetigen?token=${emailToken}&action=confirm`;
   const editUrl = `${APP_URL}/plaetze-bestaetigen?token=${emailToken}&action=edit`;
 
-  const plaetzeZeilen = plaetze
-    .filter((p) => p.ab !== null)
-    .map(
-      (p) =>
-        `<p style="margin:4px 0;"><span style="margin-right:6px;">📅</span><strong>Platz ${p.nr}:</strong> ab ${formatDatum(p.ab)}</p>`,
-    )
-    .join("");
-
-  const plaetzeText =
-    plaetze
-      .filter((p) => p.ab !== null)
-      .map((p) => `📅 Platz ${p.nr}: ab ${formatDatum(p.ab)}`)
-      .join("\n") || "(aktuell keine freien Plätze eingetragen)";
-
   const inhalt = `
     <p>Liebe ${escape(vorname)},</p>
-    <p>bitte überprüfe deine aktuell eingetragenen freien Plätze:</p>
-    <div style="background:#fef2c2;border-radius:12px;padding:16px 20px;margin:16px 0;">
-      ${plaetzeZeilen || `<p style="margin:0;color:#5a534c;">Aktuell sind keine freien Plätze eingetragen.</p>`}
-    </div>
+    <p>bitte überprüfe deine aktuell eingetragenen freien Plätze auf unserer Website:</p>
+    ${plaetzeBlockHtml(plaetze)}
     <p>
-      ${button(confirmUrl, "✅ Alles stimmt so – bestätigen", "#f8796c")}
+      ${button(confirmUrl, "Alles stimmt so – bestätigen", "#f8796c")}
     </p>
     <p>
       ${button(editUrl, "✏️ Ich möchte etwas ändern", "#5a534c")}
     </p>
     <p style="margin-top:24px;color:#5a534c;font-size:14px;">
+      Bitte bestätige deine freien Plätze.
       Wenn wir bis zum <strong>${erinnerungAm}</strong> keine Antwort erhalten,
       schicken wir eine Erinnerung. Antwortest du bis zum
       <strong>${cleanupAm}</strong> nicht, werden deine freien Plätze
-      vorübergehend von der Website entfernt. Dein Profil bleibt bestehen.
+      vorübergehend von der Website entfernt. Dein Profil bleibt bestehen,
+      aber Eltern finden dich bei der Platzsuche nicht.
     </p>
     <p style="margin-top:24px;">Viele Grüße,<br>Dresdner Tageseltern e.V.</p>
   `;
 
   const text = `Liebe ${vorname},
 
-bitte überprüfe deine aktuell eingetragenen freien Plätze:
+bitte überprüfe deine aktuell eingetragenen freien Plätze auf unserer Website:
 
-${plaetzeText}
+${plaetzeBlockText(plaetze)}
 
 Alles stimmt so – bestätigen:
 ${confirmUrl}
@@ -190,32 +231,100 @@ ${confirmUrl}
 Ich möchte etwas ändern:
 ${editUrl}
 
-Wenn wir bis zum ${erinnerungAm} keine Antwort erhalten, schicken wir eine Erinnerung.
+Bitte bestätige deine freien Plätze. Wenn wir bis zum ${erinnerungAm} keine Antwort erhalten, schicken wir eine Erinnerung.
 Antwortest du bis zum ${cleanupAm} nicht, werden deine freien Plätze
-vorübergehend von der Website entfernt. Dein Profil bleibt bestehen.
+vorübergehend von der Website entfernt. Dein Profil bleibt bestehen,
+aber Eltern finden dich bei der Platzsuche nicht.
 
 Viele Grüße,
 Dresdner Tageseltern e.V.`;
 
   return {
     betreff: `Bitte bestätige deine freien Plätze – ${monat}`,
-    html: layout(inhalt),
+    html: layout(
+      inhalt,
+      `Kurze Rückmeldung bis ${erinnerungAm}: Stimmen deine freien Plätze noch?`,
+    ),
     text,
   };
 }
 
 // ----------------------------------------------------------------
-// Mail 2 – Erinnerung (Tag 7)
+// Erstmail – einmalige Einführung (Roll-out)
+// ----------------------------------------------------------------
+
+export function buildIntroEmail(args: {
+  vorname: string;
+  emailToken: string;
+}): { betreff: string; html: string; text: string } {
+  const { vorname, emailToken } = args;
+  const editUrl = `${APP_URL}/plaetze-bestaetigen?token=${emailToken}&action=edit`;
+
+  const inhalt = `
+    <p>Liebe ${escape(vorname)},</p>
+    <p>
+      ab sofort kannst du deine <strong>freien Betreuungsplätze</strong> direkt
+      auf unserer Website anzeigen lassen – so finden dich suchende Eltern noch
+      leichter und sehen sofort, ab wann bei dir ein Platz frei wird.
+    </p>
+    <p>
+      Bitte trage einmal kurz ein, <strong>ab welchem Monat</strong> bei dir
+      Plätze frei werden:
+    </p>
+    <p>
+      ${button(editUrl, "Freie Plätze eintragen", "#f8796c")}
+    </p>
+    <p>
+      Hast du aktuell <strong>keine</strong> freien Plätze? Dann lass die Felder
+      einfach leer – fertig.
+    </p>
+    <p style="margin-top:24px;color:#5a534c;font-size:14px;">
+      Ab jetzt melden wir uns einmal im Monat kurz bei dir, damit deine Angaben
+      aktuell bleiben. Du kannst sie aber jederzeit über diesen Link anpassen.
+    </p>
+    <p style="margin-top:24px;">Vielen Dank und liebe Grüße,<br>Dresdner Tageseltern e.V.</p>
+  `;
+
+  const text = `Liebe ${vorname},
+
+ab sofort kannst du deine freien Betreuungsplätze direkt auf unserer Website
+anzeigen lassen – so finden dich suchende Eltern noch leichter und sehen sofort,
+ab wann bei dir ein Platz frei wird.
+
+Bitte trage einmal kurz ein, ab welchem Monat bei dir Plätze frei werden:
+${editUrl}
+
+Hast du aktuell keine freien Plätze? Dann lass die Felder einfach leer – fertig.
+
+Ab jetzt melden wir uns einmal im Monat kurz bei dir, damit deine Angaben aktuell
+bleiben. Du kannst sie aber jederzeit über diesen Link anpassen.
+
+Vielen Dank und liebe Grüße,
+Dresdner Tageseltern e.V.`;
+
+  return {
+    betreff: "Neu: Zeig deine freien Plätze auf unserer Website",
+    html: layout(
+      inhalt,
+      "Neu: Trage ein, ab wann bei dir ein Betreuungsplatz frei wird.",
+    ),
+    text,
+  };
+}
+
+// ----------------------------------------------------------------
+// Mail 2 – Erinnerung (Tag 6)
 // ----------------------------------------------------------------
 
 export function buildReminderEmail(args: {
   vorname: string;
   emailToken: string;
+  plaetze: PlatzInfo[];
   heute: Date;
 }): { betreff: string; html: string; text: string } {
-  const { vorname, emailToken, heute } = args;
+  const { vorname, emailToken, plaetze, heute } = args;
   const monat = monatJahr(heute);
-  const cleanupAm = formatDatum(plusTage(heute, 3))!; // Tag 10 = +3 Tage ab Tag 7
+  const cleanupAm = formatDatum(plusTage(heute, 5))!; // Tag 11 = +5 Tage ab Tag 6
 
   const confirmUrl = `${APP_URL}/plaetze-bestaetigen?token=${emailToken}&action=confirm`;
   const editUrl = `${APP_URL}/plaetze-bestaetigen?token=${emailToken}&action=edit`;
@@ -223,12 +332,13 @@ export function buildReminderEmail(args: {
   const inhalt = `
     <p>Liebe ${escape(vorname)},</p>
     <p>
-      vor einer Woche haben wir dich gebeten, deine freien Plätze zu bestätigen.
+      vor einigen Tagen haben wir dich gebeten, deine freien Plätze zu bestätigen.
       Wir haben bisher noch keine Antwort von dir bekommen – kannst du das kurz
-      erledigen?
+      erledigen? Hier deine aktuell eingetragenen Plätze:
     </p>
+    ${plaetzeBlockHtml(plaetze)}
     <p>
-      ${button(confirmUrl, "✅ Alles stimmt so – bestätigen", "#f8796c")}
+      ${button(confirmUrl, "Alles stimmt so – bestätigen", "#f8796c")}
     </p>
     <p>
       ${button(editUrl, "✏️ Ich möchte etwas ändern", "#5a534c")}
@@ -236,15 +346,18 @@ export function buildReminderEmail(args: {
     <p style="margin-top:24px;color:#5a534c;font-size:14px;">
       Wenn wir bis zum <strong>${cleanupAm}</strong> keine Antwort erhalten,
       werden deine freien Plätze vorübergehend von der Website entfernt.
-      Dein Profil bleibt selbstverständlich bestehen.
+      Dein Profil bleibt bestehen, aber Eltern finden dich bei der Platzsuche nicht.
     </p>
     <p style="margin-top:24px;">Viele Grüße,<br>Dresdner Tageseltern e.V.</p>
   `;
 
   const text = `Liebe ${vorname},
 
-vor einer Woche haben wir dich gebeten, deine freien Plätze zu bestätigen.
+vor einigen Tagen haben wir dich gebeten, deine freien Plätze zu bestätigen.
 Wir haben bisher noch keine Antwort von dir bekommen – kannst du das kurz erledigen?
+Hier deine aktuell eingetragenen Plätze:
+
+${plaetzeBlockText(plaetze)}
 
 Alles stimmt so – bestätigen:
 ${confirmUrl}
@@ -253,20 +366,24 @@ Ich möchte etwas ändern:
 ${editUrl}
 
 Wenn wir bis zum ${cleanupAm} keine Antwort erhalten, werden deine freien Plätze
-vorübergehend von der Website entfernt. Dein Profil bleibt bestehen.
+vorübergehend von der Website entfernt. Dein Profil bleibt bestehen,
+aber Eltern finden dich bei der Platzsuche nicht.
 
 Viele Grüße,
 Dresdner Tageseltern e.V.`;
 
   return {
     betreff: `Erinnerung: Bitte bestätige deine freien Plätze – ${monat}`,
-    html: layout(inhalt),
+    html: layout(
+      inhalt,
+      `Nur ein Klick: Bitte bestätige deine freien Plätze bis ${cleanupAm}.`,
+    ),
     text,
   };
 }
 
 // ----------------------------------------------------------------
-// Mail 3 – Admin-Zusammenfassung (Tag 10)
+// Mail 3 – Admin-Zusammenfassung (Tag 11)
 // ----------------------------------------------------------------
 
 export function buildAdminSummaryEmail(args: {
@@ -286,7 +403,7 @@ export function buildAdminSummaryEmail(args: {
       <p style="margin:6px 0;">❌ <strong>${nichtGeantwortet}</strong> Tagesmütter haben nicht geantwortet → Plätze gelöscht</p>
     </div>
     <p style="margin-top:24px;color:#5a534c;font-size:14px;">
-      Automatischer Versand vom Cron-Job am 10. des Monats.
+      Automatischer Versand vom Cron-Job am 11. des Monats.
     </p>
   `;
 
@@ -298,7 +415,10 @@ export function buildAdminSummaryEmail(args: {
 
   return {
     betreff: `Monatsübersicht freie Plätze – ${monat}`,
-    html: layout(inhalt),
+    html: layout(
+      inhalt,
+      `${bestaetigt + aktualisiert} Rückmeldungen, ${nichtGeantwortet} ohne Antwort.`,
+    ),
     text,
   };
 }

@@ -50,3 +50,6 @@ mitglieder.xlsx
 # Windows-Systemdateien
 desktop.ini
 Thumbs.db
+
+# Lokale E-Mail-Vorschauen (generiert)
+scripts/_preview/

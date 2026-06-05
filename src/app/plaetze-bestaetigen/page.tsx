@@ -88,7 +88,7 @@ export default async function PlaetzeBestaetigenPage({
       fp?.platz3Ab ?? null,
       fp?.platz4Ab ?? null,
       fp?.platz5Ab ?? null,
-    ].map((d) => (d ? d.toISOString().slice(0, 10) : ""));
+    ].map((d) => (d ? d.toISOString().slice(0, 7) : ""));
 
     return (
       <Wrapper>
@@ -98,8 +98,8 @@ export default async function PlaetzeBestaetigenPage({
           </h1>
           <p className="text-text-soft mb-6">
             Hier kannst du deine freien Plätze aktualisieren. Trage für jeden
-            Platz das Datum ein, ab dem er frei wird – oder lass das Feld leer,
-            wenn der Platz aktuell belegt ist.
+            Platz Monat und Jahr ein (z. B. 08.2026), ab dem er frei wird, oder
+            lass das Feld leer, wenn der Platz nicht belegt werden soll.
           </p>
           <EditPlaetzeForm token={token} initialDates={initial} />
         </div>
