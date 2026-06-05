@@ -383,11 +383,11 @@ export default function Home() {
           <TestimonialCarousel
             items={[
               {
-                initials: "KB",
-                name: "Katrin aus Blasewitz",
-                avatar: "/images/testimonials/katrin.png",
+                initials: "MB",
+                name: "Marie aus Blasewitz",
+                avatar: "/images/testimonials/marie.jpg",
                 quote:
-                  "Unsere Tochter fühlt sich bei ihrer Tagesmama so wohl. Wir hatten einen entspannten Start und ein gutes Gefühl von Anfang an.",
+                  "Die kleine Gruppengröße hat uns sofort vom Konzept der Tagesmutter überzeugt. Unsere Tochter hat sich immer sicher und geborgen gefühlt.",
               },
               {
                 initials: "TL",
