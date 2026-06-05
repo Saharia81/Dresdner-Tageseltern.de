@@ -1,4 +1,4 @@
-// Cron: am 10. des Monats um 08:00 – Aufräumen.
+// Cron: am 11. des Monats um 08:00 – Aufräumen.
 //
 // 1. Bei Tagesmüttern, die diesen Monat NICHT bestätigt haben:
 //    alle Platz-Datumsfelder auf null setzen (Profil bleibt bestehen).

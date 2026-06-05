@@ -4,12 +4,31 @@ import { useState } from "react";
 
 type Props = {
   token: string;
-  /** 5 Strings, jeweils im Format "YYYY-MM-DD" oder leer. */
+  /** 5 Strings, jeweils im Format "YYYY-MM" oder leer. */
   initialDates: string[];
 };
 
+// "2026-08" → "08.2026" (Anzeige im Feld)
+function zuAnzeige(ym: string): string {
+  const m = /^(\d{4})-(\d{2})$/.exec(ym);
+  return m ? `${m[2]}.${m[1]}` : "";
+}
+
+// "08.2026" / "8/2026" → "2026-08"; ungültig → null
+function zuIso(eingabe: string): string | null {
+  const t = eingabe.trim();
+  if (!t) return null;
+  const m = /^(\d{1,2})[.\/-](\d{4})$/.exec(t);
+  if (!m) return null;
+  const monat = Number(m[1]);
+  if (monat < 1 || monat > 12) return null;
+  return `${m[2]}-${String(monat).padStart(2, "0")}`;
+}
+
 export function EditPlaetzeForm({ token, initialDates }: Props) {
-  const [dates, setDates] = useState<string[]>(initialDates);
+  const [dates, setDates] = useState<string[]>(() =>
+    initialDates.map(zuAnzeige),
+  );
   const [status, setStatus] = useState<
     "idle" | "speichert" | "fertig" | "fehler"
   >("idle");
@@ -21,17 +40,33 @@ export function EditPlaetzeForm({ token, initialDates }: Props) {
 
   async function speichern(e: React.FormEvent) {
     e.preventDefault();
-    setStatus("speichert");
     setFehlerText("");
 
+    // Eingaben in ISO (YYYY-MM) umrechnen und dabei prüfen
+    const plaetze: (string | null)[] = [];
+    for (let i = 0; i < dates.length; i++) {
+      const wert = dates[i].trim();
+      if (!wert) {
+        plaetze.push(null);
+        continue;
+      }
+      const iso = zuIso(wert);
+      if (!iso) {
+        setStatus("fehler");
+        setFehlerText(
+          `Platz ${i + 1}: Bitte Monat und Jahr im Format mm.jjjj eingeben (z. B. 08.2026).`,
+        );
+        return;
+      }
+      plaetze.push(iso);
+    }
+
+    setStatus("speichert");
     try {
       const res = await fetch("/api/plaetze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token,
-          plaetze: dates.map((d) => (d ? d : null)),
-        }),
+        body: JSON.stringify({ token, plaetze }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -67,10 +102,13 @@ export function EditPlaetzeForm({ token, initialDates }: Props) {
               Platz {idx + 1} frei ab:
             </span>
             <input
-              type="date"
+              type="text"
+              inputMode="numeric"
               value={wert}
               onChange={(e) => aktualisiere(idx, e.target.value)}
-              className="w-full rounded-xl border border-text-soft/20 px-4 py-2.5 bg-white text-base focus:outline-none focus:border-korallenrot"
+              placeholder="mm.jjjj"
+              maxLength={7}
+              className="w-full rounded-xl border border-text-soft/20 px-4 py-2.5 bg-white text-base placeholder:text-text-soft/40 focus:outline-none focus:border-korallenrot"
             />
           </label>
           {wert && (

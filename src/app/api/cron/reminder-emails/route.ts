@@ -1,4 +1,4 @@
-// Cron: am 7. des Monats um 08:00 – Erinnerung an alle Tagesmütter,
+// Cron: am 6. des Monats um 08:00 – Erinnerung an alle Tagesmütter,
 // deren `lastConfirmed` nicht im aktuellen Monat liegt.
 
 import { NextResponse } from "next/server";
@@ -34,6 +34,7 @@ export async function GET(request: Request) {
       istAktiv: true,
       OR: [{ lastConfirmed: null }, { lastConfirmed: { lt: grenze } }],
     },
+    include: { freiePlaetze: true },
   });
 
   let versandt = 0;
@@ -42,9 +43,19 @@ export async function GET(request: Request) {
 
   for (const tm of empfaenger) {
     try {
+      const fp = tm.freiePlaetze;
+      const plaetze = [
+        { nr: 1, ab: fp?.platz1Ab ?? null },
+        { nr: 2, ab: fp?.platz2Ab ?? null },
+        { nr: 3, ab: fp?.platz3Ab ?? null },
+        { nr: 4, ab: fp?.platz4Ab ?? null },
+        { nr: 5, ab: fp?.platz5Ab ?? null },
+      ];
+
       const mail = buildReminderEmail({
         vorname: tm.vorname,
         emailToken: tm.emailToken,
+        plaetze,
         heute,
       });
       await sendeMail({ an: tm.email, ...mail });
