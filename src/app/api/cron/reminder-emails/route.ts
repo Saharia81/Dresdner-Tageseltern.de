@@ -31,6 +31,20 @@ export async function GET(request: Request) {
   if (fehler) return fehler;
 
   const heute = new Date();
+
+  // Einmalige Ausnahme Roll-out Juni 2026: Die Erstmail ging am 5.6. raus,
+  // daher wird die reguläre 6.6.-Erinnerung übersprungen. Stattdessen läuft
+  // eine einmalige Erinnerung am 12.6. (separater Cron in vercel.json).
+  // Ab Juli greift wieder der normale Rhythmus (6. des Monats).
+  if (heute.toISOString().slice(0, 10) === "2026-06-06") {
+    return NextResponse.json({
+      ok: true,
+      typ: "reminder",
+      uebersprungen: true,
+      grund: "Einmalig ausgesetzt (Roll-out Juni 2026)",
+    });
+  }
+
   const grenze = monatsAnfang(heute);
 
   // Alle, die diesen Monat noch nicht bestätigt haben

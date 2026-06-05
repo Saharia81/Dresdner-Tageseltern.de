@@ -29,6 +29,18 @@ export async function GET(request: Request) {
   if (authError) return authError;
 
   const heute = new Date();
+
+  // Einmalige Ausnahme Roll-out Juni 2026: Aufräumen für diese erste Runde
+  // ausgesetzt (siehe reminder-emails). Ab Juli läuft es wieder normal (11.).
+  if (heute.toISOString().slice(0, 10) === "2026-06-11") {
+    return NextResponse.json({
+      ok: true,
+      typ: "cleanup",
+      uebersprungen: true,
+      grund: "Einmalig ausgesetzt (Roll-out Juni 2026)",
+    });
+  }
+
   const grenze = monatsAnfang(heute);
 
   const alle = await prisma.tagesmutter.findMany({
