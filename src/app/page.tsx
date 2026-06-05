@@ -390,9 +390,9 @@ export default function Home() {
                   "Die kleine Gruppengröße hat uns sofort vom Konzept der Tagesmutter überzeugt. Unsere Tochter hat sich immer sicher und geborgen gefühlt.",
               },
               {
-                initials: "TL",
-                name: "Thomas aus Löbtau",
-                avatar: "/images/testimonials/thomas.png",
+                initials: "SG",
+                name: "Susann aus Gruna",
+                avatar: "/images/testimonials/susann.jpg",
                 quote:
                   "Wir hatten bereits unsere große Tochter bei der Tagesmutter und nun geht unser Sohn zu ihr.",
               },
