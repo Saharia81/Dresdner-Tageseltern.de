@@ -64,7 +64,7 @@ model Tagesmutter {
   mitgliedSeit          DateTime?
 
   // E-Mail-Bestätigungs-Flow (monatliche Plätze-Aktualisierung)
-  emailToken            String   @unique @default(cuid())
+  emailToken            String   @unique @default(cuid(2))
   lastConfirmed         DateTime?
 
   // Sichtbarkeit / Sortierung

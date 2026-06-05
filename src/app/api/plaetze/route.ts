@@ -12,6 +12,31 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+// ----------------------------------------------------------------
+// Einfaches Rate-Limit (Bremse gegen massenhaftes Ausprobieren).
+// Hinweis: In-Memory, also pro Server-Instanz – auf Vercel reicht das
+// als grobe Bremse. Der eigentliche Schutz sind die 256-Bit-Tokens,
+// die praktisch nicht erratbar sind.
+// ----------------------------------------------------------------
+const RATE_LIMIT = 20; // Anfragen
+const RATE_FENSTER_MS = 60_000; // pro Minute
+const zugriffe = new Map<string, number[]>();
+
+function rateLimited(ip: string): boolean {
+  const jetzt = Date.now();
+  const liste = (zugriffe.get(ip) ?? []).filter(
+    (t) => jetzt - t < RATE_FENSTER_MS,
+  );
+  liste.push(jetzt);
+  zugriffe.set(ip, liste);
+  return liste.length > RATE_LIMIT;
+}
+
+function clientIp(request: Request): string {
+  const fwd = request.headers.get("x-forwarded-for");
+  return fwd ? fwd.split(",")[0].trim() : "unbekannt";
+}
+
 export type PlaetzeDto = {
   vorname: string;
   nachname: string;
@@ -27,6 +52,13 @@ function parseDatum(value: unknown): Date | null {
 }
 
 export async function GET(request: Request) {
+  if (rateLimited(clientIp(request))) {
+    return NextResponse.json(
+      { error: "Zu viele Anfragen. Bitte kurz warten." },
+      { status: 429 },
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const token = searchParams.get("token");
   if (!token) {
@@ -59,6 +91,13 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (rateLimited(clientIp(request))) {
+    return NextResponse.json(
+      { error: "Zu viele Anfragen. Bitte kurz warten." },
+      { status: 429 },
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();
