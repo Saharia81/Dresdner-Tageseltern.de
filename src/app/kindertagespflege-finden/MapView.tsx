@@ -12,6 +12,7 @@ import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
 import { BERATUNGSSTELLE_URL, PIN_BERATUNGSSTELLE, type Beratungsgebiet } from "@/types";
 import { BERATUNGSSTELLEN } from "./beratungsstellen";
 import { PreviewCard } from "./PreviewCard";
+import { StackCard } from "./StackCard";
 
 // leaflet-gesture-handling registriert sich beim Import selbst via L.Map.addInitHook.
 // Kein manueller addInitHook nötig — der doppelte Aufruf bricht Touch-Geräte.
@@ -65,92 +66,6 @@ function stackIcon(anzahl: number, ausgewaehlt: boolean): L.DivIcon {
   });
 }
 
-function erstelleAuswahlPopup(
-  gruppe: TagesmutterDto[],
-  onAuswaehlen: (tm: TagesmutterDto) => void,
-): L.Popup {
-  const popup = L.popup({
-    closeButton: true,
-    offset: [0, -10] as [number, number],
-    autoPan: true,
-    maxWidth: 280,
-  });
-
-  const html = `
-    <div style="padding:2px 0">
-      <p style="font-weight:700;font-size:12px;color:#888;margin:0 0 8px;font-family:system-ui,sans-serif">
-        ${gruppe.length} Tageseltern an dieser Adresse
-      </p>
-      ${gruppe
-        .map(
-          (tm, i) => `
-        <button data-idx="${i}" style="
-          display:flex;align-items:center;gap:10px;
-          width:100%;text-align:left;
-          padding:8px 10px;margin:4px 0;
-          border:1px solid #e8dfc8;background:#fdf7e3;
-          border-radius:10px;cursor:pointer;
-          font-family:system-ui,sans-serif;
-        ">
-          <img src="${tm.fotoUrl}" alt="" style="
-            width:44px;height:44px;border-radius:50%;
-            object-fit:cover;flex-shrink:0;background:#e8dfc8;
-          " />
-          <span style="min-width:0;flex:1">
-            <span style="display:block;font-weight:600;font-size:13px;color:#333;
-              overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              ${tm.vorname} ${tm.nachname}
-            </span>
-            <span style="display:block;font-size:12px;color:#666;
-              overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              ${tm.einrichtungsname}
-            </span>
-            <span style="display:block;font-size:11px;color:#888;margin-top:2px;
-              overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              ${tm.oeffnungszeiten}
-            </span>
-            ${
-              tm.hatFreienPlatz
-                ? `<span style="display:inline-flex;align-items:center;gap:4px;
-                    font-size:11px;font-weight:600;color:#15803d;margin-top:2px">
-                    <span style="width:7px;height:7px;border-radius:50%;
-                      background:#22c55e;display:inline-block"></span>Freie Plätze
-                  </span>`
-                : ""
-            }
-          </span>
-        </button>
-      `,
-        )
-        .join("")}
-    </div>
-  `;
-
-  popup.setContent(html);
-
-  popup.on("add", () => {
-    const el = popup.getElement();
-    if (!el) return;
-    el.querySelectorAll<HTMLButtonElement>("button[data-idx]").forEach((btn) => {
-      btn.addEventListener("mouseover", () => {
-        btn.style.background = "#fff";
-        btn.style.borderColor = "#f8796c";
-      });
-      btn.addEventListener("mouseout", () => {
-        btn.style.background = "#fdf7e3";
-        btn.style.borderColor = "#e8dfc8";
-      });
-      btn.addEventListener("click", () => {
-        const idx = parseInt(btn.dataset.idx ?? "0");
-        onAuswaehlen(gruppe[idx]);
-        popup.close();
-      });
-    });
-  });
-
-  return popup;
-}
-
 function beratungsstellenIcon(bild: string, hover: boolean): L.Icon {
   const groesse = hover ? 54 : 36;
   return L.icon({
@@ -188,6 +103,16 @@ export function MapView({
   // Vorschau-State (Hover Desktop / 1. Klick Mobile)
   const [vorschau, setVorschau] = useState<{
     tm: TagesmutterDto;
+    x: number;
+    y: number;
+    nachUnten: boolean;
+  } | null>(null);
+
+  // Auswahl-State für Doppelpins (mehrere Tageseltern an einer Adresse).
+  // Als React-Overlay statt Leaflet-Popup gerendert, weil Leaflets Touch-
+  // Handling auf Mobil sonst die Button-Klicks verschluckt.
+  const [auswahl, setAuswahl] = useState<{
+    gruppe: TagesmutterDto[];
     x: number;
     y: number;
     nachUnten: boolean;
@@ -336,27 +261,24 @@ export function MapView({
       const enthaeltAusgewaehlt = gruppe.some((tm) => tm.id === ausgewaehlteId);
 
       if (istStack) {
-        // ── Stack-Pin: Zahl-Badge + Auswahl-Popup ─────────────────────
+        // ── Stack-Pin: Zahl-Badge + Auswahl-Overlay (React) ───────────
         const icon = stackIcon(gruppe.length, enthaeltAusgewaehlt);
         const marker = L.marker([lat, lng], { icon });
 
-        const popup = erstelleAuswahlPopup(gruppe, (tm) => {
-          onSelect(tm);
-        });
-        marker.bindPopup(popup);
+        const oeffneAuswahl = (e: L.LeafletMouseEvent) => {
+          const point = map.latLngToContainerPoint(e.latlng);
+          // Die Liste kann mehrere Einträge hoch sein → mehr Platz oben nötig.
+          const nachUnten = point.y < 260;
+          setVorschau(null);
+          setAuswahl({ gruppe, x: point.x, y: point.y, nachUnten });
+        };
 
         // Desktop (Maus): Auswahl schon beim Hovern öffnen.
-        marker.on("mouseover", () => {
-          if (!window.matchMedia("(hover: none)").matches) {
-            setVorschau(null);
-            marker.openPopup();
-          }
+        marker.on("mouseover", (e) => {
+          if (!window.matchMedia("(hover: none)").matches) oeffneAuswahl(e);
         });
         // Touch / Fallback: per Klick/Tap öffnen.
-        marker.on("click", () => {
-          setVorschau(null);
-          marker.openPopup();
-        });
+        marker.on("click", oeffneAuswahl);
 
         marker.addTo(map);
         for (const tm of gruppe) {
@@ -375,6 +297,7 @@ export function MapView({
             // Oberhalb des Pins braucht die Karte ca. 200 px. Ist dort kein
             // Platz (Pin am oberen Rand), klappt sie nach unten auf.
             const nachUnten = point.y < 200;
+            setAuswahl(null);
             setVorschau({ tm, x: point.x, y: point.y, nachUnten });
           }
         });
@@ -382,6 +305,7 @@ export function MapView({
         marker.on("click", () => {
           onSelect(tm);
           setVorschau(null);
+          setAuswahl(null);
         });
 
         marker.addTo(map);
@@ -460,6 +384,7 @@ export function MapView({
 
     const handleClick = () => {
       setVorschau(null);
+      setAuswahl(null);
       map.scrollWheelZoom.enable();
     };
     const handleMouseLeave = () => {
@@ -487,6 +412,18 @@ export function MapView({
           onClick={() => {
             onSelect(vorschau.tm);
             setVorschau(null);
+          }}
+        />
+      )}
+      {auswahl && (
+        <StackCard
+          gruppe={auswahl.gruppe}
+          x={auswahl.x}
+          y={auswahl.y}
+          nachUnten={auswahl.nachUnten}
+          onSelect={(tm) => {
+            onSelect(tm);
+            setAuswahl(null);
           }}
         />
       )}
