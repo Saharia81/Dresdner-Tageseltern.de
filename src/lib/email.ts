@@ -492,15 +492,26 @@ export function buildBanner5TageEmail(args: {
   name: string;
   bannerBezeichnung: string;
   start: Date;
-  vorgaenger: { name: string; email: string } | null;
+  vorgaenger: { name: string; email: string; telefon?: string | null } | null;
 }): { betreff: string; html: string; text: string } {
   const { name, bannerBezeichnung, start, vorgaenger } = args;
   const von = formatDatum(start)!;
 
+  const telefon = vorgaenger?.telefon?.trim() || null;
+  // Telefonnummer für tel:-Link von Leerzeichen befreien.
+  const telHref = telefon ? telefon.replace(/[^\d+]/g, "") : null;
+
+  const kontaktHtml = vorgaenger
+    ? `E-Mail: <a href="mailto:${escape(vorgaenger.email)}" style="color:#f8796c;">${escape(vorgaenger.email)}</a>` +
+      (telefon
+        ? `, Telefon: <a href="tel:${telHref}" style="color:#f8796c;">${escape(telefon)}</a>`
+        : "")
+    : "";
+
   const uebergabeHtml = vorgaenger
     ? `<p>
-        Aktuell hat den Banner <strong>${escape(vorgaenger.name)}</strong>
-        (<a href="mailto:${escape(vorgaenger.email)}" style="color:#f8796c;">${escape(vorgaenger.email)}</a>).
+        Aktuell hat den Banner <strong>${escape(vorgaenger.name)}</strong>.
+        ${kontaktHtml}.<br>
         Bitte nimm Kontakt auf, um die <strong>Übergabe</strong> zu vereinbaren.
       </p>`
     : `<p>
@@ -510,7 +521,7 @@ export function buildBanner5TageEmail(args: {
       </p>`;
 
   const uebergabeText = vorgaenger
-    ? `Aktuell hat den Banner ${vorgaenger.name} (${vorgaenger.email}). Bitte nimm Kontakt auf, um die Übergabe zu vereinbaren.`
+    ? `Aktuell hat den Banner ${vorgaenger.name}. E-Mail: ${vorgaenger.email}${telefon ? `, Telefon: ${telefon}` : ""}. Bitte nimm Kontakt auf, um die Übergabe zu vereinbaren.`
     : `Bitte melde dich kurz bei ${INFO_EMAIL}, um die Übergabe des Banners zu klären.`;
 
   const inhalt = `
@@ -594,8 +605,12 @@ Dresdner Tageseltern e.V.`;
   };
 }
 
-// An den Verein: neue Anfrage, deren E-Mail keinem Profil zugeordnet werden konnte.
-export function buildAdminBuchungsanfrageEmail(args: {
+// An den Verein: Benachrichtigung über jede neue Banner-Buchung.
+//   • status BESTAETIGT → sofort bestätigte Buchung (E-Mail einem Profil
+//     zugeordnet)
+//   • status ANFRAGE    → muss im Admin geprüft/freigegeben werden
+export function buildAdminBuchungEmail(args: {
+  status: "BESTAETIGT" | "ANFRAGE";
   kontaktName: string;
   kontaktEmail: string;
   bannerBezeichnung: string;
@@ -603,17 +618,25 @@ export function buildAdminBuchungsanfrageEmail(args: {
   ende: Date;
   anzeigeTyp?: "STECKBRIEF" | "INDIVIDUELL";
   wunsch?: string | null;
+  profilName?: string | null;
 }): { betreff: string; html: string; text: string } {
-  const { kontaktName, kontaktEmail, bannerBezeichnung, start, ende } = args;
+  const { status, kontaktName, kontaktEmail, bannerBezeichnung, start, ende } =
+    args;
+  const bestaetigt = status === "BESTAETIGT";
   const individuell = args.anzeigeTyp === "INDIVIDUELL";
   const von = formatDatum(start)!;
   const bis = formatDatum(ende)!;
   const adminUrl = `${APP_URL}/admin/buchungen`;
 
-  const einleitung = individuell
-    ? "Neue <strong>Banner-Anfrage mit individuellem Inhalt</strong> – bitte Inhalt im Admin pflegen und freigeben:"
-    : "Neue <strong>Banner-Anfrage</strong> (E-Mail keinem Profil zugeordnet):";
+  const einleitung = bestaetigt
+    ? "Neue <strong>Banner-Buchung</strong> (sofort bestätigt):"
+    : individuell
+      ? "Neue <strong>Banner-Anfrage mit individuellem Inhalt</strong> – bitte Inhalt im Admin pflegen und freigeben:"
+      : "Neue <strong>Banner-Anfrage</strong> (E-Mail keinem Profil zugeordnet) – bitte prüfen:";
 
+  const profilHtml = args.profilName
+    ? `<p style="margin:4px 0;"><strong>Profil:</strong> ${escape(args.profilName)}</p>`
+    : "";
   const wunschHtml = args.wunsch
     ? `<p style="margin:4px 0;"><strong>Wunsch:</strong> ${escape(args.wunsch)}</p>`
     : "";
@@ -623,27 +646,33 @@ export function buildAdminBuchungsanfrageEmail(args: {
     <div style="background:#fef2c2;border-radius:12px;padding:16px 20px;margin:16px 0;">
       <p style="margin:4px 0;"><strong>Banner:</strong> ${escape(bannerBezeichnung)}</p>
       <p style="margin:4px 0;"><strong>Zeitraum:</strong> ${von} – ${bis}</p>
+      <p style="margin:4px 0;"><strong>Status:</strong> ${bestaetigt ? "Bestätigt" : "Anfrage"}</p>
       <p style="margin:4px 0;"><strong>Anzeige:</strong> ${individuell ? "Individueller Inhalt" : "Steckbrief"}</p>
+      ${profilHtml}
       <p style="margin:4px 0;"><strong>Name:</strong> ${escape(kontaktName)}</p>
       <p style="margin:4px 0;"><strong>E-Mail:</strong> ${escape(kontaktEmail)}</p>
       ${wunschHtml}
     </div>
-    <p>${button(adminUrl, "Im Admin prüfen", "#f8796c")}</p>
+    <p>${button(adminUrl, "Im Admin ansehen", "#f8796c")}</p>
   `;
 
-  const text = `${individuell ? "Neue Banner-Anfrage mit individuellem Inhalt – bitte im Admin pflegen und freigeben:" : "Neue Banner-Anfrage (E-Mail keinem Profil zugeordnet):"}
+  const text = `${bestaetigt ? "Neue Banner-Buchung (sofort bestätigt):" : individuell ? "Neue Banner-Anfrage mit individuellem Inhalt – bitte im Admin pflegen und freigeben:" : "Neue Banner-Anfrage (E-Mail keinem Profil zugeordnet) – bitte prüfen:"}
 
 Banner: ${bannerBezeichnung}
 Zeitraum: ${von} – ${bis}
-Anzeige: ${individuell ? "Individueller Inhalt" : "Steckbrief"}
+Status: ${bestaetigt ? "Bestätigt" : "Anfrage"}
+Anzeige: ${individuell ? "Individueller Inhalt" : "Steckbrief"}${args.profilName ? `\nProfil: ${args.profilName}` : ""}
 Name: ${kontaktName}
 E-Mail: ${kontaktEmail}${args.wunsch ? `\nWunsch: ${args.wunsch}` : ""}
 
-Im Admin prüfen: ${adminUrl}`;
+Im Admin ansehen: ${adminUrl}`;
 
   return {
-    betreff: `Neue Banner-Anfrage: ${bannerBezeichnung} (${von} – ${bis})`,
-    html: layout(inhalt, `Anfrage von ${kontaktName} für ${bannerBezeichnung}.`),
+    betreff: `${bestaetigt ? "Neue Banner-Buchung" : "Neue Banner-Anfrage"}: ${bannerBezeichnung} (${von} – ${bis})`,
+    html: layout(
+      inhalt,
+      `${bestaetigt ? "Buchung" : "Anfrage"} von ${kontaktName} für ${bannerBezeichnung}.`,
+    ),
     text,
   };
 }

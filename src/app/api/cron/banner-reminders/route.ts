@@ -70,11 +70,22 @@ export async function GET(request: Request) {
         b.banner.nummer,
         plusTage(b.zeitraumStart, -1),
       );
+      // Telefonnummer der Vorgängerin (falls einem Profil zugeordnet).
+      let vorgaengerTelefon: string | null = null;
+      if (vorgaengerBuchung?.tagesmutterId) {
+        const tm = await prisma.tagesmutter.findUnique({
+          where: { id: vorgaengerBuchung.tagesmutterId },
+          select: { telefon: true },
+        });
+        vorgaengerTelefon = tm?.telefon ?? null;
+      }
+
       const vorgaenger =
         vorgaengerBuchung && vorgaengerBuchung.id !== b.id
           ? {
               name: vorgaengerBuchung.kontaktName,
               email: vorgaengerBuchung.kontaktEmail,
+              telefon: vorgaengerTelefon,
             }
           : null;
 

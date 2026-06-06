@@ -23,7 +23,7 @@ import {
 import {
   sendeMail,
   buildBuchungBestaetigungEmail,
-  buildAdminBuchungsanfrageEmail,
+  buildAdminBuchungEmail,
 } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
@@ -216,6 +216,8 @@ export async function POST(request: Request) {
 
   // Mails (Fehler dürfen die Buchung nicht scheitern lassen)
   try {
+    // Bestätigung an die Bucherin (nur, wenn einem Profil zugeordnet – sonst
+    // sieht sie im Formular den Kontakt-Hinweis).
     if (tagesmutter) {
       const mail = buildBuchungBestaetigungEmail({
         name: buchung.kontaktName,
@@ -225,21 +227,26 @@ export async function POST(request: Request) {
         token: buchung.token,
       });
       await sendeMail({ an: buchung.kontaktEmail, ...mail });
-    } else {
-      const mail = buildAdminBuchungsanfrageEmail({
-        kontaktName: buchung.kontaktName,
-        kontaktEmail: buchung.kontaktEmail,
-        bannerBezeichnung: banner.bezeichnung,
-        start: startTag,
-        ende: endeTag,
-        anzeigeTyp,
-        wunsch,
-      });
-      await sendeMail({
-        an: process.env.ADMIN_EMAIL ?? "info@dresdner-tageseltern.de",
-        ...mail,
-      });
     }
+
+    // Benachrichtigung an den Verein – bei JEDER Buchung (bestätigt + Anfrage).
+    const adminMail = buildAdminBuchungEmail({
+      status,
+      kontaktName: buchung.kontaktName,
+      kontaktEmail: buchung.kontaktEmail,
+      bannerBezeichnung: banner.bezeichnung,
+      start: startTag,
+      ende: endeTag,
+      anzeigeTyp,
+      wunsch,
+      profilName: tagesmutter
+        ? `${tagesmutter.vorname} ${tagesmutter.nachname}`.trim()
+        : null,
+    });
+    await sendeMail({
+      an: process.env.ADMIN_EMAIL ?? "info@dresdner-tageseltern.de",
+      ...adminMail,
+    });
   } catch (err) {
     console.error("Buchungs-Mail fehlgeschlagen:", err);
   }
