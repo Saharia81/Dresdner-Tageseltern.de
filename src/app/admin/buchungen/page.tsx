@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/db";
 import { tagISO } from "@/lib/buchungen";
-import { AdminBuchungenListe, type BuchungZeile } from "./AdminBuchungenListe";
+import {
+  AdminBuchungenListe,
+  type BuchungZeile,
+  type BannerGruppe,
+} from "./AdminBuchungenListe";
 import { AdminBuchungAnlegen } from "./AdminBuchungAnlegen";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +13,7 @@ export default async function AdminBuchungenPage() {
   const [buchungen, banner, tagesmuetter] = await Promise.all([
     prisma.buchung.findMany({
       include: { banner: true, tagesmutter: { select: { slug: true } } },
-      orderBy: [{ status: "asc" }, { zeitraumStart: "asc" }],
+      orderBy: [{ zeitraumStart: "asc" }],
     }),
     prisma.banner.findMany({
       where: { istAktiv: true },
@@ -28,14 +32,9 @@ export default async function AdminBuchungenPage() {
     label: `${t.vorname} ${t.nachname}${t.einrichtungsname ? ` – ${t.einrichtungsname}` : ""}`,
   }));
 
-  // Anfragen zuerst, dann der Rest
-  const sortiert = [...buchungen].sort((a, b) => {
-    const rang = (s: string) => (s === "ANFRAGE" ? 0 : 1);
-    return rang(a.status) - rang(b.status);
-  });
-
-  const zeilen: BuchungZeile[] = sortiert.map((b) => ({
+  const zeilen: BuchungZeile[] = buchungen.map((b) => ({
     id: b.id,
+    bannerId: b.bannerId,
     banner: b.banner.bezeichnung,
     name: b.kontaktName,
     email: b.kontaktEmail,
@@ -52,11 +51,34 @@ export default async function AdminBuchungenPage() {
     inhaltLinkText: b.inhaltLinkText,
   }));
 
+  // Erledigt = abgelehnt/abgelaufen oder Zeitraum bereits vorbei.
+  const heute = tagISO(new Date());
+  const istErledigt = (z: BuchungZeile) =>
+    z.status === "ABGELEHNT" || z.status === "ABGELAUFEN" || z.ende < heute;
+
+  // Pro Banner gruppieren: aktiv/kommend nach Datum aufsteigend, erledigt
+  // nach Datum absteigend (neuestes zuerst).
+  const gruppen: BannerGruppe[] = banner.map((b) => {
+    const eigene = zeilen.filter((z) => z.bannerId === b.id);
+    return {
+      bannerId: b.id,
+      bannerName: b.bezeichnung,
+      aktiv: eigene
+        .filter((z) => !istErledigt(z))
+        .sort((a, c) => a.start.localeCompare(c.start)),
+      erledigt: eigene
+        .filter(istErledigt)
+        .sort((a, c) => c.start.localeCompare(a.start)),
+    };
+  });
+
+  const offeneAnfragen = zeilen.filter((z) => z.status === "ANFRAGE").length;
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
       <h1 className="text-3xl font-bold mb-6">Banner-Buchungen</h1>
       <AdminBuchungAnlegen banner={banner} profile={profile} />
-      <AdminBuchungenListe zeilen={zeilen} />
+      <AdminBuchungenListe gruppen={gruppen} offeneAnfragen={offeneAnfragen} />
     </main>
   );
 }

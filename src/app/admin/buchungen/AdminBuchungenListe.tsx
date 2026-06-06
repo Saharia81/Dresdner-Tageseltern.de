@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 export type BuchungZeile = {
   id: string;
+  bannerId: string;
   banner: string;
   name: string;
   email: string;
@@ -19,6 +20,13 @@ export type BuchungZeile = {
   inhaltBildUrl: string | null;
   inhaltLinkUrl: string | null;
   inhaltLinkText: string | null;
+};
+
+export type BannerGruppe = {
+  bannerId: string;
+  bannerName: string;
+  aktiv: BuchungZeile[];
+  erledigt: BuchungZeile[];
 };
 
 type InhaltForm = {
@@ -37,16 +45,36 @@ const STATUS_LABEL: Record<string, { text: string; cls: string }> = {
 };
 
 function fmt(iso: string): string {
-  return new Date(iso).toLocaleDateString("de-DE");
+  return new Date(iso + "T00:00:00").toLocaleDateString("de-DE");
 }
 
-export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
+// Lokales Kalenderdatum als YYYY-MM-DD (für „läuft gerade"-Erkennung).
+function heuteISO(): string {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const t = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${t}`;
+}
+
+export function AdminBuchungenListe({
+  gruppen,
+  offeneAnfragen,
+}: {
+  gruppen: BannerGruppe[];
+  offeneAnfragen: number;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [fehler, setFehler] = useState("");
   const [slugs, setSlugs] = useState<Record<string, string>>({});
   // Welche Buchungen haben den Inhalts-Editor geöffnet + Entwurf je Buchung.
   const [editor, setEditor] = useState<Record<string, InhaltForm>>({});
+  // Welche „Erledigt"-Bereiche sind aufgeklappt (je Banner).
+  const [erledigtOffen, setErledigtOffen] = useState<Record<string, boolean>>(
+    {},
+  );
+
+  const heute = heuteISO();
 
   async function aktion(id: string, art: "bestaetigen" | "ablehnen" | "loeschen") {
     if (art === "loeschen" && !confirm("Diese Buchung wirklich löschen?")) {
@@ -123,116 +151,183 @@ export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
     }
   }
 
-  if (zeilen.length === 0) {
-    return <p className="text-text-soft">Noch keine Buchungen.</p>;
+  // Eine einzelne Buchungskarte (Banner-Name steht in der Gruppen-Überschrift).
+  function Karte(z: BuchungZeile, gedaempft = false) {
+    const s = STATUS_LABEL[z.status] ?? { text: z.status, cls: "bg-gray-100" };
+    const laeuft =
+      z.status === "BESTAETIGT" && z.start <= heute && z.ende >= heute;
+    return (
+      <div
+        key={z.id}
+        className={`rounded-2xl border border-text-soft/10 bg-white p-4 shadow-sm ${
+          gedaempft ? "opacity-70" : ""
+        }`}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+          <span className="font-bold">
+            {fmt(z.start)} – {fmt(z.ende)}
+          </span>
+          <span className="flex items-center gap-1.5">
+            {laeuft && (
+              <span className="rounded-full bg-korallenrot/15 text-korallenrot px-2.5 py-0.5 text-xs font-bold">
+                läuft gerade
+              </span>
+            )}
+            <span
+              className={`rounded-full px-3 py-0.5 text-xs font-bold ${s.cls}`}
+            >
+              {s.text}
+            </span>
+          </span>
+        </div>
+
+        <p className="text-sm">
+          {z.name}
+          {z.email ? ` · ${z.email}` : ""}
+        </p>
+        <p className="text-sm text-text-soft">
+          {z.anzeigeTyp === "INDIVIDUELL" ? (
+            <>
+              Individueller Inhalt ·{" "}
+              {z.inhaltTitel ? (
+                `„${z.inhaltTitel}"`
+              ) : (
+                <span className="text-korallenrot font-semibold">
+                  noch kein Inhalt gepflegt
+                </span>
+              )}
+            </>
+          ) : (
+            <>Steckbrief · {z.profilSlug ?? "— (nicht zugeordnet)"}</>
+          )}
+        </p>
+        {z.wunsch && (
+          <p className="text-sm text-text-soft mt-1">
+            <span className="font-semibold">Wunsch:</span> {z.wunsch}
+          </p>
+        )}
+
+        {editor[z.id] !== undefined && (
+          <div className="mt-3">
+            <InhaltEditor
+              form={editor[z.id]}
+              busy={busy === z.id}
+              onChange={(patch) =>
+                setEditor((p) => ({ ...p, [z.id]: { ...p[z.id], ...patch } }))
+              }
+              onSave={() => inhaltSpeichern(z.id)}
+              onCancel={() => editorSchliessen(z.id)}
+            />
+          </div>
+        )}
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {z.status === "ANFRAGE" && (
+            <>
+              <input
+                type="text"
+                placeholder="Profil-Slug (optional)"
+                value={slugs[z.id] ?? ""}
+                onChange={(e) =>
+                  setSlugs((p) => ({ ...p, [z.id]: e.target.value }))
+                }
+                className="rounded-lg border border-text-soft/20 px-3 py-1.5 text-sm"
+              />
+              <button
+                onClick={() => aktion(z.id, "bestaetigen")}
+                disabled={busy === z.id}
+                className="rounded-full bg-korallenrot text-white px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+              >
+                Bestätigen
+              </button>
+              <button
+                onClick={() => aktion(z.id, "ablehnen")}
+                disabled={busy === z.id}
+                className="rounded-full bg-text-soft/15 px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+              >
+                Ablehnen
+              </button>
+            </>
+          )}
+          {editor[z.id] === undefined && (
+            <button
+              onClick={() => editorOeffnen(z)}
+              disabled={busy === z.id}
+              className="rounded-full bg-text-soft/15 px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+            >
+              {z.anzeigeTyp === "INDIVIDUELL" && z.inhaltTitel
+                ? "Inhalt bearbeiten"
+                : "Individuellen Inhalt eintragen"}
+            </button>
+          )}
+          <button
+            onClick={() => aktion(z.id, "loeschen")}
+            disabled={busy === z.id}
+            className="rounded-full border border-red-300 text-red-700 px-4 py-1.5 text-sm font-bold hover:bg-red-50 disabled:opacity-60"
+          >
+            Löschen
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       {fehler && (
         <p className="text-sm font-semibold text-korallenrot">{fehler}</p>
       )}
-      {zeilen.map((z) => {
-        const s = STATUS_LABEL[z.status] ?? {
-          text: z.status,
-          cls: "bg-gray-100",
-        };
+
+      {offeneAnfragen > 0 && (
+        <p className="rounded-xl bg-yellow-50 border border-yellow-200 px-4 py-2.5 text-sm font-semibold text-yellow-800">
+          {offeneAnfragen} offene{" "}
+          {offeneAnfragen === 1 ? "Anfrage wartet" : "Anfragen warten"} auf deine
+          Freigabe.
+        </p>
+      )}
+
+      {gruppen.map((g) => {
+        const offen = erledigtOffen[g.bannerId] ?? false;
         return (
-          <div
-            key={z.id}
-            className="rounded-2xl border border-text-soft/10 bg-white p-4 shadow-sm"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <span className="font-bold">{z.banner}</span>
-              <span className={`rounded-full px-3 py-0.5 text-xs font-bold ${s.cls}`}>
-                {s.text}
+          <section key={g.bannerId}>
+            <div className="flex items-baseline justify-between gap-2 mb-3 border-b border-text-soft/15 pb-1.5">
+              <h2 className="text-lg font-extrabold">{g.bannerName}</h2>
+              <span className="text-sm text-text-soft">
+                {g.aktiv.length === 0
+                  ? "derzeit frei"
+                  : `${g.aktiv.length} aktiv/kommend`}
               </span>
             </div>
-            <p className="text-sm text-text-soft">
-              {fmt(z.start)} – {fmt(z.ende)}
-            </p>
-            <p className="text-sm">
-              {z.name} · {z.email}
-            </p>
-            <p className="text-sm text-text-soft">
-              Anzeige:{" "}
-              <strong>
-                {z.anzeigeTyp === "INDIVIDUELL"
-                  ? "Individueller Inhalt"
-                  : "Steckbrief"}
-              </strong>
-              {z.anzeigeTyp === "STECKBRIEF" &&
-                ` · Profil: ${z.profilSlug ?? "— (nicht zugeordnet)"}`}
-              {z.anzeigeTyp === "INDIVIDUELL" &&
-                ` · ${z.inhaltTitel ? `„${z.inhaltTitel}“` : "noch kein Inhalt gepflegt"}`}
-            </p>
-            {z.wunsch && (
-              <p className="text-sm text-text-soft mb-1 mt-1">
-                <span className="font-semibold">Wunsch:</span> {z.wunsch}
+
+            {g.aktiv.length > 0 ? (
+              <div className="space-y-3">{g.aktiv.map((z) => Karte(z))}</div>
+            ) : (
+              <p className="text-sm text-text-soft italic">
+                Keine laufenden oder kommenden Buchungen.
               </p>
             )}
-            <div className="mb-3" />
 
-            {editor[z.id] !== undefined && (
-              <InhaltEditor
-                form={editor[z.id]}
-                busy={busy === z.id}
-                onChange={(patch) =>
-                  setEditor((p) => ({ ...p, [z.id]: { ...p[z.id], ...patch } }))
-                }
-                onSave={() => inhaltSpeichern(z.id)}
-                onCancel={() => editorSchliessen(z.id)}
-              />
-            )}
-
-            <div className="flex flex-wrap items-center gap-2">
-              {z.status === "ANFRAGE" && (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Profil-Slug (optional)"
-                    value={slugs[z.id] ?? ""}
-                    onChange={(e) =>
-                      setSlugs((p) => ({ ...p, [z.id]: e.target.value }))
-                    }
-                    className="rounded-lg border border-text-soft/20 px-3 py-1.5 text-sm"
-                  />
-                  <button
-                    onClick={() => aktion(z.id, "bestaetigen")}
-                    disabled={busy === z.id}
-                    className="rounded-full bg-korallenrot text-white px-4 py-1.5 text-sm font-bold disabled:opacity-60"
-                  >
-                    Bestätigen
-                  </button>
-                  <button
-                    onClick={() => aktion(z.id, "ablehnen")}
-                    disabled={busy === z.id}
-                    className="rounded-full bg-text-soft/15 px-4 py-1.5 text-sm font-bold disabled:opacity-60"
-                  >
-                    Ablehnen
-                  </button>
-                </>
-              )}
-              {editor[z.id] === undefined && (
+            {g.erledigt.length > 0 && (
+              <div className="mt-3">
                 <button
-                  onClick={() => editorOeffnen(z)}
-                  disabled={busy === z.id}
-                  className="rounded-full bg-text-soft/15 px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+                  onClick={() =>
+                    setErledigtOffen((p) => ({
+                      ...p,
+                      [g.bannerId]: !offen,
+                    }))
+                  }
+                  className="text-sm font-semibold text-text-soft hover:text-text"
                 >
-                  {z.anzeigeTyp === "INDIVIDUELL" && z.inhaltTitel
-                    ? "Inhalt bearbeiten"
-                    : "Individuellen Inhalt eintragen"}
+                  {offen ? "▾" : "▸"} Vergangen / abgelehnt ({g.erledigt.length})
                 </button>
-              )}
-              <button
-                onClick={() => aktion(z.id, "loeschen")}
-                disabled={busy === z.id}
-                className="rounded-full border border-red-300 text-red-700 px-4 py-1.5 text-sm font-bold hover:bg-red-50 disabled:opacity-60"
-              >
-                Löschen
-              </button>
-            </div>
-          </div>
+                {offen && (
+                  <div className="space-y-3 mt-3">
+                    {g.erledigt.map((z) => Karte(z, true))}
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
         );
       })}
     </div>
@@ -258,7 +353,7 @@ function InhaltEditor({
   const input =
     "w-full rounded-lg border border-text-soft/20 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-korallenrot/40";
   return (
-    <div className="mb-3 rounded-xl border border-korallenrot/30 bg-korallenrot/5 p-4 space-y-3">
+    <div className="rounded-xl border border-korallenrot/30 bg-korallenrot/5 p-4 space-y-3">
       <p className="text-sm font-bold">Individueller Banner-Inhalt</p>
       <div>
         <label className={label}>Titel *</label>
