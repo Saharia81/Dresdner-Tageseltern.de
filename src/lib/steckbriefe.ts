@@ -86,3 +86,16 @@ export async function getAlleTagesmuetter() {
 export async function getTagesmutterBySlug(slug: string) {
   return prisma.tagesmutter.findUnique({ where: { slug } });
 }
+
+// Für die Admin-Mitgliederverwaltung: ALLE Datensätze (aktiv und inaktiv),
+// sortiert wie auf der öffentlichen Karte.
+export async function getAlleTagesmuetterAdmin() {
+  return prisma.tagesmutter.findMany({
+    orderBy: [{ reihenfolge: "asc" }, { nachname: "asc" }],
+  });
+}
+
+// Einzelner Datensatz per ID – für die Bearbeiten-Maske.
+export async function getTagesmutterById(id: string) {
+  return prisma.tagesmutter.findUnique({ where: { id } });
+}

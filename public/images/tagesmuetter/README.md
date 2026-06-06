@@ -22,5 +22,5 @@ Pro Mitglied gibt es einen Ordner, benannt nach der **Mitgliedsnummer + 1000**:
 - Das Profilbild **muss** `profilbild.jpg` heißen (auch `.jpeg`/`.png` werden erkannt).
 - Galeriebilder fortlaufend `1`, `2`, `3` … benennen.
 - Fehlt `profilbild.jpg`, zeigt der Steckbrief automatisch den Platzhalter.
-- Nach dem Einlegen neuer Bilder erneut `npm run import:excel` ausführen, damit
-  die Pfade in der Datenbank aktualisiert werden.
+- Nach dem Einlegen neuer Bilder den Bild-Pfad im Admin-Bereich unter
+  **Steckbriefe verwalten → Mitglied bearbeiten → Fotos** eintragen.
