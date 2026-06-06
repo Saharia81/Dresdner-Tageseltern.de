@@ -50,15 +50,30 @@ async function main() {
   }
   console.log(`✅ BlogPost: ${blogPosts.length}`);
 
-  // 2. Banner
-  const banner = rows<{ id: string; bezeichnung: string; notizen: string | null }>(
-    "SELECT * FROM Banner"
-  );
+  // 2. Banner – historische Migration. Das alte SQLite-Banner kannte die
+  // Felder nummer/fotoUrl/groesse/beschreibung noch nicht; sie werden hier mit
+  // Platzhaltern gefüllt (die Tabelle war zum Migrationszeitpunkt leer).
+  const banner = rows<{
+    id: string;
+    bezeichnung: string;
+    notizen: string | null;
+    nummer?: number | null;
+  }>("SELECT * FROM Banner");
+  let bannerNr = 0;
   for (const b of banner) {
+    bannerNr += 1;
     await pg.banner.upsert({
       where: { id: b.id },
       update: {},
-      create: { id: b.id, bezeichnung: b.bezeichnung, notizen: b.notizen },
+      create: {
+        id: b.id,
+        nummer: b.nummer ?? bannerNr,
+        bezeichnung: b.bezeichnung,
+        fotoUrl: `/images/banner/banner${b.nummer ?? bannerNr}.jpg`,
+        groesse: "",
+        beschreibung: "",
+        notizen: b.notizen,
+      },
     });
   }
   console.log(`✅ Banner: ${banner.length}`);
@@ -164,6 +179,9 @@ async function main() {
         id: b.id,
         bannerId: b.bannerId,
         tagesmutterId: b.tagesmutterId,
+        kontaktName: "",
+        kontaktEmail: "",
+        grundstueckBestaetigt: false,
         status: b.status,
         zeitraumStart: new Date(b.zeitraumStart),
         zeitraumEnde: new Date(b.zeitraumEnde),

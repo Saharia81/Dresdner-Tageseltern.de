@@ -14,6 +14,15 @@ function zuAnzeige(ym: string): string {
   return m ? `${m[2]}.${m[1]}` : "";
 }
 
+// Tippt der Nutzer nur Ziffern, wird der Punkt automatisch gesetzt:
+// "0"→"0", "08"→"08", "082"→"08.2", "082026"→"08.2026".
+// So funktioniert die Eingabe auch auf der iPhone-Zahlentastatur ohne Punkt-Taste.
+function formatiereEingabe(roh: string): string {
+  const ziffern = roh.replace(/\D/g, "").slice(0, 6);
+  if (ziffern.length <= 2) return ziffern;
+  return `${ziffern.slice(0, 2)}.${ziffern.slice(2)}`;
+}
+
 // "08.2026" / "8/2026" → "2026-08"; ungültig → null
 function zuIso(eingabe: string): string | null {
   const t = eingabe.trim();
@@ -35,7 +44,9 @@ export function EditPlaetzeForm({ token, initialDates }: Props) {
   const [fehlerText, setFehlerText] = useState<string>("");
 
   function aktualisiere(idx: number, wert: string) {
-    setDates((prev) => prev.map((d, i) => (i === idx ? wert : d)));
+    setDates((prev) =>
+      prev.map((d, i) => (i === idx ? formatiereEingabe(wert) : d)),
+    );
   }
 
   async function speichern(e: React.FormEvent) {

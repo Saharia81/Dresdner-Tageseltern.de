@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { GET as monthlyGet } from "../monthly-emails/route";
 import { GET as reminderGet } from "../reminder-emails/route";
 import { GET as cleanupGet } from "../cleanup/route";
+import { GET as bannerRemindersGet } from "../banner-reminders/route";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -16,17 +17,22 @@ export async function GET(request: Request) {
   const tag = heute.getUTCDate();
   const monat = heute.getUTCMonth() + 1; // 1–12
 
-  // Aufforderung am 1.
-  if (tag === 1) return monthlyGet(request);
+  // Banner-Erinnerungen laufen JEDEN Tag (datumsabhängig je Buchung).
+  const bannerRes = await bannerRemindersGet(request);
+  const banner = await bannerRes.json().catch(() => null);
 
-  // Reguläre Erinnerung am 6.
-  if (tag === 6) return reminderGet(request);
+  // Datumsabhängige Monats-Routinen
+  let monatsRoutine: unknown = null;
+  if (tag === 1) {
+    monatsRoutine = await (await monthlyGet(request)).json().catch(() => null);
+  } else if (tag === 6) {
+    monatsRoutine = await (await reminderGet(request)).json().catch(() => null);
+  } else if (tag === 11) {
+    monatsRoutine = await (await cleanupGet(request)).json().catch(() => null);
+  } else if (monat === 6 && tag === 12) {
+    // Einmalige Roll-out-Erinnerung am 12.6.2026
+    monatsRoutine = await (await reminderGet(request)).json().catch(() => null);
+  }
 
-  // Aufräumen am 11.
-  if (tag === 11) return cleanupGet(request);
-
-  // Einmalige Roll-out-Erinnerung am 12.6.2026
-  if (monat === 6 && tag === 12) return reminderGet(request);
-
-  return NextResponse.json({ ok: true, info: "Heute keine Aktion fällig." });
+  return NextResponse.json({ ok: true, banner, monatsRoutine });
 }

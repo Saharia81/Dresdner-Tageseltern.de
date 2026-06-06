@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "./db";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
 
@@ -10,8 +11,26 @@ export async function getTagesmutterDtoBySlug(
     where: { slug },
     include: { freiePlaetze: true },
   });
-  if (!tm || !tm.istAktiv) return null;
+  return tmZuDto(tm);
+}
 
+// Wie oben, aber per Profil-ID – für die Bannerseite (verknüpfte Buchung).
+export async function getTagesmutterDtoById(
+  id: string,
+): Promise<TagesmutterDto | null> {
+  const tm = await prisma.tagesmutter.findUnique({
+    where: { id },
+    include: { freiePlaetze: true },
+  });
+  return tmZuDto(tm);
+}
+
+type TmMitPlaetze = Prisma.TagesmutterGetPayload<{
+  include: { freiePlaetze: true };
+}>;
+
+function tmZuDto(tm: TmMitPlaetze | null): TagesmutterDto | null {
+  if (!tm || !tm.istAktiv) return null;
   const fp = tm.freiePlaetze
     ? {
         platz1Ab: tm.freiePlaetze.platz1Ab?.toISOString() ?? null,

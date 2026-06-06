@@ -306,8 +306,8 @@ function InfoCardsSection() {
             </h3>
             <p className="text-text-soft leading-relaxed flex-1">
               Die Elternbeiträge sind identisch mit denen in Krippe und
-              Kita. Die Kosten richten sich nach dem Einkommen und werden
-              durch die Landeshauptstadt Dresden bezuschusst.
+              Kita. Die Kosten richten sich nach der gewählten Betreuungszeit
+              und Anzahl der betreuten Kinder im Haushalt.
             </p>
             <div>
               <LinkButton
