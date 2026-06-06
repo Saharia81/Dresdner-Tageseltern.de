@@ -115,9 +115,10 @@ model Banner {
   id           String    @id @default(cuid())
   nummer       Int       @unique // 1..4 – Verknüpfung zu /banner1–4
   bezeichnung  String    // "Banner 1", "Banner 2" …
-  fotoUrl      String    // Vorschaubild auf /banner-buchen
+  fotoUrl      String    // Banner-Grafik (Detailseite, voll sichtbar)
   fotoBreite   Int?      // Pixelmaße des Fotos (für korrektes Seitenverhältnis)
   fotoHoehe    Int?
+  kartenfotoUrl String?  // 16:9-Aufmacher für die Karte auf /banner-buchen
   beispielFotos String[] @default([]) // "so hängt der Banner in echt"-Fotos
   groesse      String    // z. B. "2,0 × 1,0 m"
   beschreibung String

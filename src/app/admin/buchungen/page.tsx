@@ -1,13 +1,31 @@
 import { prisma } from "@/lib/db";
 import { AdminBuchungenListe, type BuchungZeile } from "./AdminBuchungenListe";
+import { AdminBuchungAnlegen } from "./AdminBuchungAnlegen";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminBuchungenPage() {
-  const buchungen = await prisma.buchung.findMany({
-    include: { banner: true, tagesmutter: { select: { slug: true } } },
-    orderBy: [{ status: "asc" }, { zeitraumStart: "asc" }],
-  });
+  const [buchungen, banner, tagesmuetter] = await Promise.all([
+    prisma.buchung.findMany({
+      include: { banner: true, tagesmutter: { select: { slug: true } } },
+      orderBy: [{ status: "asc" }, { zeitraumStart: "asc" }],
+    }),
+    prisma.banner.findMany({
+      where: { istAktiv: true },
+      orderBy: [{ reihenfolge: "asc" }, { nummer: "asc" }],
+      select: { id: true, bezeichnung: true },
+    }),
+    prisma.tagesmutter.findMany({
+      where: { istAktiv: true },
+      orderBy: [{ nachname: "asc" }, { vorname: "asc" }],
+      select: { id: true, vorname: true, nachname: true, einrichtungsname: true },
+    }),
+  ]);
+
+  const profile = tagesmuetter.map((t) => ({
+    id: t.id,
+    label: `${t.vorname} ${t.nachname}${t.einrichtungsname ? ` – ${t.einrichtungsname}` : ""}`,
+  }));
 
   // Anfragen zuerst, dann der Rest
   const sortiert = [...buchungen].sort((a, b) => {
@@ -29,6 +47,7 @@ export default async function AdminBuchungenPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
       <h1 className="text-3xl font-bold mb-6">Banner-Buchungen</h1>
+      <AdminBuchungAnlegen banner={banner} profile={profile} />
       <AdminBuchungenListe zeilen={zeilen} />
     </main>
   );

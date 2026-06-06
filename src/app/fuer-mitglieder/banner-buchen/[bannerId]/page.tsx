@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { gebuchteZeitraeume } from "@/lib/buchungen";
 import { BuchungsForm } from "./BuchungsForm";
+import { BannerGalerie } from "./BannerGalerie";
 
 type Params = Promise<{ bannerId: string }>;
 
@@ -35,11 +36,6 @@ export default async function BannerDetailPage({ params }: { params: Params }) {
     ende: z.zeitraumEnde.toISOString().slice(0, 10),
   }));
 
-  const datumFmt = new Intl.DateTimeFormat("de-DE", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
 
   return (
     <main className="bg-creme">
@@ -65,18 +61,18 @@ export default async function BannerDetailPage({ params }: { params: Params }) {
           Alle Banner
         </Link>
 
-        <div className="rounded-3xl bg-korallenrot/25 border border-korallenrot/40 overflow-hidden shadow-sm mb-8">
-          <div className="p-3 sm:p-4">
+        <div className="rounded-3xl bg-white border border-text-soft/10 overflow-hidden shadow-sm mb-8">
+          <div className="relative aspect-[16/9] bg-creme">
             <Image
-              src={banner.fotoUrl}
+              src={banner.kartenfotoUrl ?? banner.fotoUrl}
               alt={banner.bezeichnung}
-              width={banner.fotoBreite ?? 1600}
-              height={banner.fotoHoehe ?? 800}
-              className="w-full h-auto block rounded-xl border border-korallenrot/30"
+              fill
+              priority
+              className="object-cover object-center"
               sizes="(max-width: 672px) 100vw, 640px"
             />
           </div>
-          <div className="px-6 pb-6">
+          <div className="px-6 py-6">
             <h1 className="text-2xl font-extrabold mb-1">{banner.bezeichnung}</h1>
             <p className="text-sm font-semibold text-korallenrot">
               Größe: {banner.groesse}
@@ -84,43 +80,15 @@ export default async function BannerDetailPage({ params }: { params: Params }) {
           </div>
         </div>
 
-        {banner.beispielFotos.length > 0 && (
+        {(banner.beispielFotos ?? []).length > 0 && (
           <div className="mb-8">
             <h2 className="text-sm font-extrabold mb-3">
-              So sieht der Banner aufgehängt aus
+              Beispielbilder aus der Praxis
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {banner.beispielFotos.map((src, i) => (
-                <div
-                  key={i}
-                  className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-creme border border-korallenrot/30"
-                >
-                  <Image
-                    src={src}
-                    alt={`${banner.bezeichnung} – Beispiel ${i + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 672px) 50vw, 213px"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {belegt.length > 0 && (
-          <div className="rounded-2xl bg-white border border-text-soft/10 p-5 mb-8 shadow-sm">
-            <h2 className="text-sm font-extrabold mb-3">
-              Bereits belegte Zeiträume
-            </h2>
-            <ul className="space-y-1 text-sm text-text-soft">
-              {belegt.map((z, i) => (
-                <li key={i}>
-                  {datumFmt.format(new Date(z.start))} –{" "}
-                  {datumFmt.format(new Date(z.ende))}
-                </li>
-              ))}
-            </ul>
+            <BannerGalerie
+              fotos={banner.beispielFotos ?? []}
+              bezeichnung={banner.bezeichnung}
+            />
           </div>
         )}
 

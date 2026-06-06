@@ -25,6 +25,21 @@ function beispielFotos(nummer: number): string[] {
     .map((f) => `/images/banner/${f}`);
 }
 
+// 16:9-Aufmacher für die Karte (banner{nr}-karte.<ext>), falls vorhanden.
+function kartenfoto(nummer: number): string | null {
+  const dir = join(process.cwd(), "public", "images", "banner");
+  let dateien: string[] = [];
+  try {
+    dateien = readdirSync(dir);
+  } catch {
+    return null;
+  }
+  const treffer = dateien.find((f) =>
+    new RegExp(`^banner${nummer}-karte\\.(jpe?g|png|webp)$`, "i").test(f),
+  );
+  return treffer ? `/images/banner/${treffer}` : null;
+}
+
 async function main() {
   await prisma.tagesmutter.upsert({
     where: { slug: "beispiel-tagesmutter" },
@@ -105,6 +120,7 @@ async function main() {
 
   for (const b of banner) {
     const fotos = beispielFotos(b.nummer);
+    const karte = kartenfoto(b.nummer);
     await prisma.banner.upsert({
       where: { nummer: b.nummer },
       update: {
@@ -112,6 +128,7 @@ async function main() {
         fotoUrl: b.fotoUrl,
         fotoBreite: b.fotoBreite,
         fotoHoehe: b.fotoHoehe,
+        kartenfotoUrl: karte,
         beispielFotos: fotos,
         groesse: b.groesse,
         beschreibung: b.beschreibung,
@@ -123,6 +140,7 @@ async function main() {
         fotoUrl: b.fotoUrl,
         fotoBreite: b.fotoBreite,
         fotoHoehe: b.fotoHoehe,
+        kartenfotoUrl: karte,
         beispielFotos: fotos,
         groesse: b.groesse,
         beschreibung: b.beschreibung,

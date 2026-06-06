@@ -31,7 +31,10 @@ export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
   const [fehler, setFehler] = useState("");
   const [slugs, setSlugs] = useState<Record<string, string>>({});
 
-  async function aktion(id: string, art: "bestaetigen" | "ablehnen") {
+  async function aktion(id: string, art: "bestaetigen" | "ablehnen" | "loeschen") {
+    if (art === "loeschen" && !confirm("Diese Buchung wirklich löschen?")) {
+      return;
+    }
     setBusy(id);
     setFehler("");
     try {
@@ -92,33 +95,42 @@ export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
               Profil: {z.profilSlug ?? "— (nicht zugeordnet)"}
             </p>
 
-            {z.status === "ANFRAGE" && (
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  type="text"
-                  placeholder="Profil-Slug (optional)"
-                  value={slugs[z.id] ?? ""}
-                  onChange={(e) =>
-                    setSlugs((p) => ({ ...p, [z.id]: e.target.value }))
-                  }
-                  className="rounded-lg border border-text-soft/20 px-3 py-1.5 text-sm"
-                />
-                <button
-                  onClick={() => aktion(z.id, "bestaetigen")}
-                  disabled={busy === z.id}
-                  className="rounded-full bg-korallenrot text-white px-4 py-1.5 text-sm font-bold disabled:opacity-60"
-                >
-                  Bestätigen
-                </button>
-                <button
-                  onClick={() => aktion(z.id, "ablehnen")}
-                  disabled={busy === z.id}
-                  className="rounded-full bg-text-soft/15 px-4 py-1.5 text-sm font-bold disabled:opacity-60"
-                >
-                  Ablehnen
-                </button>
-              </div>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {z.status === "ANFRAGE" && (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Profil-Slug (optional)"
+                    value={slugs[z.id] ?? ""}
+                    onChange={(e) =>
+                      setSlugs((p) => ({ ...p, [z.id]: e.target.value }))
+                    }
+                    className="rounded-lg border border-text-soft/20 px-3 py-1.5 text-sm"
+                  />
+                  <button
+                    onClick={() => aktion(z.id, "bestaetigen")}
+                    disabled={busy === z.id}
+                    className="rounded-full bg-korallenrot text-white px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+                  >
+                    Bestätigen
+                  </button>
+                  <button
+                    onClick={() => aktion(z.id, "ablehnen")}
+                    disabled={busy === z.id}
+                    className="rounded-full bg-text-soft/15 px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+                  >
+                    Ablehnen
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => aktion(z.id, "loeschen")}
+                disabled={busy === z.id}
+                className="rounded-full border border-red-300 text-red-700 px-4 py-1.5 text-sm font-bold hover:bg-red-50 disabled:opacity-60"
+              >
+                Löschen
+              </button>
+            </div>
           </div>
         );
       })}

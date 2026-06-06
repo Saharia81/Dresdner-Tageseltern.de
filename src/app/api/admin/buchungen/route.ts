@@ -2,7 +2,7 @@
 // Geschützt über die Passwort-Middleware (siehe src/middleware.ts).
 //
 //  POST /api/admin/buchungen
-//    { id, aktion: "bestaetigen" | "ablehnen", tagesmutterSlug?: string }
+//    { id, aktion: "bestaetigen" | "ablehnen" | "loeschen", tagesmutterSlug?: string }
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -20,7 +20,10 @@ export async function POST(request: Request) {
   }
 
   const { id, aktion, tagesmutterSlug } = (body ?? {}) as Record<string, unknown>;
-  if (typeof id !== "string" || (aktion !== "bestaetigen" && aktion !== "ablehnen")) {
+  if (
+    typeof id !== "string" ||
+    (aktion !== "bestaetigen" && aktion !== "ablehnen" && aktion !== "loeschen")
+  ) {
     return NextResponse.json({ error: "Ungültige Aktion" }, { status: 400 });
   }
 
@@ -30,6 +33,11 @@ export async function POST(request: Request) {
   });
   if (!buchung) {
     return NextResponse.json({ error: "Buchung nicht gefunden" }, { status: 404 });
+  }
+
+  if (aktion === "loeschen") {
+    await prisma.buchung.delete({ where: { id } });
+    return NextResponse.json({ ok: true, status: "GELOESCHT" });
   }
 
   if (aktion === "ablehnen") {

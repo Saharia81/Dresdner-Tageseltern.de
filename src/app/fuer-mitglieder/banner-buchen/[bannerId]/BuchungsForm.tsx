@@ -1,21 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { BuchungsKalender } from "./BuchungsKalender";
 
 type Belegt = { start: string; ende: string };
+
+function fmtDatum(iso: string): string {
+  return new Date(iso + "T00:00:00").toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 type Props = {
   bannerId: string;
   bannerBezeichnung: string;
   belegt: Belegt[];
 };
-
-// heutiges Datum als YYYY-MM-DD (lokal) für das min-Attribut
-function heuteIso(): string {
-  const d = new Date();
-  const off = d.getTimezoneOffset();
-  return new Date(d.getTime() - off * 60_000).toISOString().slice(0, 10);
-}
 
 // Überschneidet sich [start, ende] mit einem belegten Zeitraum?
 function ueberschneidet(start: string, ende: string, belegt: Belegt[]): boolean {
@@ -123,35 +125,22 @@ export function BuchungsForm({ bannerId, bannerBezeichnung, belegt }: Props) {
     >
       <h2 className="text-xl font-extrabold">Zeitraum buchen</h2>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="start" className={labelCls}>
-            Von
-          </label>
-          <input
-            id="start"
-            type="date"
-            value={start}
-            min={heuteIso()}
-            onChange={(e) => setStart(e.target.value)}
-            required
-            className={inputCls}
-          />
-        </div>
-        <div>
-          <label htmlFor="ende" className={labelCls}>
-            Bis
-          </label>
-          <input
-            id="ende"
-            type="date"
-            value={ende}
-            min={start || heuteIso()}
-            onChange={(e) => setEnde(e.target.value)}
-            required
-            className={inputCls}
-          />
-        </div>
+      <div>
+        <span className={labelCls}>Wähle deinen Zeitraum</span>
+        <BuchungsKalender
+          belegt={belegt}
+          start={start}
+          ende={ende}
+          onSelect={(s, e) => {
+            setStart(s);
+            setEnde(e);
+          }}
+        />
+        <p className="text-sm text-text-soft mt-2">
+          {start
+            ? `Gewählt: ${fmtDatum(start)} – ${fmtDatum(ende || start)}`
+            : "Klicke ein Startdatum und dann ein Enddatum an."}
+        </p>
       </div>
 
       <div>
@@ -183,8 +172,8 @@ export function BuchungsForm({ bannerId, bannerBezeichnung, belegt }: Props) {
           className={inputCls}
         />
         <p className="text-xs text-text-soft mt-1.5">
-          Bitte die E-Mail-Adresse deines Steckbrief-Profils angeben – so
-          erscheint der richtige Steckbrief auf der Banner-Seite.
+          Bitte die E-Mail-Adresse angeben die auch auf deinem Steckbrief ist,
+          damit wir dich korrekt zuordnen können.
         </p>
       </div>
 
