@@ -1,18 +1,16 @@
 // Gemeinsame Darstellung einer Banner-Landingpage (/banner1, /banner2, …).
 //
-// Zeigt den Steckbrief der aktuell ausleihenden Tagesmutter plus einen Link
-// auf die Übersicht aller Tageseltern. Ist dem Banner gerade niemand
-// zugeordnet, erscheint stattdessen eine neutrale Begrüßung mit demselben Link.
+// Zeigt – je nach laufender Buchung – den Steckbrief der ausleihenden
+// Tagesmutter oder einen individuellen Inhalt. Ist der Banner gerade nicht
+// ausgeliehen, leitet die Seite auf /kindertagespflege-finden weiter.
 
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { SteckbriefInhalt } from "@/app/kindertagespflege-finden/SteckbriefInhalt";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
-import {
-  getTagesmutterDtoBySlug,
-  getTagesmutterDtoById,
-} from "@/lib/steckbriefe";
-import { getBannerSlug, type BannerNummer } from "@/lib/banner";
+import { getTagesmutterDtoById } from "@/lib/steckbriefe";
+import { type BannerNummer } from "@/lib/banner";
 import { aktuelleBuchung } from "@/lib/buchungen";
 
 type IndividuellerInhalt = {
@@ -24,20 +22,19 @@ type IndividuellerInhalt = {
 };
 
 // Was aktuell auf einem Banner gezeigt werden soll:
-//   steckbrief  – das Profil der Bucherin (oder feste Zuordnung)
+//   steckbrief  – das Profil der aktuell ausleihenden Bucherin
 //   individuell – ein vom Admin gepflegter freier Inhalt
-//   neutral     – nichts Passendes → neutrale Finder-Landingpage
+//   neutral     – Banner gerade nicht ausgeliehen → Weiterleitung zum Finder
 type BannerAnzeige =
   | { typ: "steckbrief"; tagesmutter: TagesmutterDto }
   | { typ: "individuell"; inhalt: IndividuellerInhalt }
   | { typ: "neutral" };
 
-// Reihenfolge:
-// 1. Läuft gerade eine bestätigte Buchung?
-//    • Anzeige INDIVIDUELL mit Titel → individueller Inhalt
-//    • Profil zugeordnet → dessen Steckbrief
-//    • sonst → neutral (NICHT die alte feste Zuordnung, sonst falsche Person)
-// 2. Keine laufende Buchung → feste Zuordnung aus banner.ts (Übergangslösung)
+// Nur eine laufende, bestätigte Buchung bestimmt die Anzeige:
+//   • INDIVIDUELL mit Titel → individueller Inhalt
+//   • Profil zugeordnet → dessen Steckbrief
+// Läuft KEINE Buchung (oder Inhalt noch nicht gepflegt) → neutral, d. h. die
+// Banner-Seite leitet auf die Finder-Seite weiter.
 async function aktuelleAnzeige(nr: BannerNummer): Promise<BannerAnzeige> {
   const buchung = await aktuelleBuchung(Number(nr));
   if (buchung) {
@@ -57,15 +54,6 @@ async function aktuelleAnzeige(nr: BannerNummer): Promise<BannerAnzeige> {
       const tm = await getTagesmutterDtoById(buchung.tagesmutterId);
       if (tm) return { typ: "steckbrief", tagesmutter: tm };
     }
-    // Laufende Buchung ohne nutzbaren Inhalt (z. B. individueller Inhalt noch
-    // nicht gepflegt) → neutral statt der veralteten festen Zuordnung.
-    return { typ: "neutral" };
-  }
-
-  const slug = getBannerSlug(nr);
-  if (slug) {
-    const tm = await getTagesmutterDtoBySlug(slug);
-    if (tm) return { typ: "steckbrief", tagesmutter: tm };
   }
   return { typ: "neutral" };
 }
@@ -179,22 +167,9 @@ export async function BannerSeite({ nr }: { nr: BannerNummer }) {
     return <IndividuelleAnzeige inhalt={anzeige.inhalt} />;
   }
 
-  // Fallback: Banner aktuell niemandem zugeordnet (oder Profil inaktiv).
+  // Banner aktuell nicht ausgeliehen → direkt zur Finder-Seite weiterleiten.
   if (anzeige.typ === "neutral") {
-    return (
-      <main className="bg-creme min-h-[60vh]">
-        <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-          <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-4">
-            Liebevolle Kindertagespflege in Dresden
-          </h1>
-          <p className="text-lg text-text-soft mb-8 leading-relaxed">
-            Entdecke Tagesmütter und Tagesväter in deiner Nähe und finde die
-            Betreuung, die zu deinem Kind und eurer Familie passt.
-          </p>
-          <FinderCta />
-        </div>
-      </main>
-    );
+    redirect("/kindertagespflege-finden");
   }
 
   return (

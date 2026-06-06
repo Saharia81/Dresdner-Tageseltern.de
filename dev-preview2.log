@@ -2,44 +2,46 @@
 - Local:         http://localhost:3001
 - Network:       http://192.168.76.60:3001
 - Environments: .env
-✓ Ready in 867ms
+✓ Ready in 516ms
 
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 1842ms (next.js: 1219ms, application-code: 622ms)
- GET /admin/buchungen 200 in 1398ms (next.js: 65ms, proxy.ts: 69ms, application-code: 1264ms)
- GET /kindertagespflege-finden 200 in 138ms (next.js: 42ms, application-code: 96ms)
- GET /api/tagesmutters? 200 in 367ms (next.js: 73ms, application-code: 294ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 305ms (next.js: 15ms, application-code: 290ms)
- POST /api/buchungen 409 in 332ms (next.js: 57ms, application-code: 274ms)
-✓ Compiled in 924ms
-✓ Compiled in 151ms
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 660ms (next.js: 173ms, application-code: 487ms)
- GET /admin/buchungen 200 in 671ms (next.js: 208ms, proxy.ts: 63ms, application-code: 401ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 455ms (next.js: 48ms, application-code: 407ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 332ms (next.js: 37ms, application-code: 294ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 334ms (next.js: 5ms, application-code: 328ms)
- GET /admin/buchungen 200 in 485ms (next.js: 47ms, proxy.ts: 47ms, application-code: 391ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 236ms (next.js: 5ms, application-code: 232ms)
- GET /admin/buchungen 200 in 242ms (next.js: 24ms, proxy.ts: 39ms, application-code: 179ms)
- GET /admin/buchungen 200 in 171ms (next.js: 16ms, proxy.ts: 11ms, application-code: 143ms)
- GET /admin/buchungen 200 in 208ms (next.js: 10ms, proxy.ts: 50ms, application-code: 148ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 450ms (next.js: 79ms, application-code: 371ms)
- GET /admin/buchungen 200 in 501ms (next.js: 204ms, proxy.ts: 49ms, application-code: 248ms)
-✓ Compiled in 154ms
- GET /admin/buchungen 200 in 530ms (next.js: 175ms, proxy.ts: 48ms, application-code: 307ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 497ms (next.js: 84ms, application-code: 413ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 259ms (next.js: 4ms, application-code: 255ms)
- GET /admin/buchungen 200 in 306ms (next.js: 39ms, proxy.ts: 7ms, application-code: 260ms)
-✓ Compiled in 96ms
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 412ms (next.js: 75ms, application-code: 336ms)
- GET /admin/buchungen 200 in 462ms (next.js: 215ms, proxy.ts: 43ms, application-code: 204ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 109ms (next.js: 4ms, application-code: 105ms)
- GET /admin/buchungen 200 in 146ms (next.js: 40ms, proxy.ts: 11ms, application-code: 95ms)
-✓ Compiled in 127ms
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 478ms (next.js: 73ms, application-code: 405ms)
- GET /admin/buchungen 200 in 528ms (next.js: 217ms, proxy.ts: 47ms, application-code: 265ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 189ms (next.js: 4ms, application-code: 185ms)
- GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 127ms (next.js: 7ms, application-code: 120ms)
- GET /admin/buchungen 200 in 161ms (next.js: 49ms, proxy.ts: 8ms, application-code: 103ms)
- GET /admin/buchungen 200 in 320ms (next.js: 38ms, proxy.ts: 7ms, application-code: 275ms)
- GET /plaetze-bestaetigen?token=___test___&action=edit 200 in 962ms (next.js: 500ms, application-code: 462ms)
-[?25h
+Persisting failed: Unable to commit operations
+
+Caused by:
+    0: Unable to write meta file 00001756.meta
+    1: Der Vorgang ist bei einer Datei mit einem geöffneten Bereich, der einem Benutzer zugeordnet ist, nicht anwendbar. (os error 1224)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+ GET /fuer-mitglieder/banner-buchen 200 in 1069ms (next.js: 204ms, application-code: 865ms)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+ GET / 200 in 436ms (next.js: 41ms, application-code: 395ms)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+ GET /fuer-mitglieder/banner-buchen 200 in 389ms (next.js: 5ms, application-code: 384ms)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+ GET /fuer-mitglieder/banner-buchen/cmq1ypm000002k8i4tztqqcsp 200 in 745ms (next.js: 599ms, application-code: 146ms)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+ POST /api/buchungen 200 in 2.2s (next.js: 94ms, application-code: 2.1s)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+ GET /fuer-mitglieder/banner-buchen/cmq1ypm000002k8i4tztqqcsp 200 in 937ms (next.js: 558ms, application-code: 379ms)
+ GET /fuer-mitglieder/banner-buchen/cmq1ypm000002k8i4tztqqcsp 200 in 324ms (next.js: 5ms, application-code: 319ms)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+ GET /fuer-mitglieder/banner-buchen/cmq1ypm000002k8i4tztqqcsp 200 in 255ms (next.js: 87ms, application-code: 168ms)
+ GET /fuer-mitglieder/banner-buchen/cmq1ypm000002k8i4tztqqcsp 200 in 163ms (next.js: 5ms, application-code: 158ms)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)

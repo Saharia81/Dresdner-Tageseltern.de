@@ -460,7 +460,7 @@ export function buildBuchungBestaetigungEmail(args: {
     <p style="color:#5a534c;font-size:14px;">${escape(GRUNDSTUECK_HINWEIS)}</p>
     <p style="color:#5a534c;font-size:14px;">
       Etwa <strong>5 Tage vor Beginn</strong> melden wir uns noch einmal mit den
-      Übergabe-Details. Solltest du doch nicht buchen können, schreib uns einfach:
+      Übergabe-Details. Bei Fragen schreib uns einfach:
       <a href="${stornoMailto}" style="color:#f8796c;">${INFO_EMAIL}</a>.
     </p>
     <p style="margin-top:24px;">Viele Grüße,<br>Dresdner Tageseltern e.V.</p>
@@ -475,7 +475,7 @@ Zeitraum: ${von} – ${bis}
 ${GRUNDSTUECK_HINWEIS}
 
 Etwa 5 Tage vor Beginn melden wir uns noch einmal mit den Übergabe-Details.
-Stornieren? Schreib uns an ${INFO_EMAIL}.
+Bei Fragen schreib uns einfach an ${INFO_EMAIL}.
 
 Viele Grüße,
 Dresdner Tageseltern e.V.`;
