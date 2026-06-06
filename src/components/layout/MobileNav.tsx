@@ -17,6 +17,12 @@ const NAV: Array<
       { href: "/fuer-eltern/aktionswoche", label: "Aktionswoche Kindertagespflege" },
     ],
   },
+  {
+    label: "Für Tageseltern",
+    children: [
+      { href: "/fuer-mitglieder/banner-buchen", label: "Banner buchen" },
+    ],
+  },
   { href: "/ueber-uns", label: "Über uns" },
 ];
 
