@@ -135,6 +135,14 @@ enum BuchungsStatus {
   ABGELAUFEN
 }
 
+// Was auf der Banner-Landingpage (/banner1–4) während dieser Buchung gezeigt
+// wird: der Steckbrief der Bucherin – oder ein individueller, vom Admin
+// freigegebener Inhalt (z. B. Tag der offenen Tür, Sommerfest).
+enum BannerInhaltTyp {
+  STECKBRIEF
+  INDIVIDUELL
+}
+
 model Buchung {
   id              String         @id @default(cuid())
   bannerId        String
@@ -151,6 +159,18 @@ model Buchung {
 
   // Pflicht-Bestätigung: Aufhängen mit Grundstückseigentümer abgesprochen
   grundstueckBestaetigt Boolean
+
+  // Anzeige auf der Bannerseite. STECKBRIEF = Profil der Bucherin zeigen.
+  // INDIVIDUELL = freier Inhalt (geht nur nach Admin-Freigabe live).
+  anzeigeTyp      BannerInhaltTyp @default(STECKBRIEF)
+  // Wunsch-Freitext aus dem Buchungsformular (was beworben werden soll).
+  wunsch          String?
+  // Vom Admin gepflegter individueller Banner-Inhalt:
+  inhaltTitel     String?
+  inhaltText      String?
+  inhaltBildUrl   String?
+  inhaltLinkUrl   String?
+  inhaltLinkText  String?
 
   status          BuchungsStatus @default(ANFRAGE)
   zeitraumStart   DateTime

@@ -6,8 +6,10 @@
 // Ablauf POST:
 //   • Validierung (Pflichtfelder, Grundstück-Häkchen, Datumslogik)
 //   • Überlappungsprüfung gegen bestehende Buchungen
-//   • E-Mail zu aktivem Profil passend → Status BESTAETIGT, Bestätigungsmail
-//   • sonst → Status ANFRAGE, Hinweis-Mail an den Verein
+//   • Anzeige-Typ INDIVIDUELL → immer Status ANFRAGE (Inhalt geht erst nach
+//     Admin-Freigabe live), Hinweis-Mail an den Verein
+//   • sonst (STECKBRIEF): E-Mail zu aktivem Profil passend → Status BESTAETIGT,
+//     Bestätigungsmail; ohne Treffer → Status ANFRAGE, Hinweis-Mail an den Verein
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -16,6 +18,7 @@ import {
   pruefeUeberlappung,
   gebuchteZeitraeume,
   tagesBeginn,
+  tagISO,
 } from "@/lib/buchungen";
 import {
   sendeMail,
@@ -76,8 +79,8 @@ export async function GET(request: Request) {
   const zeitraeume = await gebuchteZeitraeume(bannerId);
   return NextResponse.json({
     zeitraeume: zeitraeume.map((z) => ({
-      start: z.zeitraumStart.toISOString().slice(0, 10),
-      ende: z.zeitraumEnde.toISOString().slice(0, 10),
+      start: tagISO(z.zeitraumStart),
+      ende: tagISO(z.zeitraumEnde),
     })),
   });
 }
@@ -104,8 +107,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Ungültiger Body" }, { status: 400 });
   }
 
-  const { bannerId, name, email, start, ende, grundstueckBestaetigt } =
-    body as Record<string, unknown>;
+  const {
+    bannerId,
+    name,
+    email,
+    start,
+    ende,
+    grundstueckBestaetigt,
+    anzeigeTyp: anzeigeTypRoh,
+    wunsch: wunschRoh,
+  } = body as Record<string, unknown>;
+
+  // Anzeige-Typ: STECKBRIEF (Standard) oder INDIVIDUELL (freier Inhalt).
+  const anzeigeTyp = anzeigeTypRoh === "INDIVIDUELL" ? "INDIVIDUELL" : "STECKBRIEF";
+  const wunsch =
+    typeof wunschRoh === "string" && wunschRoh.trim()
+      ? wunschRoh.trim().slice(0, 1000)
+      : null;
 
   // Validierung
   if (typeof bannerId !== "string" || !bannerId) {
@@ -172,8 +190,13 @@ export async function POST(request: Request) {
     );
   }
 
-  // Profil-Zuordnung über die E-Mail
-  const tagesmutter = await findeAktiveTagesmutterByEmail(email);
+  // Profil-Zuordnung über die E-Mail. Bei individuellem Inhalt zeigen wir den
+  // Steckbrief NICHT automatisch und bestätigen nicht automatisch – der Admin
+  // pflegt den Inhalt und gibt frei.
+  const tagesmutter =
+    anzeigeTyp === "STECKBRIEF"
+      ? await findeAktiveTagesmutterByEmail(email)
+      : null;
   const status = tagesmutter ? "BESTAETIGT" : "ANFRAGE";
 
   const buchung = await prisma.buchung.create({
@@ -183,6 +206,8 @@ export async function POST(request: Request) {
       kontaktName: name.trim(),
       kontaktEmail: email.trim(),
       grundstueckBestaetigt: true,
+      anzeigeTyp,
+      wunsch,
       status,
       zeitraumStart: startTag,
       zeitraumEnde: endeTag,
@@ -207,6 +232,8 @@ export async function POST(request: Request) {
         bannerBezeichnung: banner.bezeichnung,
         start: startTag,
         ende: endeTag,
+        anzeigeTyp,
+        wunsch,
       });
       await sendeMail({
         an: process.env.ADMIN_EMAIL ?? "info@dresdner-tageseltern.de",
@@ -217,5 +244,5 @@ export async function POST(request: Request) {
     console.error("Buchungs-Mail fehlgeschlagen:", err);
   }
 
-  return NextResponse.json({ ok: true, status });
+  return NextResponse.json({ ok: true, status, anzeigeTyp });
 }

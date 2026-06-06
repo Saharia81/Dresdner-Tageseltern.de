@@ -22,6 +22,17 @@ export function plusTage(d: Date, tage: number): Date {
   return n;
 }
 
+// Kalendertag als "YYYY-MM-DD". Buchungstage werden als LOKALE Mitternacht
+// gespeichert (siehe tagesBeginn), daher muss hier lokal formatiert werden.
+// NICHT toISOString() verwenden – das rechnet nach UTC um und verschiebt in
+// Zeitzonen mit positivem Offset (z. B. Sommerzeit) den Tag um einen Tag.
+export function tagISO(d: Date): string {
+  const jahr = d.getFullYear();
+  const monat = String(d.getMonth() + 1).padStart(2, "0");
+  const tag = String(d.getDate()).padStart(2, "0");
+  return `${jahr}-${monat}-${tag}`;
+}
+
 // Findet ein aktives Tagesmutter-Profil zu einer E-Mail (case-insensitive).
 export async function findeAktiveTagesmutterByEmail(email: string) {
   const sauber = email.trim();

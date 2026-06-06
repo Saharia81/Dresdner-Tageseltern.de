@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { tagISO } from "@/lib/buchungen";
 import { AdminBuchungenListe, type BuchungZeile } from "./AdminBuchungenListe";
 import { AdminBuchungAnlegen } from "./AdminBuchungAnlegen";
 
@@ -38,10 +39,17 @@ export default async function AdminBuchungenPage() {
     banner: b.banner.bezeichnung,
     name: b.kontaktName,
     email: b.kontaktEmail,
-    start: b.zeitraumStart.toISOString().slice(0, 10),
-    ende: b.zeitraumEnde.toISOString().slice(0, 10),
+    start: tagISO(b.zeitraumStart),
+    ende: tagISO(b.zeitraumEnde),
     status: b.status,
     profilSlug: b.tagesmutter?.slug ?? null,
+    anzeigeTyp: b.anzeigeTyp,
+    wunsch: b.wunsch,
+    inhaltTitel: b.inhaltTitel,
+    inhaltText: b.inhaltText,
+    inhaltBildUrl: b.inhaltBildUrl,
+    inhaltLinkUrl: b.inhaltLinkUrl,
+    inhaltLinkText: b.inhaltLinkText,
   }));
 
   return (

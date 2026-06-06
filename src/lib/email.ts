@@ -601,29 +601,43 @@ export function buildAdminBuchungsanfrageEmail(args: {
   bannerBezeichnung: string;
   start: Date;
   ende: Date;
+  anzeigeTyp?: "STECKBRIEF" | "INDIVIDUELL";
+  wunsch?: string | null;
 }): { betreff: string; html: string; text: string } {
   const { kontaktName, kontaktEmail, bannerBezeichnung, start, ende } = args;
+  const individuell = args.anzeigeTyp === "INDIVIDUELL";
   const von = formatDatum(start)!;
   const bis = formatDatum(ende)!;
   const adminUrl = `${APP_URL}/admin/buchungen`;
 
+  const einleitung = individuell
+    ? "Neue <strong>Banner-Anfrage mit individuellem Inhalt</strong> – bitte Inhalt im Admin pflegen und freigeben:"
+    : "Neue <strong>Banner-Anfrage</strong> (E-Mail keinem Profil zugeordnet):";
+
+  const wunschHtml = args.wunsch
+    ? `<p style="margin:4px 0;"><strong>Wunsch:</strong> ${escape(args.wunsch)}</p>`
+    : "";
+
   const inhalt = `
-    <p>Neue <strong>Banner-Anfrage</strong> (E-Mail keinem Profil zugeordnet):</p>
+    <p>${einleitung}</p>
     <div style="background:#fef2c2;border-radius:12px;padding:16px 20px;margin:16px 0;">
       <p style="margin:4px 0;"><strong>Banner:</strong> ${escape(bannerBezeichnung)}</p>
       <p style="margin:4px 0;"><strong>Zeitraum:</strong> ${von} – ${bis}</p>
+      <p style="margin:4px 0;"><strong>Anzeige:</strong> ${individuell ? "Individueller Inhalt" : "Steckbrief"}</p>
       <p style="margin:4px 0;"><strong>Name:</strong> ${escape(kontaktName)}</p>
       <p style="margin:4px 0;"><strong>E-Mail:</strong> ${escape(kontaktEmail)}</p>
+      ${wunschHtml}
     </div>
     <p>${button(adminUrl, "Im Admin prüfen", "#f8796c")}</p>
   `;
 
-  const text = `Neue Banner-Anfrage (E-Mail keinem Profil zugeordnet):
+  const text = `${individuell ? "Neue Banner-Anfrage mit individuellem Inhalt – bitte im Admin pflegen und freigeben:" : "Neue Banner-Anfrage (E-Mail keinem Profil zugeordnet):"}
 
 Banner: ${bannerBezeichnung}
 Zeitraum: ${von} – ${bis}
+Anzeige: ${individuell ? "Individueller Inhalt" : "Steckbrief"}
 Name: ${kontaktName}
-E-Mail: ${kontaktEmail}
+E-Mail: ${kontaktEmail}${args.wunsch ? `\nWunsch: ${args.wunsch}` : ""}
 
 Im Admin prüfen: ${adminUrl}`;
 

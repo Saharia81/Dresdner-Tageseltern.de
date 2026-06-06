@@ -3,6 +3,8 @@
 //
 //  POST /api/admin/buchungen
 //    { id, aktion: "bestaetigen" | "ablehnen" | "loeschen", tagesmutterSlug?: string }
+//    { id, aktion: "inhalt-speichern", inhalt: { titel, text, bildUrl, linkUrl, linkText } }
+//      → speichert den individuellen Banner-Inhalt und setzt anzeigeTyp INDIVIDUELL
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -19,10 +21,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Ungültiger Body" }, { status: 400 });
   }
 
-  const { id, aktion, tagesmutterSlug } = (body ?? {}) as Record<string, unknown>;
+  const { id, aktion, tagesmutterSlug, inhalt } = (body ?? {}) as Record<
+    string,
+    unknown
+  >;
   if (
     typeof id !== "string" ||
-    (aktion !== "bestaetigen" && aktion !== "ablehnen" && aktion !== "loeschen")
+    (aktion !== "bestaetigen" &&
+      aktion !== "ablehnen" &&
+      aktion !== "loeschen" &&
+      aktion !== "inhalt-speichern")
   ) {
     return NextResponse.json({ error: "Ungültige Aktion" }, { status: 400 });
   }
@@ -33,6 +41,35 @@ export async function POST(request: Request) {
   });
   if (!buchung) {
     return NextResponse.json({ error: "Buchung nicht gefunden" }, { status: 404 });
+  }
+
+  // Individuellen Banner-Inhalt speichern (setzt Anzeige-Typ auf INDIVIDUELL).
+  if (aktion === "inhalt-speichern") {
+    const i = (inhalt ?? {}) as Record<string, unknown>;
+    const str = (v: unknown, max: number): string | null => {
+      if (typeof v !== "string" || !v.trim()) return null;
+      return v.trim().slice(0, max);
+    };
+    const titel = str(i.titel, 200);
+    if (!titel) {
+      return NextResponse.json(
+        { error: "Bitte einen Titel für den individuellen Inhalt angeben." },
+        { status: 400 },
+      );
+    }
+    await prisma.buchung.update({
+      where: { id },
+      data: {
+        anzeigeTyp: "INDIVIDUELL",
+        tagesmutterId: null,
+        inhaltTitel: titel,
+        inhaltText: str(i.text, 4000),
+        inhaltBildUrl: str(i.bildUrl, 500),
+        inhaltLinkUrl: str(i.linkUrl, 500),
+        inhaltLinkText: str(i.linkText, 100),
+      },
+    });
+    return NextResponse.json({ ok: true, status: buchung.status });
   }
 
   if (aktion === "loeschen") {

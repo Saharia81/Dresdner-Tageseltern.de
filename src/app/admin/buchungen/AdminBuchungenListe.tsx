@@ -12,6 +12,21 @@ export type BuchungZeile = {
   ende: string;
   status: string;
   profilSlug: string | null;
+  anzeigeTyp: "STECKBRIEF" | "INDIVIDUELL";
+  wunsch: string | null;
+  inhaltTitel: string | null;
+  inhaltText: string | null;
+  inhaltBildUrl: string | null;
+  inhaltLinkUrl: string | null;
+  inhaltLinkText: string | null;
+};
+
+type InhaltForm = {
+  titel: string;
+  text: string;
+  bildUrl: string;
+  linkUrl: string;
+  linkText: string;
 };
 
 const STATUS_LABEL: Record<string, { text: string; cls: string }> = {
@@ -30,6 +45,8 @@ export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [fehler, setFehler] = useState("");
   const [slugs, setSlugs] = useState<Record<string, string>>({});
+  // Welche Buchungen haben den Inhalts-Editor geöffnet + Entwurf je Buchung.
+  const [editor, setEditor] = useState<Record<string, InhaltForm>>({});
 
   async function aktion(id: string, art: "bestaetigen" | "ablehnen" | "loeschen") {
     if (art === "loeschen" && !confirm("Diese Buchung wirklich löschen?")) {
@@ -51,6 +68,52 @@ export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
         const d = await res.json().catch(() => ({}));
         setFehler(d.error ?? "Aktion fehlgeschlagen.");
       } else {
+        router.refresh();
+      }
+    } catch {
+      setFehler("Netzwerkfehler.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  function editorOeffnen(z: BuchungZeile) {
+    setEditor((p) => ({
+      ...p,
+      [z.id]: {
+        titel: z.inhaltTitel ?? "",
+        text: z.inhaltText ?? "",
+        bildUrl: z.inhaltBildUrl ?? "",
+        linkUrl: z.inhaltLinkUrl ?? "",
+        linkText: z.inhaltLinkText ?? "",
+      },
+    }));
+  }
+
+  function editorSchliessen(id: string) {
+    setEditor((p) => {
+      const n = { ...p };
+      delete n[id];
+      return n;
+    });
+  }
+
+  async function inhaltSpeichern(id: string) {
+    const form = editor[id];
+    if (!form) return;
+    setBusy(id);
+    setFehler("");
+    try {
+      const res = await fetch("/api/admin/buchungen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, aktion: "inhalt-speichern", inhalt: form }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setFehler(d.error ?? "Speichern fehlgeschlagen.");
+      } else {
+        editorSchliessen(id);
         router.refresh();
       }
     } catch {
@@ -91,9 +154,36 @@ export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
             <p className="text-sm">
               {z.name} · {z.email}
             </p>
-            <p className="text-sm text-text-soft mb-3">
-              Profil: {z.profilSlug ?? "— (nicht zugeordnet)"}
+            <p className="text-sm text-text-soft">
+              Anzeige:{" "}
+              <strong>
+                {z.anzeigeTyp === "INDIVIDUELL"
+                  ? "Individueller Inhalt"
+                  : "Steckbrief"}
+              </strong>
+              {z.anzeigeTyp === "STECKBRIEF" &&
+                ` · Profil: ${z.profilSlug ?? "— (nicht zugeordnet)"}`}
+              {z.anzeigeTyp === "INDIVIDUELL" &&
+                ` · ${z.inhaltTitel ? `„${z.inhaltTitel}“` : "noch kein Inhalt gepflegt"}`}
             </p>
+            {z.wunsch && (
+              <p className="text-sm text-text-soft mb-1 mt-1">
+                <span className="font-semibold">Wunsch:</span> {z.wunsch}
+              </p>
+            )}
+            <div className="mb-3" />
+
+            {editor[z.id] !== undefined && (
+              <InhaltEditor
+                form={editor[z.id]}
+                busy={busy === z.id}
+                onChange={(patch) =>
+                  setEditor((p) => ({ ...p, [z.id]: { ...p[z.id], ...patch } }))
+                }
+                onSave={() => inhaltSpeichern(z.id)}
+                onCancel={() => editorSchliessen(z.id)}
+              />
+            )}
 
             <div className="flex flex-wrap items-center gap-2">
               {z.status === "ANFRAGE" && (
@@ -123,6 +213,17 @@ export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
                   </button>
                 </>
               )}
+              {editor[z.id] === undefined && (
+                <button
+                  onClick={() => editorOeffnen(z)}
+                  disabled={busy === z.id}
+                  className="rounded-full bg-text-soft/15 px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+                >
+                  {z.anzeigeTyp === "INDIVIDUELL" && z.inhaltTitel
+                    ? "Inhalt bearbeiten"
+                    : "Individuellen Inhalt eintragen"}
+                </button>
+              )}
               <button
                 onClick={() => aktion(z.id, "loeschen")}
                 disabled={busy === z.id}
@@ -134,6 +235,99 @@ export function AdminBuchungenListe({ zeilen }: { zeilen: BuchungZeile[] }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// Editor für den individuellen Banner-Inhalt. Speichern setzt anzeigeTyp auf
+// INDIVIDUELL – der Inhalt geht damit (während des gebuchten Zeitraums) live.
+function InhaltEditor({
+  form,
+  busy,
+  onChange,
+  onSave,
+  onCancel,
+}: {
+  form: InhaltForm;
+  busy: boolean;
+  onChange: (patch: Partial<InhaltForm>) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const label = "block text-xs font-bold mb-1";
+  const input =
+    "w-full rounded-lg border border-text-soft/20 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-korallenrot/40";
+  return (
+    <div className="mb-3 rounded-xl border border-korallenrot/30 bg-korallenrot/5 p-4 space-y-3">
+      <p className="text-sm font-bold">Individueller Banner-Inhalt</p>
+      <div>
+        <label className={label}>Titel *</label>
+        <input
+          type="text"
+          value={form.titel}
+          onChange={(e) => onChange({ titel: e.target.value })}
+          placeholder="z. B. Tag der offenen Tür"
+          className={input}
+        />
+      </div>
+      <div>
+        <label className={label}>Text</label>
+        <textarea
+          value={form.text}
+          onChange={(e) => onChange({ text: e.target.value })}
+          rows={4}
+          placeholder="Beschreibung, Datum, Uhrzeit, Ort …"
+          className={`${input} resize-y`}
+        />
+      </div>
+      <div>
+        <label className={label}>Bild-URL (optional)</label>
+        <input
+          type="text"
+          value={form.bildUrl}
+          onChange={(e) => onChange({ bildUrl: e.target.value })}
+          placeholder="https://… oder /images/…"
+          className={input}
+        />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className={label}>Button-Link (optional)</label>
+          <input
+            type="text"
+            value={form.linkUrl}
+            onChange={(e) => onChange({ linkUrl: e.target.value })}
+            placeholder="https://…"
+            className={input}
+          />
+        </div>
+        <div>
+          <label className={label}>Button-Text (optional)</label>
+          <input
+            type="text"
+            value={form.linkText}
+            onChange={(e) => onChange({ linkText: e.target.value })}
+            placeholder="Mehr erfahren"
+            className={input}
+          />
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2 pt-1">
+        <button
+          onClick={onSave}
+          disabled={busy}
+          className="rounded-full bg-korallenrot text-white px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+        >
+          {busy ? "Speichert …" : "Inhalt speichern"}
+        </button>
+        <button
+          onClick={onCancel}
+          disabled={busy}
+          className="rounded-full bg-text-soft/15 px-4 py-1.5 text-sm font-bold disabled:opacity-60"
+        >
+          Abbrechen
+        </button>
+      </div>
     </div>
   );
 }

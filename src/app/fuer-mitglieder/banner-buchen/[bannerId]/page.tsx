@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
-import { gebuchteZeitraeume } from "@/lib/buchungen";
+import { gebuchteZeitraeume, tagISO } from "@/lib/buchungen";
 import { BuchungsForm } from "./BuchungsForm";
 import { BannerGalerie } from "./BannerGalerie";
 
@@ -32,8 +32,8 @@ export default async function BannerDetailPage({ params }: { params: Params }) {
 
   const zeitraeume = await gebuchteZeitraeume(banner.id);
   const belegt = zeitraeume.map((z) => ({
-    start: z.zeitraumStart.toISOString().slice(0, 10),
-    ende: z.zeitraumEnde.toISOString().slice(0, 10),
+    start: tagISO(z.zeitraumStart),
+    ende: tagISO(z.zeitraumEnde),
   }));
 
 

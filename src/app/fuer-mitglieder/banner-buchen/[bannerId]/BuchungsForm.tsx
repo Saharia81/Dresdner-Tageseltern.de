@@ -103,13 +103,31 @@ export function BuchungsForm({ bannerId, bannerBezeichnung, belegt }: Props) {
   }
 
   if (status === "anfrage") {
+    const betreff = `${bannerBezeichnung} – ${fmtDatum(start)} bis ${fmtDatum(
+      ende || start,
+    )}${name.trim() ? ` – ${name.trim()}` : ""}`;
+    const mailto = `mailto:info@dresdner-tageseltern.de?subject=${encodeURIComponent(
+      betreff,
+    )}`;
     return (
       <div className="rounded-3xl bg-white border border-text-soft/10 p-6 shadow-sm text-center">
-        <h2 className="text-xl font-extrabold mb-2">Anfrage eingegangen</h2>
-        <p className="text-text-soft">
-          Danke! Wir konnten deine E-Mail noch keinem Profil zuordnen, daher
-          prüfen wir deine Anfrage kurz und melden uns bei dir.
+        <h2 className="text-xl font-extrabold mb-2">
+          Wir konnten deinen Steckbrief nicht zuordnen
+        </h2>
+        <p className="text-text-soft mb-2">
+          Deinen Wunsch-Zeitraum haben wir vorgemerkt. Vielleicht bist du
+          Ersatztagespflegeperson oder möchtest etwas anderes auf dem Banner
+          bewerben (z. B. einen Tag der offenen Tür)?
         </p>
+        <p className="text-text-soft mb-5">
+          Dann schreib uns einfach – wir melden uns bei dir.
+        </p>
+        <a
+          href={mailto}
+          className="inline-flex items-center justify-center gap-2.5 rounded-full bg-korallenrot text-white px-6 py-3.5 text-base font-bold hover:bg-korallenrot-dunkel transition-colors shadow-sm"
+        >
+          E-Mail an uns schreiben
+        </a>
       </div>
     );
   }
@@ -172,9 +190,18 @@ export function BuchungsForm({ bannerId, bannerBezeichnung, belegt }: Props) {
           className={inputCls}
         />
         <p className="text-xs text-text-soft mt-1.5">
-          Bitte die E-Mail-Adresse angeben die auch auf deinem Steckbrief ist,
-          damit wir dich korrekt zuordnen können.
+          Bitte die E-Mail-Adresse angeben, die auch in deinem Steckbrief
+          verwendet wird, damit wir dich korrekt zuordnen können. Der QR-Code
+          auf dem Banner führt dann automatisch zu deinem Steckbrief mit deinen
+          gemeldeten freien Plätzen.
         </p>
+      </div>
+
+      <div className="rounded-xl border border-text-soft/20 bg-creme/60 p-3.5 text-sm text-text-soft">
+        <strong className="text-text">Keinen eigenen Steckbrief?</strong> Du
+        bist z. B. Ersatztagespflegeperson oder möchtest etwas anderes bewerben
+        (Tag der offenen Tür, Fest)? Buche einfach unten deinen Wunsch-Zeitraum –
+        wir melden uns dann bei dir für die Gestaltung.
       </div>
 
       <label className="flex items-start gap-3 text-sm">
