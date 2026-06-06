@@ -132,3 +132,7 @@ Compaction failed: Another write batch or compaction is already active (Only a s
  GET / 200 in 37ms (next.js: 4ms, application-code: 33ms)
  GET /fuer-mitglieder/banner-buchen 200 in 298ms (next.js: 4ms, application-code: 295ms)
 Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Compaction failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
