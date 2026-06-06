@@ -53,3 +53,8 @@ Thumbs.db
 
 # Lokale E-Mail-Vorschauen (generiert)
 scripts/_preview/
+.mail-preview/
+
+# Lokale Dev-Server-Logs
+dev-preview2.log
+dev-preview*.log
