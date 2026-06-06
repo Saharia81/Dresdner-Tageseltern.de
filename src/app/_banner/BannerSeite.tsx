@@ -7,12 +7,28 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SteckbriefInhalt } from "@/app/kindertagespflege-finden/SteckbriefInhalt";
-import { getTagesmutterDtoBySlug } from "@/lib/steckbriefe";
+import {
+  getTagesmutterDtoBySlug,
+  getTagesmutterDtoById,
+} from "@/lib/steckbriefe";
 import { getBannerSlug, type BannerNummer } from "@/lib/banner";
+import { aktuelleBuchung } from "@/lib/buchungen";
+
+// Steckbrief, der aktuell auf einem Banner gezeigt werden soll:
+// 1. laufende, bestätigte DB-Buchung (mit zugeordnetem Profil)
+// 2. sonst die feste Zuordnung aus banner.ts (Übergangslösung)
+async function aktuellerSteckbrief(nr: BannerNummer) {
+  const buchung = await aktuelleBuchung(Number(nr));
+  if (buchung?.tagesmutterId) {
+    const tm = await getTagesmutterDtoById(buchung.tagesmutterId);
+    if (tm) return tm;
+  }
+  const slug = getBannerSlug(nr);
+  return slug ? getTagesmutterDtoBySlug(slug) : null;
+}
 
 export async function bannerMetadata(nr: BannerNummer): Promise<Metadata> {
-  const slug = getBannerSlug(nr);
-  const tm = slug ? await getTagesmutterDtoBySlug(slug) : null;
+  const tm = await aktuellerSteckbrief(nr);
   if (tm) {
     return {
       title: `${tm.vorname} ${tm.nachname} – Kindertagespflege in Dresden`,
@@ -52,8 +68,7 @@ function FinderCta() {
 }
 
 export async function BannerSeite({ nr }: { nr: BannerNummer }) {
-  const slug = getBannerSlug(nr);
-  const tagesmutter = slug ? await getTagesmutterDtoBySlug(slug) : null;
+  const tagesmutter = await aktuellerSteckbrief(nr);
 
   // Fallback: Banner aktuell niemandem zugeordnet (oder Profil inaktiv).
   if (!tagesmutter) {

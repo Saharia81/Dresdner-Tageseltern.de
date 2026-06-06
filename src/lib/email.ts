@@ -422,3 +422,214 @@ export function buildAdminSummaryEmail(args: {
     text,
   };
 }
+
+// ----------------------------------------------------------------
+// Banner-Buchungssystem (Phase 2)
+// ----------------------------------------------------------------
+
+const INFO_EMAIL = "info@dresdner-tageseltern.de";
+
+const GRUNDSTUECK_HINWEIS =
+  "Bitte hänge den Banner erst auf, wenn du mit dem Grundstückseigentümer " +
+  "abgesprochen hast, dass er dort hängen darf.";
+
+// Bestätigung an die Bucherin (sofort, wenn das Profil zugeordnet werden konnte).
+export function buildBuchungBestaetigungEmail(args: {
+  name: string;
+  bannerBezeichnung: string;
+  start: Date;
+  ende: Date;
+  token: string;
+}): { betreff: string; html: string; text: string } {
+  const { name, bannerBezeichnung, start, ende, token } = args;
+  const von = formatDatum(start)!;
+  const bis = formatDatum(ende)!;
+  const stornoMailto = `mailto:${INFO_EMAIL}?subject=${encodeURIComponent(
+    `Banner-Buchung stornieren (${token})`,
+  )}`;
+
+  const inhalt = `
+    <p>Hallo ${escape(name)},</p>
+    <p>
+      deine Buchung von <strong>${escape(bannerBezeichnung)}</strong> ist
+      <strong>verbindlich bestätigt</strong>:
+    </p>
+    <div style="background:#fef2c2;border-radius:12px;padding:16px 20px;margin:16px 0;">
+      <p style="margin:4px 0;"><strong>Zeitraum:</strong> ${von} – ${bis}</p>
+    </div>
+    <p style="color:#5a534c;font-size:14px;">${escape(GRUNDSTUECK_HINWEIS)}</p>
+    <p style="color:#5a534c;font-size:14px;">
+      Etwa <strong>5 Tage vor Beginn</strong> melden wir uns noch einmal mit den
+      Übergabe-Details. Solltest du doch nicht buchen können, schreib uns einfach:
+      <a href="${stornoMailto}" style="color:#f8796c;">${INFO_EMAIL}</a>.
+    </p>
+    <p style="margin-top:24px;">Viele Grüße,<br>Dresdner Tageseltern e.V.</p>
+  `;
+
+  const text = `Hallo ${name},
+
+deine Buchung von ${bannerBezeichnung} ist verbindlich bestätigt:
+
+Zeitraum: ${von} – ${bis}
+
+${GRUNDSTUECK_HINWEIS}
+
+Etwa 5 Tage vor Beginn melden wir uns noch einmal mit den Übergabe-Details.
+Stornieren? Schreib uns an ${INFO_EMAIL}.
+
+Viele Grüße,
+Dresdner Tageseltern e.V.`;
+
+  return {
+    betreff: `Banner-Buchung bestätigt: ${bannerBezeichnung} (${von} – ${bis})`,
+    html: layout(inhalt, `Bestätigt: ${bannerBezeichnung}, ${von} – ${bis}.`),
+    text,
+  };
+}
+
+// 5 Tage vor Beginn: Übergabe-Infos + Kontakt der Vorgängerin.
+export function buildBanner5TageEmail(args: {
+  name: string;
+  bannerBezeichnung: string;
+  start: Date;
+  vorgaenger: { name: string; email: string } | null;
+}): { betreff: string; html: string; text: string } {
+  const { name, bannerBezeichnung, start, vorgaenger } = args;
+  const von = formatDatum(start)!;
+
+  const uebergabeHtml = vorgaenger
+    ? `<p>
+        Aktuell hat den Banner <strong>${escape(vorgaenger.name)}</strong>
+        (<a href="mailto:${escape(vorgaenger.email)}" style="color:#f8796c;">${escape(vorgaenger.email)}</a>).
+        Bitte nimm Kontakt auf, um die <strong>Übergabe</strong> zu vereinbaren.
+      </p>`
+    : `<p>
+        Bitte melde dich kurz bei
+        <a href="mailto:${INFO_EMAIL}" style="color:#f8796c;">${INFO_EMAIL}</a>,
+        um die <strong>Übergabe</strong> des Banners zu klären.
+      </p>`;
+
+  const uebergabeText = vorgaenger
+    ? `Aktuell hat den Banner ${vorgaenger.name} (${vorgaenger.email}). Bitte nimm Kontakt auf, um die Übergabe zu vereinbaren.`
+    : `Bitte melde dich kurz bei ${INFO_EMAIL}, um die Übergabe des Banners zu klären.`;
+
+  const inhalt = `
+    <p>Hallo ${escape(name)},</p>
+    <p>
+      in wenigen Tagen, <strong>ab ${von}</strong>, ist
+      <strong>${escape(bannerBezeichnung)}</strong> bei dir.
+    </p>
+    ${uebergabeHtml}
+    <p style="color:#5a534c;font-size:14px;">${escape(GRUNDSTUECK_HINWEIS)}</p>
+    <p style="margin-top:24px;">Viele Grüße,<br>Dresdner Tageseltern e.V.</p>
+  `;
+
+  const text = `Hallo ${name},
+
+in wenigen Tagen, ab ${von}, ist ${bannerBezeichnung} bei dir.
+
+${uebergabeText}
+
+${GRUNDSTUECK_HINWEIS}
+
+Viele Grüße,
+Dresdner Tageseltern e.V.`;
+
+  return {
+    betreff: `Bald bei dir: ${bannerBezeichnung} ab ${von}`,
+    html: layout(inhalt, `Ab ${von} ist ${bannerBezeichnung} bei dir – Übergabe klären.`),
+    text,
+  };
+}
+
+// 3 Tage vor Ende: Info, was nach dem Mietende passiert.
+export function buildBanner3TageEmail(args: {
+  name: string;
+  bannerBezeichnung: string;
+  ende: Date;
+  nachfolger: { name: string } | null;
+}): { betreff: string; html: string; text: string } {
+  const { name, bannerBezeichnung, ende, nachfolger } = args;
+  const bis = formatDatum(ende)!;
+
+  const danachHtml = nachfolger
+    ? `<p>
+        Nach dem ${bis} geht automatisch der Steckbrief von
+        <strong>${escape(nachfolger.name)}</strong> auf der Bannerseite online –
+        bitte sprich die <strong>Übergabe</strong> rechtzeitig ab.
+      </p>`
+    : `<p>
+        Nach dem ${bis} leitet die Bannerseite wieder neutral auf unsere
+        Übersicht aller Tageseltern weiter. Bitte gib den Banner wie besprochen
+        zurück.
+      </p>`;
+
+  const danachText = nachfolger
+    ? `Nach dem ${bis} geht automatisch der Steckbrief von ${nachfolger.name} online – bitte sprich die Übergabe rechtzeitig ab.`
+    : `Nach dem ${bis} leitet die Bannerseite wieder auf die Übersicht aller Tageseltern weiter. Bitte gib den Banner wie besprochen zurück.`;
+
+  const inhalt = `
+    <p>Hallo ${escape(name)},</p>
+    <p>
+      deine Mietzeit für <strong>${escape(bannerBezeichnung)}</strong> endet
+      <strong>am ${bis}</strong>.
+    </p>
+    ${danachHtml}
+    <p style="margin-top:24px;">Viele Grüße,<br>Dresdner Tageseltern e.V.</p>
+  `;
+
+  const text = `Hallo ${name},
+
+deine Mietzeit für ${bannerBezeichnung} endet am ${bis}.
+
+${danachText}
+
+Viele Grüße,
+Dresdner Tageseltern e.V.`;
+
+  return {
+    betreff: `Mietzeit endet: ${bannerBezeichnung} am ${bis}`,
+    html: layout(inhalt, `${bannerBezeichnung}: Mietende am ${bis}.`),
+    text,
+  };
+}
+
+// An den Verein: neue Anfrage, deren E-Mail keinem Profil zugeordnet werden konnte.
+export function buildAdminBuchungsanfrageEmail(args: {
+  kontaktName: string;
+  kontaktEmail: string;
+  bannerBezeichnung: string;
+  start: Date;
+  ende: Date;
+}): { betreff: string; html: string; text: string } {
+  const { kontaktName, kontaktEmail, bannerBezeichnung, start, ende } = args;
+  const von = formatDatum(start)!;
+  const bis = formatDatum(ende)!;
+  const adminUrl = `${APP_URL}/admin/buchungen`;
+
+  const inhalt = `
+    <p>Neue <strong>Banner-Anfrage</strong> (E-Mail keinem Profil zugeordnet):</p>
+    <div style="background:#fef2c2;border-radius:12px;padding:16px 20px;margin:16px 0;">
+      <p style="margin:4px 0;"><strong>Banner:</strong> ${escape(bannerBezeichnung)}</p>
+      <p style="margin:4px 0;"><strong>Zeitraum:</strong> ${von} – ${bis}</p>
+      <p style="margin:4px 0;"><strong>Name:</strong> ${escape(kontaktName)}</p>
+      <p style="margin:4px 0;"><strong>E-Mail:</strong> ${escape(kontaktEmail)}</p>
+    </div>
+    <p>${button(adminUrl, "Im Admin prüfen", "#f8796c")}</p>
+  `;
+
+  const text = `Neue Banner-Anfrage (E-Mail keinem Profil zugeordnet):
+
+Banner: ${bannerBezeichnung}
+Zeitraum: ${von} – ${bis}
+Name: ${kontaktName}
+E-Mail: ${kontaktEmail}
+
+Im Admin prüfen: ${adminUrl}`;
+
+  return {
+    betreff: `Neue Banner-Anfrage: ${bannerBezeichnung} (${von} – ${bis})`,
+    html: layout(inhalt, `Anfrage von ${kontaktName} für ${bannerBezeichnung}.`),
+    text,
+  };
+}

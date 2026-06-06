@@ -183,6 +183,30 @@ export default function DatenschutzPage() {
             Friedersdorf, mit dem ein Vertrag zur Auftragsverarbeitung (Art. 28
             DSGVO) besteht.
           </p>
+          <h3 className="text-lg font-bold mt-6 mb-2">
+            Banner-Buchung
+          </h3>
+          <p>
+            Über das Formular „Banner buchen" können Tagespflegepersonen ein
+            Werbebanner des Vereins für einen Zeitraum reservieren. Dabei
+            verarbeiten wir den angegebenen Namen, die E-Mail-Adresse, den
+            gewünschten Buchungszeitraum, die Bestätigung der Absprache mit dem
+            Grundstückseigentümer sowie einen zufällig erzeugten Zugangs-Token.
+            Anhand der E-Mail-Adresse ordnen wir die Buchung dem zugehörigen
+            Steckbrief zu, der während der Buchungszeit auf der jeweiligen
+            Banner-Seite angezeigt wird.
+          </p>
+          <p className="mt-3">
+            Wir versenden hierzu eine Buchungsbestätigung sowie Erinnerungen vor
+            Beginn und Ende der Mietzeit (inkl. Kontaktdaten der vorherigen bzw.
+            nächsten ausleihenden Person, um die Übergabe abzustimmen).
+            Rechtsgrundlage ist die Durchführung des Mitgliedschaftsverhältnisses
+            (Art. 6 Abs. 1 lit. b DSGVO) sowie unser berechtigtes Interesse an
+            der organisatorischen Abwicklung der Banner-Ausleihe (Art. 6 Abs. 1
+            lit. f DSGVO). Buchungsdaten werden gelöscht, sobald sie für die
+            Abwicklung nicht mehr erforderlich sind und keine gesetzlichen
+            Aufbewahrungspflichten entgegenstehen.
+          </p>
         </section>
 
         <section>

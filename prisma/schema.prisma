@@ -112,10 +112,19 @@ model BlogPost {
 // ============================================================
 
 model Banner {
-  id          String    @id @default(cuid())
-  bezeichnung String    // "Banner 1", "Banner 2" …
-  notizen     String?
-  buchungen   Buchung[]
+  id           String    @id @default(cuid())
+  nummer       Int       @unique // 1..4 – Verknüpfung zu /banner1–4
+  bezeichnung  String    // "Banner 1", "Banner 2" …
+  fotoUrl      String    // Vorschaubild auf /banner-buchen
+  fotoBreite   Int?      // Pixelmaße des Fotos (für korrektes Seitenverhältnis)
+  fotoHoehe    Int?
+  beispielFotos String[] @default([]) // "so hängt der Banner in echt"-Fotos
+  groesse      String    // z. B. "2,0 × 1,0 m"
+  beschreibung String
+  notizen      String?
+  reihenfolge  Int       @default(0)
+  istAktiv     Boolean   @default(true)
+  buchungen    Buchung[]
 }
 
 enum BuchungsStatus {
@@ -129,12 +138,31 @@ model Buchung {
   id              String         @id @default(cuid())
   bannerId        String
   banner          Banner         @relation(fields: [bannerId], references: [id])
-  tagesmutterId   String
-  tagesmutter     Tagesmutter    @relation(fields: [tagesmutterId], references: [id])
+
+  // Verknüpftes Profil (gesetzt, sobald die E-Mail einem aktiven
+  // Tagesmutter-Profil zugeordnet werden konnte). Bei reinen Anfragen null.
+  tagesmutterId   String?
+  tagesmutter     Tagesmutter?   @relation(fields: [tagesmutterId], references: [id])
+
+  // Kontaktdaten aus dem Buchungsformular
+  kontaktName     String
+  kontaktEmail    String
+
+  // Pflicht-Bestätigung: Aufhängen mit Grundstückseigentümer abgesprochen
+  grundstueckBestaetigt Boolean
+
   status          BuchungsStatus @default(ANFRAGE)
   zeitraumStart   DateTime
   zeitraumEnde    DateTime
   notizenAdmin    String?
+
+  // Sicherer Link für Status/Storno
+  token           String         @unique @default(cuid(2))
+
+  // Erinnerungs-Versand (Doppelversand vermeiden)
+  erinnerung5TageGesendet Boolean @default(false)
+  info3TageGesendet       Boolean @default(false)
+
   erstelltAm      DateTime       @default(now())
   aktualisiertAm  DateTime       @updatedAt
 

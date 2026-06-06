@@ -1,0 +1,37 @@
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.76.60:3001
+- Environments: .env
+✓ Ready in 497ms
+
+ GET /fuer-mitglieder/banner-buchen 200 in 3.3s (next.js: 2.3s, application-code: 1022ms)
+ GET /images/banner/banner1.jpg 404 in 635ms (next.js: 431ms, application-code: 204ms)
+ GET /images/banner/banner4.jpg 404 in 617ms (next.js: 439ms, application-code: 178ms)
+ GET /images/banner/banner2.jpg 404 in 623ms (next.js: 465ms, application-code: 158ms)
+ GET /images/banner/banner3.jpg 404 in 620ms (next.js: 549ms, application-code: 71ms)
+⨯ The requested resource isn't a valid image for /images/banner/banner4.jpg received null
+⨯ The requested resource isn't a valid image for /images/banner/banner1.jpg received null
+⨯ The requested resource isn't a valid image for /images/banner/banner3.jpg received null
+⨯ The requested resource isn't a valid image for /images/banner/banner2.jpg received null
+ GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 1580ms (next.js: 1299ms, application-code: 281ms)
+ GET /images/banner/banner1.jpg 404 in 54ms (next.js: 7ms, application-code: 46ms)
+⨯ The requested resource isn't a valid image for /images/banner/banner1.jpg received null
+ GET /images/banner/banner1.jpg 404 in 197ms (next.js: 17ms, application-code: 180ms)
+ GET /images/banner/banner2.jpg 404 in 199ms (next.js: 37ms, application-code: 162ms)
+ GET /images/banner/banner3.jpg 404 in 200ms (next.js: 58ms, application-code: 142ms)
+⨯ The requested resource isn't a valid image for /images/banner/banner1.jpg received null
+⨯ The requested resource isn't a valid image for /images/banner/banner2.jpg received null
+ GET /images/banner/banner4.jpg 404 in 205ms (next.js: 130ms, application-code: 75ms)
+⨯ The requested resource isn't a valid image for /images/banner/banner3.jpg received null
+⨯ The requested resource isn't a valid image for /images/banner/banner4.jpg received null
+ GET /fuer-mitglieder/banner-buchen/cmq1yplyw0001k8i4aduvc3b8 200 in 297ms (next.js: 13ms, application-code: 284ms)
+ GET /images/banner/banner1.jpg 404 in 51ms (next.js: 7ms, application-code: 45ms)
+⨯ The requested resource isn't a valid image for /images/banner/banner1.jpg received null
+ GET /images/banner/banner3.jpg 404 in 200ms (next.js: 17ms, application-code: 183ms)
+ GET /images/banner/banner4.jpg 404 in 201ms (next.js: 38ms, application-code: 164ms)
+ GET /images/banner/banner2.jpg 404 in 203ms (next.js: 59ms, application-code: 144ms)
+⨯ The requested resource isn't a valid image for /images/banner/banner3.jpg received null
+⨯ The requested resource isn't a valid image for /images/banner/banner4.jpg received null
+⨯ The requested resource isn't a valid image for /images/banner/banner2.jpg received null
+ GET /images/banner/banner1.jpg 404 in 210ms (next.js: 132ms, application-code: 78ms)
+⨯ The requested resource isn't a valid image for /images/banner/banner1.jpg received null
