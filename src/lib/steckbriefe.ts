@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "./db";
+import { bilderFuer } from "./tagesmutter-bilder";
 import type { TagesmutterDto } from "@/app/api/tagesmutters/route";
 
 // Lädt eine aktive Tagesmutter als fertiges DTO (inkl. freier Plätze),
@@ -29,7 +30,7 @@ type TmMitPlaetze = Prisma.TagesmutterGetPayload<{
   include: { freiePlaetze: true };
 }>;
 
-function tmZuDto(tm: TmMitPlaetze | null): TagesmutterDto | null {
+async function tmZuDto(tm: TmMitPlaetze | null): Promise<TagesmutterDto | null> {
   if (!tm || !tm.istAktiv) return null;
   const fp = tm.freiePlaetze
     ? {
@@ -47,14 +48,16 @@ function tmZuDto(tm: TmMitPlaetze | null): TagesmutterDto | null {
       (x) => x !== null,
     );
 
+  const bilder = await bilderFuer(tm.mitgliedsnummer);
+
   return {
     id: tm.id,
     slug: tm.slug,
     vorname: tm.vorname,
     nachname: tm.nachname,
     einrichtungsname: tm.einrichtungsname,
-    fotoUrl: tm.fotoUrl,
-    einrichtungsfotoUrls: tm.einrichtungsfotoUrls,
+    fotoUrl: bilder.fotoUrl,
+    einrichtungsfotoUrls: bilder.galerie,
     strasse: tm.strasse,
     plz: tm.plz,
     stadtteil: tm.stadtteil,

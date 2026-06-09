@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ordnerNummer } from "@/lib/tagesmutter-helpers";
 
 // Felder, die das Formular bearbeitet. Spiegelt das Tagesmutter-Modell wider
 // (ohne freiePlaetze – die laufen weiter über den monatlichen Bestätigungs-Flow).
@@ -10,8 +11,6 @@ export type SteckbriefFormData = {
   vorname: string;
   nachname: string;
   einrichtungsname: string;
-  fotoUrl: string;
-  einrichtungsfotoUrls: string; // eine URL pro Zeile (Textarea)
   strasse: string;
   plz: string;
   stadtteil: string;
@@ -52,6 +51,45 @@ function Feld({
       {children}
       {hinweis && <span className="text-xs text-text-soft">{hinweis}</span>}
     </label>
+  );
+}
+
+// Bilder werden nicht mehr gepflegt, sondern automatisch aus dem Ordner
+// public/images/tagesmuetter/<nr>/ erkannt. Dieser Abschnitt zeigt nur, wo die
+// Dateien abgelegt werden müssen – abgeleitet aus der Mitgliedsnummer.
+function FotoHinweis({ mitgliedsnummer }: { mitgliedsnummer: string }) {
+  const nr = ordnerNummer(mitgliedsnummer);
+  const ordner = nr ? `public/images/tagesmuetter/${nr}/` : null;
+  return (
+    <section className="rounded-2xl border border-text-soft/15 bg-white p-5 shadow-sm">
+      <h2 className="text-lg font-extrabold mb-2">Fotos</h2>
+      {ordner ? (
+        <div className="text-sm text-text-soft space-y-1">
+          <p>
+            Bilder werden automatisch aus dem Ordner erkannt – keine Pfade nötig.
+            Dateien hier ablegen:
+          </p>
+          <ul className="list-disc pl-5 space-y-0.5">
+            <li>
+              Profilbild: <code>{ordner}profilbild.jpg</code>{" "}
+              <span className="text-text-soft/70">(auch .png/.jpeg/.webp)</span>
+            </li>
+            <li>
+              Galerie: <code>{ordner}galerie/1.jpg</code>,{" "}
+              <code>2.jpg</code> … (fortlaufend nummeriert)
+            </li>
+          </ul>
+          <p className="text-text-soft/70">
+            Fehlt das Profilbild, zeigt der Steckbrief den Platzhalter.
+          </p>
+        </div>
+      ) : (
+        <p className="text-sm text-text-soft">
+          Erst eine <strong>Mitgliedsnummer</strong> eintragen – daraus ergibt
+          sich der Bilder-Ordner <code>public/images/tagesmuetter/&lt;nr&gt;/</code>.
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -170,37 +208,7 @@ export function SteckbriefForm({
       </section>
 
       {/* Fotos */}
-      <section className="rounded-2xl border border-text-soft/15 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-extrabold mb-4">Fotos</h2>
-        <p className="text-sm text-text-soft mb-4">
-          Bilder werden als Dateien im Projekt abgelegt
-          (<code>public/images/tagesmuetter/&lt;nr&gt;/</code>). Hier nur die
-          Pfade eintragen.
-        </p>
-        <div className="grid gap-4">
-          <Feld
-            label="Profilbild-Pfad"
-            hinweis="z. B. /images/tagesmuetter/1001/profilbild.jpg"
-          >
-            <input
-              className={inputCls}
-              value={form.fotoUrl}
-              onChange={(e) => set("fotoUrl", e.target.value)}
-            />
-          </Feld>
-          <Feld
-            label="Galerie-Pfade"
-            hinweis="Eine URL pro Zeile, z. B. /images/tagesmuetter/1001/galerie/1.jpg"
-          >
-            <textarea
-              className={inputCls}
-              rows={4}
-              value={form.einrichtungsfotoUrls}
-              onChange={(e) => set("einrichtungsfotoUrls", e.target.value)}
-            />
-          </Feld>
-        </div>
-      </section>
+      <FotoHinweis mitgliedsnummer={form.mitgliedsnummer} />
 
       {/* Adresse */}
       <section className="rounded-2xl border border-text-soft/15 bg-white p-5 shadow-sm">
