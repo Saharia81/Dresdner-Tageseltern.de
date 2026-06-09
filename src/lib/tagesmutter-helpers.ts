@@ -16,12 +16,12 @@ export function slugify(...teile: string[]): string {
     .replace(/^-+|-+$/g, "");
 }
 
-// "01" → 1001, "12" → 1012. Gibt null bei nicht-numerischem Wert.
-// Die Nummer dient zugleich als Bilder-Ordner: public/images/tagesmuetter/<n>.
-export function ordnerNummer(mitglied: unknown): number | null {
+// Bilder-Ordner einer Tagesmutter: public/images/tagesmuetter/<nr>.
+// Die Mitgliedsnummer IST bereits die Ordnernummer (z. B. "1007" → Ordner 1007).
+// Gibt die Ziffernfolge zurück, oder null bei leerem/nicht-numerischem Wert.
+export function bilderOrdner(mitglied: unknown): string | null {
   const ziffern = String(mitglied ?? "").replace(/\D/g, "");
-  if (ziffern.length === 0) return null;
-  return 1000 + Number(ziffern);
+  return ziffern.length === 0 ? null : ziffern;
 }
 
 // PLZ auf 5 Stellen mit führender Null auffüllen (1277 → 01277).

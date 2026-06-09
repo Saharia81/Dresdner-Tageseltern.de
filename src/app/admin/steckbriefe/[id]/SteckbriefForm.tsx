@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ordnerNummer } from "@/lib/tagesmutter-helpers";
+import { bilderOrdner } from "@/lib/tagesmutter-helpers";
 
 // Felder, die das Formular bearbeitet. Spiegelt das Tagesmutter-Modell wider
 // (ohne freiePlaetze – die laufen weiter über den monatlichen Bestätigungs-Flow).
@@ -58,7 +58,7 @@ function Feld({
 // public/images/tagesmuetter/<nr>/ erkannt. Dieser Abschnitt zeigt nur, wo die
 // Dateien abgelegt werden müssen – abgeleitet aus der Mitgliedsnummer.
 function FotoHinweis({ mitgliedsnummer }: { mitgliedsnummer: string }) {
-  const nr = ordnerNummer(mitgliedsnummer);
+  const nr = bilderOrdner(mitgliedsnummer);
   const ordner = nr ? `public/images/tagesmuetter/${nr}/` : null;
   return (
     <section className="rounded-2xl border border-text-soft/15 bg-white p-5 shadow-sm">

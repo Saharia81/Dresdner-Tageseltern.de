@@ -5,13 +5,13 @@
 //     profilbild.<ext>        ← rundes Hauptfoto (sonst Platzhalter)
 //     galerie/1.<ext>, 2.<ext> … ← fortlaufend nummerierte Galeriebilder
 //
-// <nr> = Mitgliedsnummer + 1000 (siehe ordnerNummer()).
+// <nr> = die Mitgliedsnummer selbst (sie ist bereits die Ordnernummer, z. B. 1007).
 //
 // Server-only: liest das Dateisystem, darf nie in Client-Bundles landen.
 import "server-only";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { ordnerNummer } from "./tagesmutter-helpers";
+import { bilderOrdner } from "./tagesmutter-helpers";
 
 export const PLATZHALTER = "/images/steckbriefe/placeholder.svg";
 
@@ -24,7 +24,7 @@ export type Bilder = { fotoUrl: string; galerie: string[] };
 // In Produktion cachen: Bilder ändern sich nur beim Deploy (Neustart leert den
 // Cache). In der Entwicklung nicht cachen, damit neu eingelegte Bilder sofort
 // erscheinen.
-const cache = new Map<number, Bilder>();
+const cache = new Map<string, Bilder>();
 const CACHE_AKTIV = process.env.NODE_ENV === "production";
 
 // Sortiert "1.jpg", "2.png", … "10.jpg" numerisch nach führender Zahl.
@@ -35,8 +35,8 @@ function nachZahl(a: string, b: string): number {
   return za - zb;
 }
 
-async function leseOrdner(nr: number): Promise<Bilder> {
-  const ordner = path.join(BASIS, String(nr));
+async function leseOrdner(nr: string): Promise<Bilder> {
+  const ordner = path.join(BASIS, nr);
 
   // Profilbild: erste Datei profilbild.<ext> im Ordner.
   let fotoUrl = PLATZHALTER;
@@ -65,7 +65,7 @@ async function leseOrdner(nr: number): Promise<Bilder> {
 }
 
 export async function bilderFuer(mitgliedsnummer: string | null): Promise<Bilder> {
-  const nr = ordnerNummer(mitgliedsnummer);
+  const nr = bilderOrdner(mitgliedsnummer);
   if (nr === null) return { fotoUrl: PLATZHALTER, galerie: [] };
 
   if (CACHE_AKTIV) {

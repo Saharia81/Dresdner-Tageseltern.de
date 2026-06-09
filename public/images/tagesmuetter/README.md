@@ -1,9 +1,10 @@
 # Bilder der Tagesmütter
 
-Pro Mitglied gibt es einen Ordner, benannt nach der **Mitgliedsnummer + 1000**:
+Pro Mitglied gibt es einen Ordner, der **genau der Mitgliedsnummer** entspricht
+(die Mitgliedsnummer ist bereits die Ordnernummer):
 
-- Mitglied `01` → Ordner `1001`
-- Mitglied `02` → Ordner `1002`
+- Mitgliedsnummer `1001` → Ordner `1001`
+- Mitgliedsnummer `1007` → Ordner `1007`
 - usw.
 
 ## Aufbau eines Ordners
@@ -24,5 +25,5 @@ Pro Mitglied gibt es einen Ordner, benannt nach der **Mitgliedsnummer + 1000**:
 - Fehlt `profilbild.jpg`, zeigt der Steckbrief automatisch den Platzhalter.
 - Die Bilder werden **automatisch** aus diesem Ordner erkannt – es müssen keine
   Pfade mehr im Admin-Bereich eingetragen werden. Einlegen (bzw. committen)
-  genügt. Die Zuordnung erfolgt über die Mitgliedsnummer (`<nr>` = Nummer + 1000),
+  genügt. Die Zuordnung erfolgt über die Mitgliedsnummer (Ordnername = Nummer),
   siehe `src/lib/tagesmutter-bilder.ts`.
