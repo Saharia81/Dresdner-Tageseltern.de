@@ -14,6 +14,7 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { bilderFuer } from "@/lib/tagesmutter-bilder";
 
 export type FreiePlaetzeDto = {
   platz1Ab: string | null;
@@ -98,7 +99,8 @@ export async function GET(request: Request) {
   const fensterVon = abDatum;
   const fensterBis = bisDatum;
 
-  const dtos: TagesmutterDto[] = tagesmuetter.map((tm) => {
+  const dtos: TagesmutterDto[] = await Promise.all(
+    tagesmuetter.map(async (tm) => {
     const fp: FreiePlaetzeDto | null = tm.freiePlaetze
       ? {
           platz1Ab: tm.freiePlaetze.platz1Ab?.toISOString() ?? null,
@@ -110,6 +112,7 @@ export async function GET(request: Request) {
       : null;
 
     const hatFreienPlatz = hatFreienPlatzInZeitraum(fp, fensterVon, fensterBis);
+    const bilder = await bilderFuer(tm.mitgliedsnummer);
 
     return {
       id: tm.id,
@@ -117,8 +120,8 @@ export async function GET(request: Request) {
       vorname: tm.vorname,
       nachname: tm.nachname,
       einrichtungsname: tm.einrichtungsname,
-      fotoUrl: tm.fotoUrl,
-      einrichtungsfotoUrls: tm.einrichtungsfotoUrls,
+      fotoUrl: bilder.fotoUrl,
+      einrichtungsfotoUrls: bilder.galerie,
       strasse: tm.strasse,
       plz: tm.plz,
       stadtteil: tm.stadtteil,
@@ -138,7 +141,8 @@ export async function GET(request: Request) {
       freiePlaetze: fp,
       hatFreienPlatz,
     };
-  });
+    }),
+  );
 
   const gefiltert =
     nurFreiePlaetze || abDatum || bisDatum

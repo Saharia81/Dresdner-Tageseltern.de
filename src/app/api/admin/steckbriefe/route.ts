@@ -50,14 +50,6 @@ function beratungOf(v: unknown): "MALWINA" | "OUTLAW" | "KINDERLAND" {
   return "MALWINA";
 }
 
-// Galerie-URLs aus dem Textarea (eine pro Zeile).
-function galerieOf(v: unknown): string[] {
-  return str(v)
-    .split(/\r?\n/)
-    .map((z) => z.trim())
-    .filter(Boolean);
-}
-
 // Eindeutigen Slug erzeugen; bei Kollision -2, -3 … anhängen.
 async function eindeutigerSlug(
   basis: string,
@@ -80,8 +72,8 @@ function gemeinsameDaten(b: Body) {
     vorname: str(b.vorname),
     nachname: str(b.nachname),
     einrichtungsname: str(b.einrichtungsname),
-    fotoUrl: str(b.fotoUrl),
-    einrichtungsfotoUrls: galerieOf(b.einrichtungsfotoUrls),
+    // Bildpfade werden nicht mehr gepflegt – sie ergeben sich aus dem Ordner
+    // public/images/tagesmuetter/<nr>/ (siehe lib/tagesmutter-bilder.ts).
     strasse: str(b.strasse),
     plz: plzPad(b.plz),
     stadtteil: str(b.stadtteil),
@@ -154,6 +146,9 @@ export async function POST(request: Request) {
         ...daten,
         email,
         slug,
+        // DB-Spalte fotoUrl ist (noch) NOT NULL, wird aber nicht mehr genutzt –
+        // das Profilbild kommt aus dem Bilder-Ordner.
+        fotoUrl: "",
         freiePlaetze: { create: {} },
       },
     });
