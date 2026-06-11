@@ -397,11 +397,11 @@ export default function Home() {
                   "Wir hatten bereits unsere große Tochter bei der Tagesmutter und nun geht unser Sohn zu ihr.",
               },
               {
-                initials: "HN",
-                name: "Helene aus Niedersedlitz",
-                avatar: "/images/testimonials/helene.png",
+                initials: "CS",
+                name: "Caro aus Striesen",
+                avatar: "/images/testimonials/caro.jpg",
                 quote:
-                  "Ich habe mich bewusst für eine Tagesmama entschieden, da ich meinem Sohn eine kleine Gruppe ermöglichen wollte.",
+                  "Ich konnte mir unser Kind in einer Krippe gar nicht vorstellen. Die Geborgenheit in so einer kleinen Gruppe war genau das Richtige für uns. Ich würde es immer wieder so machen.",
               },
             ]}
           />
