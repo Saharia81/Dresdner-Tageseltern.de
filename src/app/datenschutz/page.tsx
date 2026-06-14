@@ -184,7 +184,7 @@ export default function DatenschutzPage() {
           <p>
             Auf dieser Website veröffentlichen wir Profile (Steckbriefe)
             unserer Tagesmütter und -väter, etwa mit Name, Betreuungsort,
-            freien Plätzen und – sofern eine Einwilligung vorliegt – einem Foto.
+            freien Plätzen und, sofern eine Einwilligung vorliegt, einem Foto.
           </p>
           <p className="mt-3">
             Die Veröffentlichung erfolgt auf Grundlage der Einwilligung der
@@ -216,7 +216,7 @@ export default function DatenschutzPage() {
           </p>
           <p className="mt-3">
             Der Versand dieser E-Mails erfolgt über unseren Mail-Provider
-            ALL-INKL.COM – Neue Medien Münnich, Hauptstraße 68, 02742
+            ALL-INKL.COM, Neue Medien Münnich, Hauptstraße 68, 02742
             Friedersdorf, mit dem ein Vertrag zur Auftragsverarbeitung (Art. 28
             DSGVO) besteht.
           </p>

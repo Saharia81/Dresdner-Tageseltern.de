@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CONSENT_KEY, updateConsent } from "@/lib/analytics";
+import { CONSENT_EVENT, CONSENT_KEY, updateConsent } from "@/lib/analytics";
 
 /**
  * Einwilligungs-Banner für das Google-Tracking (Consent Mode v2).
@@ -18,6 +18,11 @@ export function CookieBanner() {
     } catch {
       setVisible(true);
     }
+
+    // Footer-Link „Cookie-Einstellungen" öffnet das Banner erneut.
+    const reopen = () => setVisible(true);
+    window.addEventListener(CONSENT_EVENT, reopen);
+    return () => window.removeEventListener(CONSENT_EVENT, reopen);
   }, []);
 
   function decide(value: "granted" | "denied") {
@@ -42,7 +47,7 @@ export function CookieBanner() {
         <p className="text-sm text-text-soft max-w-2xl">
           Wir verwenden Cookies, um die Nutzung unserer Website mit Google
           Analytics und Google Ads zu messen und unser Angebot zu verbessern.
-          Das ist freiwillig – du kannst ablehnen. Mehr dazu in unserer{" "}
+          Das ist freiwillig, du kannst ablehnen. Mehr dazu in unserer{" "}
           <Link href="/datenschutz" className="underline hover:text-korallenrot">
             Datenschutzerklärung
           </Link>
