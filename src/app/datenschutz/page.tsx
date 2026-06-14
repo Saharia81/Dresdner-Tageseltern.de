@@ -97,13 +97,50 @@ export default function DatenschutzPage() {
 
         <section>
           <h2 className="text-xl font-extrabold mb-2">
-            4. Cookies und Tracking
+            4. Cookies, Reichweitenmessung und Werbung
           </h2>
           <p>
-            Unsere Website setzt keine Cookies zu Analyse- oder Werbezwecken
-            ein. Es findet keine Reichweitenmessung, kein Tracking und keine
-            Profilbildung statt. Es werden keine Daten an Analyse- oder
-            Werbedienste weitergegeben.
+            Für die technisch notwendige Bereitstellung unserer Website setzen
+            wir keine Cookies zu Analyse- oder Werbezwecken ein, solange Sie dem
+            nicht zugestimmt haben. Beim ersten Besuch fragen wir Sie über einen
+            Hinweis (Cookie-Banner), ob Sie der nachfolgend beschriebenen
+            Messung zustimmen. Ohne Ihre Einwilligung findet keine
+            Reichweitenmessung und kein werbebezogenes Tracking statt.
+          </p>
+          <h3 className="text-lg font-bold mt-6 mb-2">
+            Google Analytics 4 und Google Ads
+          </h3>
+          <p>
+            Mit Ihrer Einwilligung verwenden wir Google Analytics 4 sowie Google
+            Ads. Anbieter ist die Google Ireland Limited, Gordon House, Barrow
+            Street, Dublin 4, Irland. Diese Dienste setzen Cookies und ähnliche
+            Technologien ein, mit denen wir auswerten, wie unsere Website genutzt
+            wird (z. B. aufgerufene Seiten sowie Klicks auf Telefon- und
+            E-Mail-Links) und ob Besucherinnen und Besucher über eine unserer
+            Google-Anzeigen zu uns gelangt sind (Conversion-Tracking). Dabei
+            werden Nutzungsdaten und eine gekürzte IP-Adresse verarbeitet.
+          </p>
+          <p className="mt-3">
+            Rechtsgrundlage ist ausschließlich Ihre Einwilligung (Art. 6 Abs. 1
+            lit. a DSGVO sowie § 25 Abs. 1 TDDDG). Vor einer Einwilligung sind
+            die genannten Cookies deaktiviert (Google Consent Mode). Sie können
+            Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen,
+            indem Sie die gespeicherte Auswahl in Ihrem Browser löschen
+            (Website-Daten für diese Seite entfernen) und beim erneuten Besuch
+            ablehnen.
+          </p>
+          <p className="mt-3 text-text-soft">
+            Im Rahmen dieser Dienste können Daten an Server von Google,
+            gegebenenfalls auch in die USA, übermittelt werden. Weitere
+            Informationen finden Sie in der Datenschutzerklärung von Google:{" "}
+            <a
+              href="https://policies.google.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              policies.google.com/privacy
+            </a>
           </p>
         </section>
 
@@ -226,6 +263,12 @@ export default function DatenschutzPage() {
             Diese Daten löschen wir, sobald sie für die Bearbeitung nicht mehr
             erforderlich sind und keine gesetzlichen Aufbewahrungspflichten
             entgegenstehen.
+          </p>
+          <p className="mt-3 text-text-soft">
+            Hinweis: Sofern Sie der Reichweitenmessung zugestimmt haben (siehe
+            Abschnitt 4), erfassen wir, dass auf einen Telefon- oder
+            E-Mail-Link geklickt wurde. Der Inhalt Ihres anschließenden Anrufs
+            oder Ihrer E-Mail wird dabei nicht erfasst.
           </p>
         </section>
 

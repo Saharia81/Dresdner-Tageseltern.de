@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm run build)",
+      "PowerShell($env:NEXT_PUBLIC_GA_ID = \"G-TEST12345\"; npm run dev)",
+      "PowerShell($html = \\(Invoke-WebRequest -Uri \"http://localhost:3000/kinderbetreuung-dresden\" -UseBasicParsing\\).Content; \"consent-default vorhanden: $\\($html -match 'consent-default'\\)\"; \"gtag.js vorhanden: $\\($html -match 'googletagmanager.com/gtag/js\\\\?id=G-TEST12345'\\)\"; \"consent denied default: $\\($html -match \"\"analytics_storage: 'denied'\"\"\\)\"; \"Landingpage-H1 vorhanden: $\\($html -match 'ruhigere Alternative zur Krippe'\\)\")"
+    ]
+  }
+}
