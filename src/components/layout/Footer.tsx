@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { BackToTop } from "@/components/ui/BackToTop";
+import { CookieSettingsLink } from "@/components/CookieSettingsLink";
+import { analyticsEnabled } from "@/lib/analytics";
 
 export function Footer() {
   return (
@@ -26,6 +28,7 @@ export function Footer() {
           <ul className="space-y-1">
             <li><Link href="/impressum" className="hover:underline">Impressum</Link></li>
             <li><Link href="/datenschutz" className="hover:underline">Datenschutz</Link></li>
+            {analyticsEnabled && <li><CookieSettingsLink /></li>}
           </ul>
         </nav>
 

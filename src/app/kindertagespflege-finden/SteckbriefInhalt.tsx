@@ -112,6 +112,7 @@ export function SteckbriefInhalt({ tagesmutter }: { tagesmutter: TagesmutterDto 
         <div className="flex flex-col gap-2.5">
           <a
             href={`tel:${telefonClean}`}
+            data-tm-name={`${tagesmutter.vorname} ${tagesmutter.nachname}`}
             className="inline-flex items-center justify-center gap-2.5 rounded-full bg-korallenrot text-white px-5 py-3 text-base font-bold hover:bg-korallenrot-dunkel transition-colors shadow-sm"
           >
             <IconTelefon />
@@ -119,6 +120,7 @@ export function SteckbriefInhalt({ tagesmutter }: { tagesmutter: TagesmutterDto 
           </a>
           <a
             href={`mailto:${tagesmutter.email}`}
+            data-tm-name={`${tagesmutter.vorname} ${tagesmutter.nachname}`}
             className="inline-flex items-center justify-center gap-2.5 rounded-full bg-sonnengelb text-text px-5 py-3 text-base font-bold hover:bg-sonnengelb-hell transition-colors shadow-sm"
           >
             <IconMail />
