@@ -20,6 +20,7 @@ const NAV: Array<
   {
     label: "Für Tageseltern",
     children: [
+      { href: "/fuer-tageseltern/ersatztagespflege", label: "Ersatztagespflege" },
       { href: "/fuer-mitglieder/banner-buchen", label: "Banner buchen" },
     ],
   },

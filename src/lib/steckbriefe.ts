@@ -86,6 +86,14 @@ export async function getAlleTagesmuetter() {
   });
 }
 
+// Aktive Ersatztageseltern (Modell != KEINE) für die Ersatztagespflege-Seite.
+export async function getErsatztagespflege() {
+  return prisma.tagesmutter.findMany({
+    where: { istAktiv: true, ersatzmodell: { not: "KEINE" } },
+    orderBy: [{ reihenfolge: "asc" }, { nachname: "asc" }],
+  });
+}
+
 export async function getTagesmutterBySlug(slug: string) {
   return prisma.tagesmutter.findUnique({ where: { slug } });
 }

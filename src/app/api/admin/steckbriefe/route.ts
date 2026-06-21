@@ -50,6 +50,12 @@ function beratungOf(v: unknown): "MALWINA" | "OUTLAW" | "KINDERLAND" {
   return "MALWINA";
 }
 
+function ersatzmodellOf(v: unknown): "KEINE" | "BASIS_ETP" | "STUETZPUNKT" {
+  const s = str(v);
+  if (s === "BASIS_ETP" || s === "STUETZPUNKT") return s;
+  return "KEINE";
+}
+
 // Eindeutigen Slug erzeugen; bei Kollision -2, -3 … anhängen.
 async function eindeutigerSlug(
   basis: string,
@@ -87,6 +93,8 @@ function gemeinsameDaten(b: Body) {
     verpflegung: verpflegungOf(b.verpflegung),
     verpflegungHinweis: strOrNull(b.verpflegungHinweis),
     beratungsgebiet: beratungOf(b.beratungsgebiet),
+    ersatzmodell: ersatzmodellOf(b.ersatzmodell),
+    ersatzFreierPlatz: b.ersatzFreierPlatz === true,
     schmetterling: b.schmetterling === true,
     schmetterlingPartner: strOrNull(b.schmetterlingPartner),
     mitgliedsnummer: strOrNull(b.mitgliedsnummer),
