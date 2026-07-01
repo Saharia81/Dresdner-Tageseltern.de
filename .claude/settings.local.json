@@ -87,7 +87,23 @@
       "Bash(gh --version)",
       "Bash(gh auth *)",
       "PowerShell($gh = Get-Command gh -ErrorAction SilentlyContinue; if \\($gh\\) { \"gh gefunden: $\\($gh.Source\\)\"; gh auth status } else { \"gh NICHT installiert\" })",
-      "Bash(git remote *)"
+      "Bash(git remote *)",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue | Select-Object Id, StartTime, @{n='RAM_MB';e={[math]::Round\\($_.WorkingSet64/1MB\\)}})",
+      "PowerShell($env:BROWSER='none'; npm run dev)",
+      "Read(//c/Users/Romy/AppData/Local/Temp/claude/c--Visual-Studio-Code-dresdner-tageseltern-de/46f78a2f-b07f-44ae-815d-a42d75c8c2a0/tasks/**)",
+      "Bash(sleep 0.5)",
+      "Bash(code=$\\(curl -s -o /tmp/ersatz.html -w \"%{http_code}\" http://localhost:3000/fuer-tageseltern/ersatztagespflege\\); echo \"HTTP $code\"; grep -o \"Verlässliche Vertretung finden\\\\|Unsere Ersatztagespflegepersonen\\\\|Ersatztagespflege\" /tmp/ersatz.html | sort -u)",
+      "Read(//tmp/**)",
+      "Bash(cd \"/c/Visual Studio Code/dresdner-tageseltern.de/public\" && ls -d images/*/ 2>/dev/null)",
+      "Read(//c/c/Visual Studio Code/dresdner-tageseltern.de/public/**)",
+      "Bash(cd \"/c/Visual Studio Code/dresdner-tageseltern.de\" && grep -iE \"DATABASE_URL|POSTGRES|sqlite\" .env 2>/dev/null | sed -E 's/\\(:\\\\/\\\\/[^:]+:\\)[^@]+@/\\\\1****@/' ; echo \"---datasource---\"; grep -A3 \"datasource\" prisma/schema.prisma | head -8)",
+      "Read(//c/c/Visual Studio Code/dresdner-tageseltern.de/**)",
+      "Bash(ls -la prisma/dev.db)",
+      "Bash(command -v sqlite3)",
+      "Bash(ls -la .env*)",
+      "Bash(grep -lriE \"postgres\\(ql\\)?://\" .env*)",
+      "Bash(find . -name \"*.db\" -not -path \"./node_modules/*\")",
+      "Bash(find . -iregex \".*\\\\\\(tagesmut\\\\|mitglied\\\\|member\\\\|steckbrief\\\\\\).*\\\\.\\\\\\(json\\\\|csv\\\\|ts\\\\\\)\" -not -path \"./node_modules/*\" -not -path \"./.next/*\")"
     ]
   }
 }
