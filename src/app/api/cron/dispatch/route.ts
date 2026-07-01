@@ -8,6 +8,7 @@ import { GET as monthlyGet } from "../monthly-emails/route";
 import { GET as reminderGet } from "../reminder-emails/route";
 import { GET as cleanupGet } from "../cleanup/route";
 import { GET as bannerRemindersGet } from "../banner-reminders/route";
+import { schliesseMailVerbindung } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -33,6 +34,9 @@ export async function GET(request: Request) {
     // Einmalige Roll-out-Erinnerung am 12.6.2026
     monatsRoutine = await (await reminderGet(request)).json().catch(() => null);
   }
+
+  // Gepoolte SMTP-Verbindung schließen, egal welche Routine gelaufen ist.
+  schliesseMailVerbindung();
 
   return NextResponse.json({ ok: true, banner, monatsRoutine });
 }
