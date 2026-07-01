@@ -49,8 +49,29 @@ function transporter(): Transporter {
     port,
     secure: port === 465, // SMTPS für 465, STARTTLS für 587
     auth: { user, pass },
+    // EINE Verbindung offen halten und für alle Mails wiederverwenden.
+    // Ohne Pool öffnet nodemailer pro Mail eine neue Verbindung (TLS-Handshake
+    // + Login). Beim Monatsversand an ~50 Tagesmütter sprengt das die
+    // 60-Sekunden-Grenze der Vercel-Funktion (Hobby) → Timeout, keine Mail geht
+    // raus. Mit Pool passiert Handshake/Login nur einmal.
+    pool: true,
+    maxConnections: 1,
+    // Hängt der Mailserver, schnell abbrechen statt die Funktion stumm ins
+    // 60-Sekunden-Timeout laufen zu lassen (Fehler wird dann sichtbar geloggt).
+    connectionTimeout: 10_000, // Verbindungsaufbau
+    greetingTimeout: 10_000, // Warten auf SMTP-Begrüßung
+    socketTimeout: 20_000, // Inaktivität während des Versands
   });
   return _transporter;
+}
+
+// Pool-Verbindung schließen und Singleton zurücksetzen. Nach einem Bulk-Versand
+// aufrufen, damit die Serverless-Funktion nicht auf offene Sockets wartet.
+export function schliesseMailVerbindung(): void {
+  if (_transporter) {
+    _transporter.close();
+    _transporter = null;
+  }
 }
 
 export async function sendeMail(opts: {
