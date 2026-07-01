@@ -6,13 +6,18 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { buildMonthlyEmail, sendeMail } from "@/lib/email";
+import {
+  buildMonthlyEmail,
+  sendeMail,
+  schliesseMailVerbindung,
+} from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 // Genug Zeit für den sequentiellen Versand an alle Tagesmütter (ca. 50 Mails).
 export const maxDuration = 60;
 
 // Kurze Pause, um das Sendelimit des Mailservers (All-Inkl) zu schonen.
+// Klein genug, dass ~50 Mails samt Pausen deutlich unter 60 Sekunden bleiben.
 function warte(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -61,7 +66,7 @@ export async function GET(request: Request) {
       });
       await sendeMail({ an: tm.email, ...mail });
       versandt++;
-      await warte(400); // ~0,4 Sek. zwischen den Mails
+      await warte(150); // kurze Pause zwischen den Mails
     } catch (err) {
       fehlgeschlagen++;
       const msg = err instanceof Error ? err.message : String(err);
@@ -69,6 +74,9 @@ export async function GET(request: Request) {
       console.error(`Mail an ${tm.email} fehlgeschlagen:`, err);
     }
   }
+
+  // Gepoolte SMTP-Verbindung schließen, damit die Funktion sauber beendet.
+  schliesseMailVerbindung();
 
   return NextResponse.json({
     ok: true,
