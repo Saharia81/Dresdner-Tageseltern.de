@@ -30,14 +30,19 @@ export async function GET(request: Request) {
 
   const heute = new Date();
 
-  // Einmalige Ausnahme Roll-out Juni 2026: Aufräumen für diese erste Runde
-  // ausgesetzt (siehe reminder-emails). Ab Juli läuft es wieder normal (11.).
-  if (heute.toISOString().slice(0, 10) === "2026-06-11") {
+  // Cleanup an bestimmten Terminen aussetzen (Datum in UTC, Cron läuft 08:00 UTC):
+  // - 2026-06-11: Roll-out Juni 2026.
+  // - 2026-07-11: Monatsmail-Versand lief in den 60s-Timeout, niemand bekam die
+  //   Abfrage-Mail und konnte bestätigen. Ohne Aussetzen würden alle freien
+  //   Plätze gelöscht.
+  const cleanupAusgesetzt = ["2026-06-11", "2026-07-11"];
+  const heuteIso = heute.toISOString().slice(0, 10);
+  if (cleanupAusgesetzt.includes(heuteIso)) {
     return NextResponse.json({
       ok: true,
       typ: "cleanup",
       uebersprungen: true,
-      grund: "Einmalig ausgesetzt (Roll-out Juni 2026)",
+      grund: `Einmalig ausgesetzt (${heuteIso})`,
     });
   }
 
