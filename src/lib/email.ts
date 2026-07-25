@@ -1,17 +1,19 @@
 // E-Mail-Versand und HTML-Templates für die monatliche
 // Plätze-Aktualisierung der Tagesmütter.
 //
-// SMTP-Konfiguration erfolgt über Umgebungsvariablen
-// (siehe .env.example: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS).
+// Versand über Resend (HTTP-API) statt SMTP: zuverlässig aus Vercel-Serverless
+// heraus und schnell genug, um alle Mails per Batch in einem Aufruf zu senden.
+// Konfiguration über RESEND_API_KEY (siehe .env.example).
 
-import nodemailer, { type Transporter } from "nodemailer";
+import { Resend } from "resend";
 
 const APP_URL = process.env.APP_URL ?? "https://dresdner-tageseltern.de";
 const ABSENDER_NAME = "Dresdner Tageseltern e.V.";
-// Absender getrennt vom SMTP-Login: bei manchen Hostern (z.B. All-Inkl) ist
-// der SMTP-Benutzername ein interner Login (mXXXXXXX), nicht die Adresse.
+// Absenderadresse – muss zu einer in Resend verifizierten Domain gehören.
 const ABSENDER_EMAIL =
-  process.env.SMTP_FROM ?? "plaetze@dresdner-tageseltern.de";
+  process.env.RESEND_FROM ??
+  process.env.SMTP_FROM ??
+  "plaetze@dresdner-tageseltern.de";
 
 const DATUM_FORMAT = new Intl.DateTimeFormat("de-DE", {
   day: "2-digit",
@@ -25,68 +27,76 @@ const MONAT_JAHR_FORMAT = new Intl.DateTimeFormat("de-DE", {
 });
 
 // ----------------------------------------------------------------
-// Transport
+// Transport (Resend)
 // ----------------------------------------------------------------
 
-let _transporter: Transporter | null = null;
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-function transporter(): Transporter {
-  if (_transporter) return _transporter;
+// Kombinierter Absender im Format "Name <adresse@domain>".
+const ABSENDER = `${ABSENDER_NAME} <${ABSENDER_EMAIL}>`;
 
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT ?? 587);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-
-  if (!host || !user || !pass) {
-    throw new Error(
-      "SMTP-Konfiguration unvollständig. Bitte SMTP_HOST, SMTP_USER, SMTP_PASS in .env setzen.",
-    );
-  }
-
-  _transporter = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465, // SMTPS für 465, STARTTLS für 587
-    auth: { user, pass },
-    // EINE Verbindung offen halten und für alle Mails wiederverwenden.
-    // Ohne Pool öffnet nodemailer pro Mail eine neue Verbindung (TLS-Handshake
-    // + Login). Beim Monatsversand an ~50 Tagesmütter sprengt das die
-    // 60-Sekunden-Grenze der Vercel-Funktion (Hobby) → Timeout, keine Mail geht
-    // raus. Mit Pool passiert Handshake/Login nur einmal.
-    pool: true,
-    maxConnections: 1,
-    // Hängt der Mailserver, schnell abbrechen statt die Funktion stumm ins
-    // 60-Sekunden-Timeout laufen zu lassen (Fehler wird dann sichtbar geloggt).
-    connectionTimeout: 10_000, // Verbindungsaufbau
-    greetingTimeout: 10_000, // Warten auf SMTP-Begrüßung
-    socketTimeout: 20_000, // Inaktivität während des Versands
-  });
-  return _transporter;
-}
-
-// Pool-Verbindung schließen und Singleton zurücksetzen. Nach einem Bulk-Versand
-// aufrufen, damit die Serverless-Funktion nicht auf offene Sockets wartet.
-export function schliesseMailVerbindung(): void {
-  if (_transporter) {
-    _transporter.close();
-    _transporter = null;
-  }
-}
-
-export async function sendeMail(opts: {
+export type MailInhalt = {
   an: string;
   betreff: string;
   html: string;
   text: string;
-}): Promise<void> {
-  await transporter().sendMail({
-    from: `"${ABSENDER_NAME}" <${ABSENDER_EMAIL}>`,
+};
+
+// Einzelne Mail (z.B. Admin-Zusammenfassung, Banner-Erinnerungen).
+export async function sendeMail(opts: MailInhalt): Promise<void> {
+  const { error } = await resend.emails.send({
+    from: ABSENDER,
     to: opts.an,
     subject: opts.betreff,
     html: opts.html,
     text: opts.text,
   });
+  if (error) {
+    throw new Error(`Resend: ${error.name} – ${error.message}`);
+  }
+}
+
+// Sammelversand (Monatsabfrage, Erinnerung). Resend nimmt bis zu 100 Mails pro
+// Batch-Aufruf; längere Listen werden in 100er-Blöcke geteilt. So gehen ~50
+// personalisierte Mails in einem einzigen HTTP-Call raus – weit unter der
+// 60-Sekunden-Grenze der Vercel-Funktion. Ein fehlgeschlagener Block wird
+// gezählt und gemeldet, blockiert aber die übrigen nicht.
+export async function sendeMailsBatch(mails: MailInhalt[]): Promise<{
+  versandt: number;
+  fehlgeschlagen: number;
+  fehler: string[];
+}> {
+  const BLOCK = 100;
+  let versandt = 0;
+  let fehlgeschlagen = 0;
+  const fehler: string[] = [];
+
+  for (let i = 0; i < mails.length; i += BLOCK) {
+    const block = mails.slice(i, i + BLOCK);
+    try {
+      const { error } = await resend.batch.send(
+        block.map((m) => ({
+          from: ABSENDER,
+          to: m.an,
+          subject: m.betreff,
+          html: m.html,
+          text: m.text,
+        })),
+      );
+      if (error) {
+        fehlgeschlagen += block.length;
+        fehler.push(`Batch ab ${i}: ${error.name} – ${error.message}`);
+      } else {
+        versandt += block.length;
+      }
+    } catch (err) {
+      fehlgeschlagen += block.length;
+      const msg = err instanceof Error ? err.message : String(err);
+      fehler.push(`Batch ab ${i}: ${msg}`);
+    }
+  }
+
+  return { versandt, fehlgeschlagen, fehler };
 }
 
 // ----------------------------------------------------------------
