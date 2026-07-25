@@ -3,14 +3,10 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { buildReminderEmail, sendeMail } from "@/lib/email";
+import { buildReminderEmail, sendeMailsBatch } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
-
-function warte(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function pruefeCronAuth(request: Request): NextResponse | null {
   const secret = process.env.CRON_SECRET;
@@ -56,41 +52,35 @@ export async function GET(request: Request) {
     include: { freiePlaetze: true },
   });
 
-  let versandt = 0;
-  let fehlgeschlagen = 0;
-  const fehlerListe: string[] = [];
+  const mails = empfaenger.map((tm) => {
+    const fp = tm.freiePlaetze;
+    const plaetze = [
+      { nr: 1, ab: fp?.platz1Ab ?? null },
+      { nr: 2, ab: fp?.platz2Ab ?? null },
+      { nr: 3, ab: fp?.platz3Ab ?? null },
+      { nr: 4, ab: fp?.platz4Ab ?? null },
+      { nr: 5, ab: fp?.platz5Ab ?? null },
+    ];
+    const mail = buildReminderEmail({
+      vorname: tm.vorname,
+      emailToken: tm.emailToken,
+      plaetze,
+      heute,
+    });
+    return { an: tm.email, ...mail };
+  });
 
-  for (const tm of empfaenger) {
-    try {
-      const fp = tm.freiePlaetze;
-      const plaetze = [
-        { nr: 1, ab: fp?.platz1Ab ?? null },
-        { nr: 2, ab: fp?.platz2Ab ?? null },
-        { nr: 3, ab: fp?.platz3Ab ?? null },
-        { nr: 4, ab: fp?.platz4Ab ?? null },
-        { nr: 5, ab: fp?.platz5Ab ?? null },
-      ];
+  const { versandt, fehlgeschlagen, fehler: fehlerListe } =
+    await sendeMailsBatch(mails);
 
-      const mail = buildReminderEmail({
-        vorname: tm.vorname,
-        emailToken: tm.emailToken,
-        plaetze,
-        heute,
-      });
-      await sendeMail({ an: tm.email, ...mail });
-      versandt++;
-      await warte(400);
-    } catch (err) {
-      fehlgeschlagen++;
-      const msg = err instanceof Error ? err.message : String(err);
-      fehlerListe.push(`${tm.email}: ${msg}`);
-      console.error(`Erinnerung an ${tm.email} fehlgeschlagen:`, err);
-    }
+  if (fehlgeschlagen > 0) {
+    console.error(`Erinnerung: ${fehlgeschlagen} fehlgeschlagen`, fehlerListe);
   }
 
   return NextResponse.json({
     ok: true,
     typ: "reminder",
+    empfaenger: mails.length,
     versandt,
     fehlgeschlagen,
     fehler: fehlerListe,

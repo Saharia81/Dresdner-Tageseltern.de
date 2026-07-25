@@ -6,21 +6,10 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import {
-  buildMonthlyEmail,
-  sendeMail,
-  schliesseMailVerbindung,
-} from "@/lib/email";
+import { buildMonthlyEmail, sendeMailsBatch } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
-// Genug Zeit für den sequentiellen Versand an alle Tagesmütter (ca. 50 Mails).
 export const maxDuration = 60;
-
-// Kurze Pause, um das Sendelimit des Mailservers (All-Inkl) zu schonen.
-// Klein genug, dass ~50 Mails samt Pausen deutlich unter 60 Sekunden bleiben.
-function warte(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function pruefeCronAuth(request: Request): NextResponse | null {
   const secret = process.env.CRON_SECRET;
@@ -43,44 +32,58 @@ export async function GET(request: Request) {
     include: { freiePlaetze: true },
   });
 
-  let versandt = 0;
-  let fehlgeschlagen = 0;
-  const fehlerListe: string[] = [];
+  // Alle Mails vorbauen und per Resend-Batch in einem Rutsch verschicken.
+  const mails = tagesmuetter.map((tm) => {
+    const fp = tm.freiePlaetze;
+    const plaetze = [
+      { nr: 1, ab: fp?.platz1Ab ?? null },
+      { nr: 2, ab: fp?.platz2Ab ?? null },
+      { nr: 3, ab: fp?.platz3Ab ?? null },
+      { nr: 4, ab: fp?.platz4Ab ?? null },
+      { nr: 5, ab: fp?.platz5Ab ?? null },
+    ];
+    const mail = buildMonthlyEmail({
+      vorname: tm.vorname,
+      emailToken: tm.emailToken,
+      plaetze,
+      heute,
+    });
+    return { an: tm.email, ...mail };
+  });
 
-  for (const tm of tagesmuetter) {
-    try {
-      const fp = tm.freiePlaetze;
-      const plaetze = [
-        { nr: 1, ab: fp?.platz1Ab ?? null },
-        { nr: 2, ab: fp?.platz2Ab ?? null },
-        { nr: 3, ab: fp?.platz3Ab ?? null },
-        { nr: 4, ab: fp?.platz4Ab ?? null },
-        { nr: 5, ab: fp?.platz5Ab ?? null },
-      ];
+  // Optionale Test-Parameter (nur manuell mit CRON_SECRET nutzbar; der Cron
+  // ruft ohne Parameter auf, also unverändertes Regelverhalten):
+  //   ?only=<email>  → nur an diese eine Adresse senden
+  //   ?dry=1         → nichts senden, nur die Empfänger auflisten
+  const url = new URL(request.url);
+  const only = url.searchParams.get("only");
+  const dry = url.searchParams.get("dry") === "1";
 
-      const mail = buildMonthlyEmail({
-        vorname: tm.vorname,
-        emailToken: tm.emailToken,
-        plaetze,
-        heute,
-      });
-      await sendeMail({ an: tm.email, ...mail });
-      versandt++;
-      await warte(150); // kurze Pause zwischen den Mails
-    } catch (err) {
-      fehlgeschlagen++;
-      const msg = err instanceof Error ? err.message : String(err);
-      fehlerListe.push(`${tm.email}: ${msg}`);
-      console.error(`Mail an ${tm.email} fehlgeschlagen:`, err);
-    }
+  const ziel = only
+    ? mails.filter((m) => m.an.toLowerCase() === only.toLowerCase())
+    : mails;
+
+  if (dry) {
+    return NextResponse.json({
+      ok: true,
+      typ: "monthly",
+      dryRun: true,
+      empfaenger: ziel.length,
+      adressen: ziel.map((m) => m.an),
+    });
   }
 
-  // Gepoolte SMTP-Verbindung schließen, damit die Funktion sauber beendet.
-  schliesseMailVerbindung();
+  const { versandt, fehlgeschlagen, fehler: fehlerListe } =
+    await sendeMailsBatch(ziel);
+
+  if (fehlgeschlagen > 0) {
+    console.error(`Monatsmail: ${fehlgeschlagen} fehlgeschlagen`, fehlerListe);
+  }
 
   return NextResponse.json({
     ok: true,
     typ: "monthly",
+    empfaenger: ziel.length,
     versandt,
     fehlgeschlagen,
     fehler: fehlerListe,
