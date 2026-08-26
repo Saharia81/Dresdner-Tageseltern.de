@@ -21,6 +21,8 @@ const NAV: Array<
   {
     label: "Für Tageseltern",
     children: [
+      { href: "/fuer-tageseltern/mitglied-werden", label: "Mitglied werden" },
+      { href: "/fuer-tageseltern/ersatztagespflege", label: "Ersatztagespflege" },
       { href: "/fuer-mitglieder/banner-buchen", label: "Banner buchen" },
     ],
   },

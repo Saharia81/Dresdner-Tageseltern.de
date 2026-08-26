@@ -25,6 +25,8 @@ export type SteckbriefFormData = {
   verpflegung: "SELBST_GEKOCHT" | "CATERING";
   verpflegungHinweis: string;
   beratungsgebiet: "MALWINA" | "OUTLAW" | "KINDERLAND";
+  ersatzmodell: "KEINE" | "BASIS_ETP" | "STUETZPUNKT";
+  ersatzFreierPlatz: boolean;
   schmetterling: boolean;
   schmetterlingPartner: string;
   mitgliedsnummer: string;
@@ -359,6 +361,33 @@ export function SteckbriefForm({
               <option value="KINDERLAND">KINDERLAND-Sachsen e.V.</option>
             </select>
           </Feld>
+          <Feld
+            label="Ersatztagespflege"
+            hinweis="Bei Basis-ETP oder Stützpunkt erscheint das Mitglied auf der Ersatztagespflege-Seite."
+          >
+            <select
+              className={inputCls}
+              value={form.ersatzmodell}
+              onChange={(e) =>
+                set(
+                  "ersatzmodell",
+                  e.target.value as SteckbriefFormData["ersatzmodell"],
+                )
+              }
+            >
+              <option value="KEINE">Keine (normale Tagesmutter)</option>
+              <option value="BASIS_ETP">Basis-ETP</option>
+              <option value="STUETZPUNKT">Stützpunkt</option>
+            </select>
+          </Feld>
+          <label className="flex items-center gap-2 self-end pb-2">
+            <input
+              type="checkbox"
+              checked={form.ersatzFreierPlatz}
+              onChange={(e) => set("ersatzFreierPlatz", e.target.checked)}
+            />
+            <span className="text-sm font-bold">Freier Kooperationsplatz</span>
+          </label>
         </div>
       </section>
 

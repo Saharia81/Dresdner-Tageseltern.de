@@ -81,7 +81,12 @@ export async function GET(request: Request) {
   const bisDatum = parseDatum(searchParams.get("bis_datum"));
   const nurFreiePlaetze = searchParams.get("nur_freie_plaetze") === "true";
 
-  const where: Prisma.TagesmutterWhereInput = { istAktiv: true };
+  // Ersatztageseltern (Ersatzmodell != KEINE) erscheinen nur auf der
+  // Ersatztagespflege-Seite, nicht in der Eltern-Suche.
+  const where: Prisma.TagesmutterWhereInput = {
+    istAktiv: true,
+    ersatzmodell: "KEINE",
+  };
   if (
     beratungsgebiet === "MALWINA" ||
     beratungsgebiet === "OUTLAW" ||

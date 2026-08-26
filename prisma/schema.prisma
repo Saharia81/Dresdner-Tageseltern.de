@@ -55,6 +55,12 @@ model Tagesmutter {
   verpflegungHinweis    String?  // abweichender Wortlaut, überschreibt das Standard-Label
   beratungsgebiet       Beratungsgebiet
 
+  // Ersatztagespflege: markiert Ersatztageseltern und ihr Modell.
+  // KEINE = normale Tagesmutter (erscheint nicht auf der Ersatztagespflege-Seite).
+  ersatzmodell          Ersatzmodell @default(KEINE)
+  // Hat die Ersatztagesperson aktuell einen freien Kooperationsplatz?
+  ersatzFreierPlatz     Boolean      @default(false)
+
   // Schmetterling-Partnerschaft
   schmetterling         Boolean  @default(false)
   schmetterlingPartner  String?
@@ -126,6 +132,13 @@ model Banner {
   reihenfolge  Int       @default(0)
   istAktiv     Boolean   @default(true)
   buchungen    Buchung[]
+}
+
+// Modell der Ersatztagespflege (für die Ersatztagespflege-Seite).
+enum Ersatzmodell {
+  KEINE
+  BASIS_ETP
+  STUETZPUNKT
 }
 
 enum BuchungsStatus {
