@@ -117,7 +117,11 @@
       "Bash(cp \"C:/Users/Romy/AppData/Local/Temp/claude/c--Visual-Studio-Code-dresdner-tageseltern-de/517d8e10-f313-4e0a-a1fd-6b7239b0b1fc/scratchpad/bilder-fertig.mjs\" ./bilder-temp.mjs)",
       "Bash(node ./bilder-temp.mjs)",
       "Bash(cp \"C:/Users/Romy/AppData/Local/Temp/claude/c--Visual-Studio-Code-dresdner-tageseltern-de/517d8e10-f313-4e0a-a1fd-6b7239b0b1fc/scratchpad/kontrolle.mjs\" ./kontrolle-temp.mjs)",
-      "Bash(node ./kontrolle-temp.mjs)"
+      "Bash(node ./kontrolle-temp.mjs)",
+      "Bash(node render.mjs __TRACKED_VAR__/Mitgliedsantrag1.pdf a1 2)",
+      "Bash(node render.mjs __TRACKED_VAR__/Mitgliedsantrag2.pdf a2 2)",
+      "Bash(node analyse1.mjs \"c:/Visual Studio Code/dresdner-tageseltern.de/public/downloads/Mitgliedsantrag1.pdf\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

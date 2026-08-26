@@ -5,9 +5,10 @@ import { trackEvent } from "@/lib/analytics";
 
 /**
  * Globaler Klick-Listener: erfasst Klicks auf alle tel:- und mailto:-Links
- * (Footer, Kontaktseiten, Steckbriefe) als GA4-Events – ohne dass jeder Link
- * einzeln angefasst werden muss. Steckbrief-Links liefern über das Attribut
- * data-tm-name zusätzlich den Namen der kontaktierten Tagesmutter.
+ * (Footer, Kontaktseiten, Steckbriefe) sowie auf die PDF-Downloads unter
+ * /downloads/ als GA4-Events – ohne dass jeder Link einzeln angefasst werden
+ * muss. Steckbrief-Links liefern über das Attribut data-tm-name zusätzlich den
+ * Namen der kontaktierten Tagesmutter.
  */
 export function ClickTracking() {
   useEffect(() => {
@@ -24,6 +25,11 @@ export function ClickTracking() {
         trackEvent("contact_phone_click", { page_path, tagesmutter });
       } else if (href.startsWith("mailto:")) {
         trackEvent("contact_email_click", { page_path, tagesmutter });
+      } else if (href.startsWith("/downloads/")) {
+        trackEvent("download_click", {
+          page_path,
+          datei: href.slice("/downloads/".length),
+        });
       }
     }
 
