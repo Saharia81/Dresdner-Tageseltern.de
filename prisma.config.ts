@@ -9,6 +9,9 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DIRECT_URL"],
+    // DIRECT_URL bevorzugt (Verbindung ohne Pooler, nötig für Schemaänderungen).
+    // Ist sie nicht gesetzt, DATABASE_URL nehmen, damit Migrationen auch dort
+    // laufen, wo es nur diese eine Variable gibt (z.B. im Vercel-Build).
+    url: process.env["DIRECT_URL"] ?? process.env["DATABASE_URL"],
   },
 });
