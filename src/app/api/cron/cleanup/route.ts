@@ -35,7 +35,11 @@ export async function GET(request: Request) {
   // - 2026-07-11: Monatsmail-Versand lief in den 60s-Timeout, niemand bekam die
   //   Abfrage-Mail und konnte bestätigen. Ohne Aussetzen würden alle freien
   //   Plätze gelöscht.
-  const cleanupAusgesetzt = ["2026-06-11", "2026-07-11"];
+  // - 2026-09-11: Die Abfrage-Mail am 1.9. fiel aus (fehlende DB-Migration),
+  //   der Zyklus ist einmalig auf den 4./9./14.9. verschoben. Der Dispatcher
+  //   ruft hier an diesem Tag ohnehin nicht auf, das hier ist die zweite
+  //   Absicherung gegen einen direkten Aufruf.
+  const cleanupAusgesetzt = ["2026-06-11", "2026-07-11", "2026-09-11"];
   const heuteIso = heute.toISOString().slice(0, 10);
   if (cleanupAusgesetzt.includes(heuteIso)) {
     return NextResponse.json({
