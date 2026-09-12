@@ -110,7 +110,7 @@ function Breadcrumb() {
 const VORTEILE = [
   {
     titel: "Kindertagespflege bekannter machen",
-    text: "Unser wichtigstes Anliegen: Eltern in Dresden sollen wissen, dass es neben der Kita noch eine andere Betreuungsform gibt. Dafür sind wir mit Flyern, Aktionen und der Aktionswoche im Mai unterwegs.",
+    text: "Unser wichtigstes Anliegen: Eltern in Dresden sollen wissen, dass es neben der Kita noch eine andere Betreuungsform gibt. Dafür sind wir mit Flyern, Aktionen und in der Aktionswoche im Mai unterwegs.",
     icon: <MegafonIcon />,
   },
   {
@@ -121,7 +121,7 @@ const VORTEILE = [
   },
   {
     titel: "Banner kostenfrei ausleihen",
-    text: "Du hast einen Platz frei? Leih dir eines unserer Werbebanner für den Zaun. Über den QR-Code kommen Eltern direkt zu deinem Steckbrief.",
+    text: "Du hast einen Platz frei? Leih dir eines unserer Werbebanner aus und bring es gut sichtbar an. Über den QR-Code kommen Eltern direkt zu deinem Steckbrief.",
     icon: <BannerIcon />,
     link: { href: "/fuer-mitglieder/banner-buchen", label: "Banner ansehen" },
   },
@@ -271,7 +271,7 @@ const SCHRITTE = [
   {
     nummer: "1",
     titel: "Antrag herunterladen und ausfüllen",
-    text: "Der Mitgliedsantrag ist ein ausfüllbares PDF. Du kannst ihn direkt am Rechner oder am Handy ausfüllen, ganz ohne Drucker.",
+    text: "Der Mitgliedsantrag ist ein ausfüllbares PDF. Du kannst ihn direkt am Rechner oder am Handy ausfüllen.",
   },
   {
     nummer: "2",
