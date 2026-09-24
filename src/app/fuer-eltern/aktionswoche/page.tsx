@@ -17,23 +17,26 @@ export const metadata = {
  * Einfach die Dateien dort ablegen – Dateinamen entsprechen den Schlüsseln.
  * Fehlende Dateien werden automatisch als Platzhalter dargestellt.
  */
-function resolveImg(relativePath: string): string | undefined {
-  const fullPath = path.join(process.cwd(), "public", relativePath);
-  return existsSync(fullPath) ? relativePath : undefined;
+// Der Pfad beginnt bewusst fest mit public/images/aktionswoche: So nimmt
+// Vercel nur diesen Ordner ins Server-Bundle auf und nicht den ganzen
+// public-Ordner (der ist größer als das Limit von 250 MB).
+function resolveImg(dateiname: string): string | undefined {
+  const fullPath = path.join(process.cwd(), "public/images/aktionswoche", dateiname);
+  return existsSync(fullPath) ? `/images/aktionswoche/${dateiname}` : undefined;
 }
 
 const IMG = {
-  hero:              resolveImg("/images/aktionswoche/hero.jpg") ?? "/images/aktionswoche/hero.jpg",
-  kaufpark1:         resolveImg("/images/aktionswoche/kaufpark-1.jpg") ?? "/images/aktionswoche/kaufpark-1.jpg",
-  kaufpark2:         resolveImg("/images/aktionswoche/kaufpark-2.png") ?? "/images/aktionswoche/kaufpark-2.png",
-  kaufpark3:         resolveImg("/images/aktionswoche/kaufpark3.jpg") ?? "/images/aktionswoche/kaufpark3.jpg",
-  kaufpark4:         resolveImg("/images/aktionswoche/kaufpark-4.jpg") ?? "/images/aktionswoche/kaufpark-4.jpg",
-  bolzplatzButton:   resolveImg("/images/aktionswoche/bolzplatz-button.png") ?? "/images/aktionswoche/bolzplatz-button.png",
-  alaunPark1:        resolveImg("/images/aktionswoche/alaunpark-1.jpg"),
-  alaunPark2:        resolveImg("/images/aktionswoche/alaunpark-2.jpg"),
-  alaunPark3:        resolveImg("/images/aktionswoche/alaunpark-3.jpg"),
-  haende:            resolveImg("/images/aktionswoche/haende.png"),        // Bunte bemalte Hände
-  danke:             resolveImg("/images/aktionswoche/danke.png"),
+  hero:              resolveImg("hero.jpg") ?? "/images/aktionswoche/hero.jpg",
+  kaufpark1:         resolveImg("kaufpark-1.jpg") ?? "/images/aktionswoche/kaufpark-1.jpg",
+  kaufpark2:         resolveImg("kaufpark-2.png") ?? "/images/aktionswoche/kaufpark-2.png",
+  kaufpark3:         resolveImg("kaufpark3.jpg") ?? "/images/aktionswoche/kaufpark3.jpg",
+  kaufpark4:         resolveImg("kaufpark-4.jpg") ?? "/images/aktionswoche/kaufpark-4.jpg",
+  bolzplatzButton:   resolveImg("bolzplatz-button.png") ?? "/images/aktionswoche/bolzplatz-button.png",
+  alaunPark1:        resolveImg("alaunpark-1.jpg"),
+  alaunPark2:        resolveImg("alaunpark-2.jpg"),
+  alaunPark3:        resolveImg("alaunpark-3.jpg"),
+  haende:            resolveImg("haende.png"),        // Bunte bemalte Hände
+  danke:             resolveImg("danke.png"),
 };
 
 /* ------------------------------------------------------------------ */
