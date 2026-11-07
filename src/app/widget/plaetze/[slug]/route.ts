@@ -7,34 +7,24 @@
 // Die Daten kommen direkt aus der Datenbank, sind also immer so aktuell wie
 // die letzte Bestätigung über die Monatsmail.
 //
-// Optionale Parameter:
-//   ?hintergrund=transparent       → durchsichtiger Hintergrund
+// Standard: durchsichtiger Hintergrund, alles in einer Zeile (bricht auf
+// schmalen Bildschirmen um).
+//
+// Optionaler Parameter:
 //   ?hintergrund=ffffff            → eigene Hintergrundfarbe (Hex ohne #)
 
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const SITE = "https://dresdner-tageseltern.de";
-
 // Gleiche Darstellung wie im Steckbrief: MM/JJJJ
 function monatJahr(d: Date): string {
   return `${String(d.getUTCMonth() + 1).padStart(2, "0")}/${d.getUTCFullYear()}`;
 }
 
-function tagMonatJahr(d: Date): string {
-  return d.toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    timeZone: "Europe/Berlin",
-  });
-}
-
 function hintergrundAus(param: string | null): string {
-  if (param === "transparent") return "transparent";
   if (param && /^[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(param)) return `#${param}`;
-  return "#fdf7e3";
+  return "transparent";
 }
 
 function seite(inhalt: string, hintergrund: string): string {
@@ -53,23 +43,17 @@ function seite(inhalt: string, hintergrund: string): string {
     font-display: swap;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: transparent; }
+  html, body { background: ${hintergrund}; }
   body {
     font-family: "Nunito", system-ui, sans-serif;
     color: #2f2a26;
     padding: 4px;
   }
-  .karte {
-    background: ${hintergrund};
-    border: 1px solid rgba(255, 222, 89, 0.4);
-    border-radius: 16px;
-    padding: 16px;
-    ${hintergrund === "transparent" ? "" : "box-shadow: 0 1px 2px rgba(0,0,0,0.06);"}
-  }
-  .kopf { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .kopf { display: flex; align-items: center; gap: 6px; }
   .kopf svg { color: #f8796c; flex-shrink: 0; }
-  h1 { font-size: 16px; font-weight: 800; }
-  ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  h1 { font-size: 16px; font-weight: 800; white-space: nowrap; }
+  ul { list-style: none; display: contents; }
   li {
     display: flex; align-items: center; gap: 6px;
     font-size: 14px; font-weight: 600;
@@ -79,18 +63,11 @@ function seite(inhalt: string, hintergrund: string): string {
     padding: 4px 12px;
   }
   .punkt { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
-  .leer { color: #5a534c; font-size: 14px; }
-  .fuss {
-    margin-top: 12px;
-    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px;
-    font-size: 12px; color: #5a534c;
-  }
-  .fuss a { color: #e3625a; text-decoration: none; font-weight: 700; }
-  .fuss a:hover { text-decoration: underline; }
+  .leer { font-size: 14px; }
 </style>
 </head>
 <body>
-<div class="karte">
+<div class="zeile">
 ${inhalt}
 </div>
 </body>
@@ -141,22 +118,12 @@ export async function GET(
     .filter((d): d is Date => d instanceof Date)
     .sort((a, b) => a.getTime() - b.getTime());
 
-  const liste =
+  const inhalt =
     daten.length === 0
-      ? `<p class="leer">Aktuell sind alle Plätze belegt.</p>`
-      : `<ul>${daten
+      ? `<div class="kopf">${HERZ}<h1>Freie Plätze:</h1></div><p class="leer">Aktuell sind alle Plätze belegt.</p>`
+      : `<div class="kopf">${HERZ}<h1>Freie Plätze ab:</h1></div><ul>${daten
           .map((d) => `<li><span class="punkt" aria-hidden="true"></span>${monatJahr(d)}</li>`)
           .join("")}</ul>`;
-
-  const stand = tm.lastConfirmed ?? fp?.aktualisiertAm ?? null;
-
-  const inhalt = `
-  <div class="kopf">${HERZ}<h1>${daten.length === 0 ? "Freie Plätze" : "Freie Plätze ab:"}</h1></div>
-  ${liste}
-  <div class="fuss">
-    <span>${stand ? `Stand: ${tagMonatJahr(stand)}` : ""}</span>
-    <a href="${SITE}/kindertagespflege-finden" target="_blank" rel="noopener">Dresdner Tages Eltern e.V.</a>
-  </div>`;
 
   return antwort(seite(inhalt, hintergrund));
 }
