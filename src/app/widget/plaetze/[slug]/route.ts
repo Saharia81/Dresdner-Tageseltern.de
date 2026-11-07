@@ -53,7 +53,14 @@ function seite(inhalt: string, hintergrund: string): string {
   .kopf { display: flex; align-items: center; gap: 6px; }
   .kopf svg { color: #f8796c; flex-shrink: 0; }
   h1 { font-size: 16px; font-weight: 800; white-space: nowrap; }
-  .daten, .leer { font-size: 16px; }
+  .leer { font-size: 16px; }
+  ul { list-style: none; display: contents; }
+  li {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 16px;
+    margin-right: 10px;
+  }
+  .punkt { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -111,9 +118,9 @@ export async function GET(
   const inhalt =
     daten.length === 0
       ? `<div class="kopf">${HERZ}<h1>Freie Plätze:</h1></div><p class="leer">Aktuell sind alle Plätze belegt.</p>`
-      : `<div class="kopf">${HERZ}<h1>Freie Plätze ab:</h1></div><p class="daten">${daten
-          .map(monatJahr)
-          .join(", ")}</p>`;
+      : `<div class="kopf">${HERZ}<h1>Freie Plätze ab:</h1></div><ul>${daten
+          .map((d) => `<li><span class="punkt" aria-hidden="true"></span>${monatJahr(d)}</li>`)
+          .join("")}</ul>`;
 
   return antwort(seite(inhalt, hintergrund));
 }
